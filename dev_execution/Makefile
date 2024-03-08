@@ -25,4 +25,8 @@ fclean: clean
 
 re: fclean all
 
+test:
+	cc mock.c -lreadline -o mock
+	./mock
+
 .PHONY: all clean fclean re
