@@ -6,19 +6,31 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 14:30:23 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/03/08 16:49:03 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/03/09 21:03:14 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
 
+/**
+ * This file is inspired by xv6's sh.c, adapted for unit testing
+ * of execution components for a 42 minishell project.
+ * Original xv6 code: https://github.com/mit-pdos/xv6-public
+ * on Unix Version 6 re-implementation using ANSI C.
+ * xv6 Copyright 2006-2018 by Frans Kaashoek, Robert Morris, and Russ Cox.
+ *
+ * 42のminishellプロジェクト、execution部分のユニットテストを目的としたコードです。
+ * xv6のsh.cに基づいており、minishellの要件に合わせて一部改変しています。
+ * Gitリポジトリ（xv6）: https://github.com/mit-pdos/xv6-public
+ * xv6の著作権は2006-2018年、Frans Kaashoek, Robert Morris, Russ Coxに帰属します。
+ */
+
 static const char	whitespace[] = " \t\r\n\v";
 static const char	symbols[] = "<|>";
 
 /**
- *  xv6を参考にした、executionのユニットテスト作成を目的とするmockのコード
- * */
-
+ * forkの失敗時にはエラーMSGと共に終了する
+ */
 pid_t	fork1(void)
 {
 	pid_t	pid;
@@ -29,6 +41,10 @@ pid_t	fork1(void)
 	return (pid);
 }
 
+/**
+ * 空白文字" \t\r\n\v"を飛ばして、**psの位置を更新する
+ * 先頭の文字が指定された文字列に含まれるかどうかを返す
+ */
 int	peek(char **ps, char *es, char *toks)
 {
 	char	*s;
@@ -40,23 +56,11 @@ int	peek(char **ps, char *es, char *toks)
 	return (*s && strchr(toks, *s));
 }
 
-// lexer
-
-/*
-'"'と'\''については、他の部分の実装が固まってから後で着手
-
-- parserに進む前にtokenの時点で"や'で囲まれた部分を文字列として扱うための処理
-- quoteが囲まれていない時にエラーとして弾く（minishellの仕様）
-- 囲んだquoteの種類によって環境変数の展開が発生するかどうかを考慮しないといけない
-
-環境変数の展開は、実行の直前に文字列を確認して行う
-
-文字列を 'a' トークンとして処理し、環境変数の展開が許されないケースを 'b' トークンとして区別することを予定している
+/**
+ * lexer (gettoken)
+ * 通常の文字列 -> 'a' token
+ * 環境変数を展開しない文字列 ->'b' token
  */
-
-static const char	whitespace[] = " \t\r\n\v";
-static const char	symbols[] = "<|>";
-
 int	gettoken(char **ps, char *es, char **q, char **eq)
 {
 	char	*s;
@@ -65,7 +69,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	s = *ps;
 	while (s < es && strchr(whitespace, *s))
 		s++;
-	// トークンの開始地点を指すポインタを更新
+	// tokenの開始地点を指すポインタを更新
 	if (q)
 		*q = s;
 	ret = *s;
@@ -80,9 +84,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 		s++;
 		if (*s == '<')
 		{
-			// heredocの実装のやり方がよくわからない。
-			//とりあえず '-' tokenを返す
-			ret = '-';
+			ret = '-'; // token for `<<`
 			s++;
 		}
 		break ;
@@ -90,26 +92,42 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 		s++;
 		if (*s == '>')
 		{
-			ret = '+';
+			ret = '+'; // token for `>>`
 			s++;
 		}
 		break ;
 	case '"':
-		// 文字列の処理はやり方がわからないため一旦省略（こちらは後の環境変数の展開なども含むため'\''とはなんらかの形で区別する必要がある）
+		ret = 'a'; // 通常の文字列token
+		s++;       // 最初のdouble quote
+		while (s < es && *s != '"')
+			s++; // quote内の文字を飛ばす
+		if (s < es)
+			s++; // 終了のdouble quote
+		else
+			error_exit("unclosed double quote");
+		break ;
 	case '\'':
-		// 文字列の処理はやり方がわからないため一旦省略
+		ret = 'b'; // 環境変数を展開しない文字列token
+		s++;       // 最初のsingle quote
+		while (s < es && *s != '\'')
+			s++;
+		if (s < es)
+			s++; // 終了のsingle quote
+		else
+			error_exit("unclosed single quote");
+		break ;
 	default:
 		ret = 'a';
 		while (s < es && !strchr(whitespace, *s) && !strchr(symbols, *s))
 			s++;
 		break ;
 	}
-	// トークンの終了地点を指すポインタを更新
+	// tokenの終了地点を指すポインタを更新
 	if (eq)
 		*eq = s;
 	while (s < es && strchr(whitespace, *s))
 		s++;
-	// 次のトークンの開始地点を指すポインタを更新
+	// 次のtokenの開始地点までポインタを更新
 	*ps = s;
 	return (ret);
 }
@@ -120,7 +138,10 @@ struct cmd			*parsepipe(char **, char *);
 struct cmd			*parseexec(char **, char *);
 struct cmd			*nulterminate(struct cmd *);
 
-// constructor
+/**
+ * execcmd, redircmd, pipecmdのconstructor
+ * struct cmdを基底クラスとして、castした構造体を返す
+ */
 struct cmd	*execcmd(void)
 {
 	struct execcmd	*cmd;
@@ -130,6 +151,7 @@ struct cmd	*execcmd(void)
 	cmd->type = EXEC;
 	return ((struct cmd *)cmd);
 }
+
 struct cmd	*redircmd(struct cmd *subcmd, char *file, char *efile, int mode,
 		int fd)
 {
@@ -197,6 +219,7 @@ struct cmd	*parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
+// 重複するredirectionが複数あるケースなどに対応していない気がします
 struct cmd	*parseredirs(struct cmd *cmd, char **ps, char *es)
 {
 	int	tok;
@@ -205,7 +228,7 @@ struct cmd	*parseredirs(struct cmd *cmd, char **ps, char *es)
 	while (peek(ps, es, "<>"))
 	{
 		tok = gettoken(ps, es, 0, 0);
-		if (gettoken(ps, es, &q, &eq) != 'a')
+		if (gettoken(ps, es, &q, &eq) != 'a') // 次のtokenを確認
 			panic("missing file for redirection");
 		switch (tok)
 		{
@@ -230,14 +253,11 @@ struct cmd	*parseexec(char **ps, char *es)
 
 	char *q, *eq;
 	int tok, argc;
-	// `(`の処理はいらないため省略
-	// 手動ポリモーフィズム
-	// execcmdをcmd型にキャストしたものをexeccmdとして再キャストする
-	ret = execcmd();
-	cmd = (struct execcmd *)ret;
+	ret = execcmd();             // コンストラクタ
+	cmd = (struct execcmd *)ret; // 手動ポリモーフィズム
 	argc = 0;
 	ret = parseredirs(ret, ps, es);
-	while (!peek(ps, es, "|)&;"))
+	while (!peek(ps, es, "|")) // 元々"|)&;"
 	{
 		if ((tok = gettoken(ps, es, &q, &eq)) == 0)
 			break ;
