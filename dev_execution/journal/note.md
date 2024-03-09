@@ -42,6 +42,7 @@ https://docs.google.com/spreadsheets/u/0/d/1uJHQu0VPsjjBkR4hxOeCMEt3AOM1Hp_SmUzP
 ### 未読資料
 [The Architecture of Open Source Applications](https://aosabook.org/en/index.html)
 [GNU Bison](https://www.gnu.org/software/bison/manual/bison.html)
+[xv6 資料](https://ocw.mit.edu/courses/6-828-operating-system-engineering-fall-2012/3def8fcd397933ebb846fb479bdcf556_MIT6_828F12_xv6-book-rev7.pdf)
 
 ### 資料リスト
 https://minishell.simple.ink/
