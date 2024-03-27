@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 23:59:28 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/03/27 20:17:00 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/03/27 22:44:15 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,6 @@ void	exec_redir(t_cmd *cmd)
 			perror_exit("Error: close failed\n");
 		}
 	}
-	exec_cmd(rcmd->cmd);
+	run_cmd(rcmd->cmd);
 	close(rcmd->fd);
 }

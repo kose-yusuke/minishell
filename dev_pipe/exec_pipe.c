@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 15:48:03 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/03/27 01:13:02 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/03/27 22:44:24 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2])
 			perror_exit("Error: close failed\n");
 		}
 	}
-	exec_cmd(pcmd->left);
-	error_exit("Error: exec_cmd failed\n");
+	run_cmd(pcmd->left);
+	error_exit("Error: run_cmd failed\n");
 }
 
 static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2])
@@ -64,8 +64,8 @@ static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2])
 			perror_exit("Error: close failed\n");
 		}
 	}
-	exec_cmd(pcmd->right);
-	error_exit("Error: exec_cmd failed\n");
+	run_cmd(pcmd->right);
+	error_exit("Error: run_cmd failed\n");
 }
 
 void	exec_pipe(t_cmd *cmd)
