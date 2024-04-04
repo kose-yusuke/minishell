@@ -6,15 +6,15 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 20:37:40 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/03/27 20:08:27 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/04/02 00:59:26 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tmp.h"
 
-t_cmd	*init_execcmd(void)
+struct s_cmd	*init_execcmd(void)
 {
-	t_execcmd	*cmd;
+	struct s_execcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -26,9 +26,9 @@ t_cmd	*init_execcmd(void)
 	return ((t_cmd *)cmd);
 }
 
-t_cmd	*init_redircmd(t_cmd *subcmd, char *filepath, int oflag, int fd)
+struct s_cmd	*init_redircmd(t_cmd *subcmd, char *filepath, int oflag, int fd)
 {
-	t_redircmd	*cmd;
+	struct s_redircmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -45,9 +45,9 @@ t_cmd	*init_redircmd(t_cmd *subcmd, char *filepath, int oflag, int fd)
 	return ((struct cmd *)cmd);
 }
 
-t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
+struct s_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
 {
-	t_pipecmd	*cmd;
+	struct s_pipecmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)

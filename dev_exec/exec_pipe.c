@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 15:48:03 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/03/27 22:44:24 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/04/02 00:30:40 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,5 +102,5 @@ void	exec_pipe(t_cmd *cmd)
 	{
 		perror_exit("Error: wait failed\n");
 	}
-	exit(EXIT_SUCCESS); // ここで終了するのは親プロセスのみになる
+	exit(EXIT_SUCCESS);
 }

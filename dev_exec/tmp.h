@@ -6,13 +6,14 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 20:39:02 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/03/27 21:24:52 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/04/04 03:08:38 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TMP_H
 # define TMP_H
 
+# include "libft.h"
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -37,8 +38,8 @@ typedef struct s_cmd
 typedef struct s_execcmd
 {
 	t_cmd_type	type;
-	// command and arguments
 	char		*argv[MAXARGS];
+	char		*eargv[MAXARGS];
 }				t_execcmd;
 
 typedef struct s_redircmd
@@ -46,12 +47,10 @@ typedef struct s_redircmd
 	t_cmd_type	type;
 	t_cmd		*cmd;
 	char		*filepath;
-	// O_WRONLY | O_CREATE, O_RDONLY とかを入れるための変数。正しいフラグを入れる必要がある。
-	int			oflag;
-	// STDOUT_FILENO, STDIN_FILENO とかを入れるための変数
-	int			fd;
-	// ここは必要なのかな? here_docはどうやって使うのか、現時点では不明。
-	bool		here_doc;
+	char		*efilepath;
+	int oflag;     // O_WRONLY | O_CREATE, O_RDONLY とかを入れる 元々mode
+	int fd;        // STDOUT_FILENO, STDIN_FILENO とかを入れる
+	bool here_doc; // ここ? here_docはexpansionの時に展開する
 
 }				t_redircmd;
 
@@ -61,5 +60,8 @@ typedef struct s_pipecmd
 	t_cmd		*left;
 	t_cmd		*right;
 }				t_pipecmd;
+
+void			error_exit(char *err_msg);
+void			perror_exit(char *err_msg);
 
 #endif
