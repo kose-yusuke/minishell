@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/04 02:25:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/04/04 15:26:37 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/04/04 20:47:48 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,8 @@ typedef struct s_redircmd
 	t_cmd		*cmd;
 	char		*filepath;
 	char		*efilepath;
-	int oflag;     // O_WRONLY | O_CREATE, O_RDONLY とかを入れる 元々mode
-	int fd;        // STDOUT_FILENO, STDIN_FILENO とかを入れる
-	bool here_doc; // ここ? here_docはexpansionの時に展開する
-
+	int oflag; // O_WRONLY | O_CREATE, O_RDONLY とかを入れる 元々mode
+	int fd;    // STDOUT_FILENO, STDIN_FILENO とかを入れる
 }				t_redircmd;
 
 typedef struct s_pipecmd
