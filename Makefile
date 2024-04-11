@@ -1,19 +1,29 @@
-NAME     = minishell
-CC       = cc 
-INCLUDES = -I include
-CFLAGS   = $(INCLUDES) -g -fsanitize=address
-# CFLAGS   = -Wall -Wextra -Werror $(INCLUDES)
-LIBS     = -lreadline
-SRCS     = src/main.c src/readline.c src/tokenize.c src/exec.c src/utils.c src/destructor.c src/error.c src/expand.c
-OBJS     = $(SRCS:%.c=%.o)
+NAME		:= minishell
+SRC_DIR		:= src
+INC_DIR		:= include
+INC			:= -I$(INC_DIR)
+SRCS		:= $(addprefix $(SRC_DIR)/,main.c readline.c tokenize.c exec.c utils.c destructor.c error.c expand.c)
+OBJS		:= $(SRCS:%.c=%.o)
+LIBS		:= -lreadline
+CC			:= gcc
+DFLAGS		:= -g -fsanitize=address
+CFLAGS		:= -Wall -Werror $(INC)
+#CFLAGS		:= -Wall -Werror -Wextra $(INC)  tmp commented out
 
 all: $(NAME)
+
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(LIBS) -o $(NAME) $(OBJS)
+
 clean:
-	$(RM) $(OBJS)
+	rm -f $(OBJS)
+
 fclean: clean
-	$(RM) $(NAME)
+	rm -f $(NAME)
+
 re: fclean all
-.PHONY: all clean fclean re test
-##########################
+
+debug: clean $(OBJS)
+	$(CC) $(CFLAGS) $(DFLAGS) $(LIBS) -o $(NAME) $(OBJS)
+
+.PHONY: all clean fclean re debug

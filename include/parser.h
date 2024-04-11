@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 19:58:52 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/03/21 23:46:39 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/04/12 02:14:04 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,6 @@
 
 #include "lexer.h"
 
-typedef enum {
-    ND_CMD,     // コマンド
-    ND_PIPE,    // パイプ
-} t_node_kind;
-
-typedef struct s_ast
-{
-    t_node_kind kind;
-    t_ast		*left;
-	t_ast		*right;
-	t_token		*lst;
-}               t_ast;
+t_ast *parse_token(t_mgr *mgr);
 
 #endif

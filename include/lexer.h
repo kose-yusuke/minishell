@@ -11,21 +11,7 @@
 #include <stdbool.h>
 # include <stddef.h>
 
-// readline~Lexer
-
-typedef enum e_token_kind
-{
-    TK_WORD,
-    TK_OP,
-    TK_EOF
-}               t_token_kind;
-
-typedef struct s_token
-{
-    char            *word;
-    t_token_kind    kind;
-	struct s_token     	*next;
-}					t_token;
+#include "struct.h"
 
 // 引用符処理
 #define SINGLE_QUOTE_CHAR '\''
@@ -36,7 +22,8 @@ int main(int argc, char **argv, char **envp);
 
 //readline
 int	ft_readline(char **envp);
-void interpret(char *line, int *stat_loc);
+//void interpret(char *line, int *stat_loc);
+void interpret(char *line, t_mgr *mgr);
 
 //Lexer
 t_token	*tokenize(char *line);

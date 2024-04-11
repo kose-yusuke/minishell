@@ -15,13 +15,7 @@
 //error
 # define ERROR_TOKENIZE 258
 
-typedef struct s_mgr
-{
-	t_token	*tok;
-	t_ast	*ast;
-	int		status;
-	bool	syntax_error;
-}	t_mgr;
+
 
 void	fatal_error(const char *msg);
 void	assert_error(const char *msg);

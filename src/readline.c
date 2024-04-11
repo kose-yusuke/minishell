@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/10 18:23:40 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/03/21 22:55:17 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/04/12 02:10:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/lexer.h"
-#include "../include/minishell.h"
+#include "lexer.h"
+#include "minishell.h"
+#include "parser.h"
 
 // デバッグ用
 int	print_list(t_token *tok)
