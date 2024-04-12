@@ -21,7 +21,7 @@
 int main(int argc, char **argv, char **envp);
 
 //readline
-int	ft_readline(char **envp);
+int	ft_readline(char **envp, t_mgr *mgr);
 //void interpret(char *line, int *stat_loc);
 void interpret(char *line, t_mgr *mgr);
 

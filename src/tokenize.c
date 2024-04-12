@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/10 22:55:19 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/03/20 12:35:55 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/04/12 05:13:08 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool is_word(const char *line)
 t_token *operator(char **rest, char *line)
 {
 	static char	*const	operators[] = {"||", "&", "&&", ";", ";;", "(", ")", "|", "\n"};
-	size_t				i = 0;				
+	size_t				i = 0;
 	char				*op;
 
 	while (i < sizeof(operators) / sizeof(*operators))
@@ -69,6 +69,7 @@ t_token *operator(char **rest, char *line)
 		i++;
 	}
 	assert_error("Unexpected operator");
+	return (NULL);
 }
 
 t_token *word(char **rest, char *line)
@@ -108,7 +109,7 @@ t_token *word(char **rest, char *line)
 		fatal_error("strndup");
 	*rest = line;
 	return (new_token(word, TK_WORD));
-	
+
 }
 
 t_token	*tokenize(char *line)

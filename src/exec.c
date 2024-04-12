@@ -6,7 +6,7 @@ char *search_path(const char *filename)
     char path[PATH_MAX];
     char *value;
     char *end;
-    
+
     value = getenv("PATH");
     while (*value)
     {
@@ -65,5 +65,6 @@ int exec(char *argv[])
         wait(&wstatus);
         return (WEXITSTATUS(wstatus));
     }
-    
+
+    return (0);
 }
