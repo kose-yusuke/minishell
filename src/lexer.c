@@ -1,7 +1,7 @@
 #include "lexer.h"
 #include "minishell.h"
 
-t_token_kind	get_blank_token(char **ps)
+static t_token_kind	get_blank_token(char **ps)
 {
 	static const char	*whitespace = " \t";
 	char				*s;
@@ -22,7 +22,7 @@ t_token_kind	get_blank_token(char **ps)
 	return (TK_BLANK);
 }
 
-t_token_kind	get_op_token(char **ps)
+static t_token_kind	get_op_token(char **ps)
 {
 	static const char			*op[] = {"|", "<<", ">>", "<", ">", NULL};
 	static const t_token_kind	tok[] = {TK_PIPE, TK_HEREDOC, TK_REDIR_APPEND,
@@ -46,7 +46,7 @@ t_token_kind	get_op_token(char **ps)
 	return (TK_UNDEF_TOKEN);
 }
 
-t_token_kind	get_quoted_token(char **ps, char **q, char **eq)
+static t_token_kind	get_quoted_token(char **ps, char **q, char **eq)
 {
 	char	*s;
 	char	quote_char;
@@ -68,14 +68,14 @@ t_token_kind	get_quoted_token(char **ps, char **q, char **eq)
 		return (TK_DQUOTED_STR);
 }
 
-bool	is_meta_character(char c)
+static bool	is_meta_character(char c)
 {
 	static const char	*metacharacter = "|<> \t\n'\"";
 
 	return (strchr(metacharacter, c) != 0);
 }
 
-t_token_kind	get_word_token(char **ps, char **q, char **eq)
+static t_token_kind	get_word_token(char **ps, char **q, char **eq)
 {
 	char	*s;
 
@@ -90,7 +90,7 @@ t_token_kind	get_word_token(char **ps, char **q, char **eq)
 	return (TK_WORD);
 }
 
-t_token_kind	get_token_kind(char **ps, char **q, char **eq)
+static t_token_kind	get_token_kind(char **ps, char **q, char **eq)
 {
 	t_token_kind	kind;
 
@@ -112,7 +112,7 @@ t_token_kind	get_token_kind(char **ps, char **q, char **eq)
 /*
 TODO: 失敗時に確保済みのリソースを適切に解放する処理を追加する
  */
-t_token	*new_token(t_token_kind kind, char **q, char **eq)
+static t_token	*new_token(t_token_kind kind, char **q, char **eq)
 {
 	t_token	*new_tok;
 
