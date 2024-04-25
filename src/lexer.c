@@ -94,8 +94,6 @@ t_token_kind	get_token_kind(char **ps, char **q, char **eq)
 {
 	t_token_kind	kind;
 
-	if (!ps || !*ps || !**ps)
-		return (TK_UNDEF_TOKEN);
 	kind = get_blank_token(ps);
 	if (kind != TK_UNDEF_TOKEN)
 		return (kind);
@@ -111,6 +109,9 @@ t_token_kind	get_token_kind(char **ps, char **q, char **eq)
 	return (TK_PARSE_ERROR);
 }
 
+/*
+TODO: 失敗時に確保済みのリソースを適切に解放する処理を追加する
+ */
 t_token	*new_token(t_token_kind kind, char **q, char **eq)
 {
 	t_token	*new_tok;
@@ -151,5 +152,3 @@ t_token	*tokenize(char *s)
 	cur_tok->next = new_token(TK_EOF, NULL, NULL);
 	return (head_tok.next);
 }
-
-
