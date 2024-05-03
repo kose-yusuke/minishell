@@ -1,32 +1,27 @@
+/* lexer.c - 入力をトークンに分割する字句解析器の実装。 */
 #include "lexer.h"
-#include "minishell.h"
 
-static t_token_kind	get_blank_token(char **ps)
+static t_token_type	get_blank_token(char **ps)
 {
-	static const char	*whitespace = " \t";
-	char				*s;
+	char	token_type;
 
-	s = *ps;
-	if (*s && *s != '\n' && !strchr(whitespace, *s))
-		return (TK_UNDEF_TOKEN);
-	if (*s == '\n')
+	if (!**ps || !strchr(" \t\n", **ps))
 	{
-		while (*s && *s == '\n')
-			s++;
-		*ps = s;
-		return (TK_NEWLINE);
+		return (TK_UNDEF_TOKEN);
 	}
-	while (*s && strchr(whitespace, *s))
-		s++;
-	*ps = s;
-	return (TK_BLANK);
+	token_type = **ps;
+	while (**ps && **ps == token_type)
+	{
+		(*ps)++;
+	}
+	return (token_type);
 }
 
-static t_token_kind	get_op_token(char **ps)
+static t_token_type	get_op_token(char **ps)
 {
 	static const char			*op[] = {"|", "<<", ">>", "<", ">", NULL};
-	static const t_token_kind	tok[] = {TK_PIPE, TK_HEREDOC, TK_REDIR_APPEND,
-			TK_REDIR_IN, TK_REDIR_OUT};
+	static const t_token_type	tok[] = {TK_PIPE, TK_HEREDOC, TK_REDIR_APPEND,
+			TK_REDIR_IN, TK_REDIR_OUT, TK_UNDEF_TOKEN};
 	static const size_t			len[] = {1, 2, 2, 1, 1};
 	char						*s;
 	size_t						i;
@@ -46,7 +41,7 @@ static t_token_kind	get_op_token(char **ps)
 	return (TK_UNDEF_TOKEN);
 }
 
-static t_token_kind	get_quoted_token(char **ps, char **q, char **eq)
+static t_token_type	get_quoted_token(char **ps, char **q, char **eq)
 {
 	char	*s;
 	char	quote_char;
@@ -75,7 +70,7 @@ static bool	is_meta_character(char c)
 	return (strchr(metacharacter, c) != 0);
 }
 
-static t_token_kind	get_word_token(char **ps, char **q, char **eq)
+static t_token_type	get_word_token(char **ps, char **q, char **eq)
 {
 	char	*s;
 
@@ -90,65 +85,63 @@ static t_token_kind	get_word_token(char **ps, char **q, char **eq)
 	return (TK_WORD);
 }
 
-static t_token_kind	get_token_kind(char **ps, char **q, char **eq)
+static t_token_type	get_token_type(char **ps, char **q, char **eq)
 {
-	t_token_kind	kind;
+	t_token_type	type;
 
-	kind = get_blank_token(ps);
-	if (kind != TK_UNDEF_TOKEN)
-		return (kind);
-	kind = get_op_token(ps);
-	if (kind != TK_UNDEF_TOKEN)
-		return (kind);
-	kind = get_quoted_token(ps, q, eq);
-	if (kind != TK_UNDEF_TOKEN)
-		return (kind);
-	kind = get_word_token(ps, q, eq);
-	if (kind != TK_UNDEF_TOKEN)
-		return (kind);
+	type = get_blank_token(ps);
+	if (type != TK_UNDEF_TOKEN)
+		return (type);
+	type = get_op_token(ps);
+	if (type != TK_UNDEF_TOKEN)
+		return (type);
+	type = get_quoted_token(ps, q, eq);
+	if (type != TK_UNDEF_TOKEN)
+		return (type);
+	type = get_word_token(ps, q, eq);
+	if (type != TK_UNDEF_TOKEN)
+		return (type);
 	return (TK_PARSE_ERROR);
 }
 
-/*
-TODO: 失敗時に確保済みのリソースを適切に解放する処理を追加する
- */
-static t_token	*new_token(t_token_kind kind, char **q, char **eq)
+// TODO: 失敗時に確保済みのリソースを適切に解放する処理を追加する
+static t_token	*new_token(t_token_type type, char **q, char **eq)
 {
-	t_token	*new_tok;
+	t_token	*new_token;
 
-	new_tok = calloc(1, sizeof(t_token));
-	if (!new_tok)
+	new_token = calloc(1, sizeof(t_token));
+	if (!new_token)
 		fatal_error("calloc");
-	new_tok->kind = kind;
-	if (kind == TK_WORD || kind == TK_SQUOTED_STR || kind == TK_DQUOTED_STR)
+	new_token->type = type;
+	if (strchr("a'\"", type))
 	{
 		if (!q || !eq || !*q)
-			error_exit("word string is not found");
-		new_tok->word = strndup(*q, *eq - *q);
-		if (!new_tok->word)
+			fatal_error("new_token");
+		new_token->word = strndup(*q, *eq - *q);
+		if (!new_token->word)
 			fatal_error("strndup");
 	}
-	return (new_tok);
+	return (new_token);
 }
 
-t_token	*tokenize(char *s)
+t_token	*lexer(char *s)
 {
-	t_token	head_tok;
-	t_token	*cur_tok;
+	t_token	head_token;
+	t_token	*cur_token;
 	char	*q;
 	char	*eq;
 
-	head_tok.next = NULL;
-	cur_tok = &head_tok;
+	head_token.next = NULL;
+	cur_token = &head_token;
 	while (*s)
 	{
 		q = NULL;
 		eq = NULL;
-		cur_tok->next = new_token(get_token_kind(&s, &q, &eq), &q, &eq);
-		if (!cur_tok->next || cur_tok->next->kind == TK_PARSE_ERROR)
+		cur_token->next = new_token(get_token_type(&s, &q, &eq), &q, &eq);
+		if (!cur_token->next || cur_token->next->type == TK_PARSE_ERROR)
 			assert_error("Unexpected Token");
-		cur_tok = cur_tok->next;
+		cur_token = cur_token->next;
 	}
-	cur_tok->next = new_token(TK_EOF, NULL, NULL);
-	return (head_tok.next);
+	cur_token->next = new_token(TK_EOF, NULL, NULL);
+	return (head_token.next);
 }

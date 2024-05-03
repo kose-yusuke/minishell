@@ -2,9 +2,9 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-# include <string.h> // strchr, strncmp, strudup, strlen
-# include <stdlib.h> // malloc, free
 # include <stdbool.h> // bool
+# include <stdlib.h>  // malloc, free
+# include <string.h>  // strchr, strncmp, strudup, strlen
 
 typedef enum e_token_type
 {
