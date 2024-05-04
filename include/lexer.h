@@ -1,10 +1,5 @@
-/* lexer.h - 入力をトークンに分割する字句解析器の定義。 */
 #ifndef LEXER_H
 # define LEXER_H
-
-# include <stdbool.h> // bool
-# include <stdlib.h>  // malloc, free
-# include <string.h>  // strchr, strncmp, strudup, strlen
 
 typedef enum e_token_type
 {

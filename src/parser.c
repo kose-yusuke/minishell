@@ -1,5 +1,28 @@
+/* parser.c */
 #include "minishell.h"
 #include "parser.h"
+
+bool	is_word_token(t_token **token)
+{
+	return (peek(token, TK_WORD));
+}
+
+bool	is_quoted_token(t_token **token)
+{
+	return (peek(token, TK_SQUOTED_STR) || peek(token, TK_DQUOTED_STR));
+}
+
+/**
+ * `advance`
+ * トークンストリームを次に進める
+ */
+void	advance(t_token **token)
+{
+	if (*token && (*token)->type != TK_EOF)
+	{
+		*token = (*token)->next;
+	}
+}
 
 /**
  * `skip_blanks`
@@ -9,7 +32,7 @@ void	skip_blanks(t_token **token)
 {
 	while (*token && (*token)->type == TK_BLANK)
 	{
-		*token = (*token)->next;
+		advance(token);
 	}
 }
 
@@ -26,7 +49,7 @@ bool	consume(t_token **token, t_token_type type)
 	{
 		return (false);
 	}
-	*token = (*token)->next;
+	advance(token);
 	return (true);
 }
 
@@ -50,7 +73,7 @@ t_token	*next_token(t_token **token)
 		return (*token);
 	}
 	current = *token;
-	*token = (*token)->next;
+	advance(token);
 	return (current);
 }
 
@@ -73,12 +96,9 @@ void	expect(t_token **token, t_token_type type)
  * 現在のトークンを見る（チェックする）が、消費はしない
  * 先頭のtokenが、指定されたtoken typeと一致するかどうかを返す
  */
-bool	peek(t_token **token, t_token_type type, bool should_skip_blanks)
+bool	peek(t_token **token, t_token_type type)
 {
-	if (should_skip_blanks)
-	{
-		skip_blanks(token);
-	}
+	skip_blanks(token);
 	return (*token && (*token)->type == type);
 }
 
@@ -128,70 +148,188 @@ t_redir	*init_redir(t_redir_type type, t_word_list *word, int oflag, int fd)
 	return (new_redir);
 }
 
-t_execcmd	*parse_redir(t_execcmd *exec_cmd, t_token **token)
+bool	is_redir_token(t_token **token)
 {
-	t_redir		*redir;
-	t_word_list	*word_list;
-	t_token		*tmp;
+	skip_blanks(token);
+	return (*token && (*token)->type != 0 && strchr("<>HA", (*token)->type));
+}
 
-	while ((peek(token, TK_REDIR_IN) || peek(token, TK_REDIR_OUT) || peek(token,
-				TK_REDIR_APPEND)) || peek(token, TK_HEREDOC))
+t_execcmd	*prepend_redir(t_redir_list **redir_list, t_token **token)
+{
+	t_redir_list	*new_redir;
+	t_word_list		*word_list;
+	t_token			*tmp;
+
+	while (is_redir_token(token))
 	{
-		// ここでword_listに追加する処理を書く
+		if (peek(token, TK_REDIR_IN))
+		{
+			redir = init_redir(REDIR_IN, NULL, O_RDONLY, STDIN_FILENO);
+			advance(token);
+		}
+		else if (peek(token, TK_REDIR_OUT))
+		{
+			redir = init_redir(REDIR_OUT, NULL, O_WRONLY | O_CREAT,
+					STDOUT_FILENO);
+			advance(token);
+		}
+		else if (peek(token, TK_REDIR_APPEND))
+		{
+			redir = init_redir(REDIR_APPEND, NULL,
+					O_WRONLY | O_CREAT | O_APPEND, STDOUT_FILENO);
+			advance(token);
+		}
+		else if (peek(token, TK_HEREDOC))
+		{
+			redir = init_redir(REDIR_HEREDOC, NULL, O_RDONLY, STDIN_FILENO);
+			advance(token);
+			if (!is_word_token(token))
+			{
+				fatal_error("syntax error\n");
+			}
+			word_list = malloc(sizeof(*word_list));
+			if (!word_list)
+			{
+				perror_exit("Error: malloc failed\n");
+			}
+			memset(word_list, 0, sizeof(*word_list));
+			word_list->word = strdup((*token)->word);
+			if (!word_list->word)
+			{
+				perror_exit("Error: strdup failed\n");
+			}
+			word_list->next = NULL;
+			redir->word_list = word_list;
+			redir->is_here_doc = true;
+			redir->is_quoted_derimiter = false;
+			advance(token);
+		}
+		else
+		{
+			fatal_error("syntax error\n");
+		}
 		// ここでredir_listに追加する処理を書く
 		*token = (*token)->next;
 	}
 	// 仮のコード
 	redir = init_redir(REDIR_OUT, NULL, O_WRONLY | O_CREAT, STDOUT_FILENO);
 	// tokenを読み解いて、redirを作���する処理を書く
-	// redir->type = REDIR_OUT;
-	// redir->word_list = NULL;
-	// redir->oflag = O_WRONLY | O_CREAT;
-	// redir->fd = STDOUT_FILENO;
-	// redir->is_here_doc = false;
-	// redir->is_quoted_derimiter = false;
-	// word_list = malloc(sizeof(*word_list));
-	// if (!word_list)
-	// {
-	// 	perror_exit("Error: malloc failed\n");
-	// }
-	// memset(word_list, 0, sizeof(*word_list));
-	// word_list->word = strdup("output.txt");
-	// if (!word_list->word)
-	// {
-	// 	perror_exit("Error: strdup failed\n");
-	// }
-	// word_list->next = NULL;
-	// redir->word_list = word_list;
-	if (exec_cmd->redir_list)
 	{
-		redir->next = exec_cmd->redir_list;
-		exec_cmd->redir_list = redir;
+		while (is_redir_token(*token))
+		{
+			if (peek(token, TK_REDIR_IN))
+			{
+				redir = init_redir(REDIR_IN, NULL, O_RDONLY, STDIN_FILENO);
+				advance(token);
+			}
+			else if (peek(token, TK_REDIR_OUT))
+			{
+				redir = init_redir(REDIR_OUT, NULL, O_WRONLY | O_CREAT,
+						STDOUT_FILENO);
+				advance(token);
+			}
+			else if (peek(token, TK_REDIR_APPEND))
+			{
+				redir = init_redir(REDIR_APPEND, NULL,
+						O_WRONLY | O_CREAT | O_APPEND, STDOUT_FILENO);
+				advance(token);
+			}
+			else if (peek(token, TK_HEREDOC))
+			{
+				redir = init_redir(REDIR_HEREDOC, NULL, O_RDONLY, STDIN_FILENO);
+				advance(token);
+				if (!is_word_token(token))
+				{
+					fatal_error("syntax error\n");
+				}
+				word_list = malloc(sizeof(*word_list));
+				if (!word_list)
+				{
+					perror_exit("Error: malloc failed\n");
+				}
+				memset(word_list, 0, sizeof(*word_list));
+				word_list->word = strdup((*token)->word);
+				if (!word_list->word)
+				{
+					perror_exit("Error: strdup failed\n");
+				}
+				word_list->next = NULL;
+				redir->word_list = word_list;
+				redir->is_here_doc = true;
+				redir->is_quoted_derimiter = false;
+				advance(token);
+			}
+			else
+			{
+				fatal_error("syntax error\n");
+			}
+			// ここでredir_listに追加する処理を書く
+			*token = (*token)->next;
+		}
+		// 仮のコード
+		redir = init_redir(REDIR_OUT, NULL, O_WRONLY | O_CREAT, STDOUT_FILENO);
+		// tokenを読み解いて、redirを作���する処理を書く
+		// redir->type = REDIR_OUT;
+		// redir->word_list = NULL;
+		// redir->oflag = O_WRONLY | O_CREAT;
+		// redir->fd = STDOUT_FILENO;
+		// redir->is_here_doc = false;
+		// redir->is_quoted_derimiter = false;
+		// word_list = malloc(sizeof(*word_list));
+		// if (!word_list)
+		// {
+		// 	perror_exit("Error: malloc failed\n");
+		// }
+		// memset(word_list, 0, sizeof(*word_list));
+		// word_list->word = strdup("output.txt");
+		// if (!word_list->word)
+		// {
+		// 	perror_exit("Error: strdup failed\n");
+		// }
+		// word_list->next = NULL;
+		// redir->word_list = word_list;
+		if (exec_cmd->redir_list)
+		{
+			redir->next = exec_cmd->redir_list;
+			exec_cmd->redir_list = redir;
+		}
+		else
+		{
+			exec_cmd->redir_list = redir;
+			redir->next = NULL;
+		}
+		return (exec_cmd);
 	}
-	else
+}
+void	append_word(t_word_list **word_list, char *word)
+{
+	t_word_list	*new_word;
+	t_word_list	*last;
+
+	new_word = calloc(sizeof(*new_word));
+	if (!new_word)
 	{
-		exec_cmd->redir_list = redir;
-		redir->next = NULL;
+		perror_exit("Error: malloc failed\n");
 	}
-	return (exec_cmd);
+	new_word->word = word;
+	new_word->next = NULL;
+	if (!*word_list)
+	{
+		*word_list = new_word;
+		return ;
+	}
+	last = *word_list;
+	while (last->next)
+	{
+		last = last->next;
+	}
+	last->next = new_word;
 }
 
-bool	is_word_token(t_token **token)
-{
-	return (peek(token, TK_WORD, true));
-}
-
-bool	is_quoted_token(t_token **token)
-{
-	return (peek(token, TK_SQUOTED_STR, true) || peek(token, TK_DQUOTED_STR, true));
-}
-
-bool	is_redirection_token(t_token *token)
-{
-	return (token && (token->type == TK_REDIR_IN || token->type == TK_REDIR_OUT
-			|| token->type == TK_HEREDOC || token->type == TK_REDIR_APPEND));
-}
-
+/**
+ * `parse_exec`
+ * execコマンドを解析する
+ */
 t_cmd	*parse_exec(t_token **token)
 {
 	t_execcmd	*exec_cmd;
@@ -199,65 +337,29 @@ t_cmd	*parse_exec(t_token **token)
 	exec_cmd = (t_execcmd *)init_execcmd();
 	if (!exec_cmd)
 	{
-		perror("Failed to allocate memory for exec command");
+		perror_exit("Error: malloc failed\n");
 		return (NULL);
 	}
-	parse_redir(exec_cmd, token); //  redir_listへの追加
-	while (!peek(token, TK_PIPE, true) && !peek(token, TK_EOF, true))
+	prepend_redir(exec_cmd, token);
+	while (!peek(token, TK_PIPE) && !peek(token, TK_EOF))
 	{
-		if (!peek(token, TK_WORD, true) && !peek(token, TK_SQUOTED_STR, true)
-			&& !peek(token, TK_DQUOTED_STR, true))
+		if (!is_word_token(token) && !is_quoted_token(token))
 		{
 			fatal_error("syntax error\n");
 		}
-		if (!is_word_token(*token) && !is_quoted_token(*token))
-		{
-			fatal_error("syntax error\n");
-		}
-		append_word(exec_cmd->word_list, (*token)->word);
-		*token = (*token)->next;
-		parse_redir(exec_cmd, token); //  redir_listへの追加
+		append_word(&exec_cmd->word_list, (*token)->word);
+		advance(token);
+		prepend_redir(exec_cmd, token);
 	}
 	return ((t_cmd *)exec_cmd);
 }
-
-/*
-struct cmd*
-parseexec(char **ps, char *es)
-{
-  struct execcmd *cmd;
-  struct cmd *ret;
-
-  char *q, *eq;
-  int tok, argc;
-  ret = execcmd();
-  cmd = (struct execcmd*)ret;
-  argc = 0;
-  ret = parseredirs(ret, ps, es);
-  while(!peek(ps, es, "|")){
-	if((tok=gettoken(ps, es, &q, &eq)) == 0)
-		break ;
-	if(tok != 'a')
-		panic("syntax");
-	cmd->argv[argc] = q;
-	cmd->eargv[argc] = eq;
-	argc++;
-	if(argc >= MAXARGS)
-		panic("too many args");
-	ret = parseredirs(ret, ps, es);
-  }
-  cmd->argv[argc] = 0;
-  cmd->eargv[argc] = 0;
-  return (ret);
-}
- */
 
 t_cmd	*parse_pipe(t_token **token)
 {
 	t_cmd	*cmd;
 
 	cmd = parse_exec(token);
-	if (peek(token, TK_PIPE, true))
+	if (peek(token, TK_PIPE))
 	{
 		consume(token, TK_PIPE);
 		cmd = init_pipecmd(cmd, parse_pipe(token));
@@ -270,7 +372,7 @@ t_cmd	*parser(t_token **token)
 	t_cmd	*cmd;
 
 	cmd = parse_pipe(token);
-	if (!peek(token, TK_EOF, true))
+	if (!peek(token, TK_EOF))
 	{
 		fatal_error("syntax error\n");
 		// TODO: clean up for allocated memory
