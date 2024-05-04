@@ -104,7 +104,6 @@ static t_token_type	get_token_type(char **ps, char **q, char **eq)
 	return (TK_PARSE_ERROR);
 }
 
-// TODO: 失敗時に確保済みのリソースを適切に解放する処理を追加する
 static t_token	*new_token(t_token_type type, char **q, char **eq)
 {
 	t_token	*new_token;
@@ -117,11 +116,25 @@ static t_token	*new_token(t_token_type type, char **q, char **eq)
 	{
 		if (!q || !eq || !*q)
 			fatal_error("new_token");
-		new_token->word = strndup(*q, *eq - *q);
+		new_token->word = *q;
+		new_token->end = *eq;
 		if (!new_token->word)
 			fatal_error("strndup");
 	}
 	return (new_token);
+}
+
+static void	insert_null_terminator(t_token *token)
+{
+	t_token	*cur_token;
+
+	cur_token = token;
+	while (cur_token)
+	{
+		if (cur_token->end)
+			*cur_token->end = '\0';
+		cur_token = cur_token->next;
+	}
 }
 
 t_token	*lexer(char *s)
@@ -143,5 +156,6 @@ t_token	*lexer(char *s)
 		cur_token = cur_token->next;
 	}
 	cur_token->next = new_token(TK_EOF, NULL, NULL);
+	insert_null_terminator(head_token.next);
 	return (head_token.next);
 }
