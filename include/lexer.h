@@ -32,6 +32,7 @@ typedef struct s_token
 {
 	enum e_token_type	type;
 	char				*word;
+	char				*end;
 	struct s_token		*next;
 }						t_token;
 
