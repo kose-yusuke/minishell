@@ -1,6 +1,8 @@
 #ifndef LEXER_H
 # define LEXER_H
 
+# include <stdbool.h>
+
 typedef enum e_token_type
 {
 	TK_UNDEF_TOKEN = -1, // 未定義のトークンは通常存在しない値を使う

@@ -3,32 +3,20 @@
 
 # include "lexer.h"
 
-// TODO: later to update
-typedef enum e_word_flags
+typedef struct s_word
 {
-	WORD_SQUOTE = 1 << 0,
-	WORD_DQUOTE = 1 << 1,
-	WORD_ESCAPE = 1 << 2,
-	WORD_EXPANSION = 1 << 3,
-	WORD_RESERVED = 1 << 4,
-	WORD_ASSIGNMENT = 1 << 5,
-	WORD_SYNTAX_ERROR = 1 << 6
-}						t_word_flags;
-
-/* token -> word_list -> argv となる*/
-typedef struct s_word_list
-{
+	enum e_token_type	word_type;
 	char				*word;
-	enum e_word_flags	flag;
-	struct s_word_list	*next;
-}						t_word_list;
+	bool				connected_to_next;
+	struct s_word		*next;
+}						t_word;
 
-// expandがword_listを解決して、単一のwordに変換する
+// filename または heredocのkeywordのためのtoken
 typedef struct s_redir_list
 {
-	enum e_token_type	type;
-	struct s_word_list	*word_list;
+	enum e_token_type	redir_type;
 	int					fd;
+	struct s_word		*word;
 	struct s_redir_list	*next;
 }						t_redir_list;
 
@@ -47,7 +35,7 @@ typedef struct s_cmd
 typedef struct s_execcmd
 {
 	enum e_cmd_type		type;
-	struct s_word_list	*word_list;
+	struct s_token		*token;
 	struct s_redir_list	*redir_list;
 }						t_execcmd;
 
