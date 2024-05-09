@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "lexer.h": "c",
-        "struct.h": "c",
-        "minishell.h": "c",
-        "parser.h": "c"
-    }
-}
