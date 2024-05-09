@@ -12,7 +12,7 @@ static t_token_type	get_blank_type(char **ps)
 	if (*s == '\n')
 	{
 		(*ps)++;
-		return (TK_NEWLINE);
+		return (TK_NL);
 	}
 	if (*s == ' ' || *s == '\t')
 	{
@@ -124,7 +124,7 @@ static t_token	*new_token(t_token_type type, char **q, char **eq)
 	if (!new_token)
 		error_exit("calloc");
 	new_token->type = type;
-	if (is_word_or_quoted(new_token) || is_io_num(new_token))
+	if (is_word_or_quoted_token(new_token) || is_io_num_token(new_token))
 	{
 		if (!q || !eq || !*q)
 			error_exit("new_token");

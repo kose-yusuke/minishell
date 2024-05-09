@@ -23,7 +23,7 @@ typedef enum e_token_type
 	TK_HEREDOC,   // ヒアドキュメント '<<'
 	TK_APPEND,    // リダイレクト追加 '>>'
 	TK_BLANK,     // 空白 ' ' または '\t'
-	TK_NEWLINE    // 改行 '\n'
+	TK_NL         // 改行 '\n'
 }						t_token_type;
 
 typedef struct s_token
@@ -35,9 +35,10 @@ typedef struct s_token
 }						t_token;
 
 /* token_utils.c */
-bool					is_word(t_token *token);
-bool					is_quoted(t_token *token);
-bool					is_word_or_quoted(t_token *token);
-bool					is_io_num(t_token *token);
+bool					is_word_token(t_token *token);
+bool					is_quoted_token(t_token *token);
+bool					is_word_or_quoted_token(t_token *token);
+bool					is_io_num_token(t_token *token);
+bool					is_redir_token(t_token *token);
 
 #endif
