@@ -1,40 +1,45 @@
 /* lexer.c - 入力をトークンに分割する字句解析器の実装。 */
-#include "minishell.h"
 #include "lexer.h"
+#include "minishell.h"
 
-static t_token_type	get_blank_token(char **ps)
+static t_token_type	get_blank_type(char **ps)
 {
-	char	token_type;
-
-	if (!**ps || !strchr(" \t\n", **ps))
-	{
-		return (TK_UNDEF_TOKEN);
-	}
-	token_type = **ps;
-	while (**ps && **ps == token_type)
-	{
-		(*ps)++;
-	}
-	return (token_type);
-}
-
-static t_token_type	get_op_token(char **ps)
-{
-	static const char			*op[] = {"|", "<<", ">>", "<", ">", NULL};
-	static const t_token_type	tok[] = {TK_PIPE, TK_HEREDOC, TK_REDIR_APPEND,
-			TK_REDIR_IN, TK_REDIR_OUT, TK_UNDEF_TOKEN};
-	static const size_t			len[] = {1, 2, 2, 1, 1};
-	char						*s;
-	size_t						i;
+	char	*s;
 
 	s = *ps;
+	if (!s || !*s)
+		return (TK_UNDEF_TOKEN);
+	if (*s == '\n')
+	{
+		(*ps)++;
+		return (TK_NEWLINE);
+	}
+	if (*s == ' ' || *s == '\t')
+	{
+		while (*s == ' ' || *s == '\t')
+			s++;
+		*ps = s;
+		return (TK_BLANK);
+	}
+	return (TK_UNDEF_TOKEN);
+}
+
+static t_token_type	get_op_type(char **ps)
+{
+	static const char			*op[] = {"|", "<<", ">>", "<", ">", NULL};
+	static const t_token_type	tok[] = {TK_PIPE, TK_HEREDOC, TK_APPEND,
+			TK_REDIR_IN, TK_REDIR_OUT};
+	static const size_t			len[] = {1, 2, 2, 1, 1};
+	size_t						i;
+
 	i = 0;
+	if (!*ps || !**ps)
+		return (TK_UNDEF_TOKEN);
 	while (op[i])
 	{
-		if (strncmp(s, op[i], len[i]) == 0)
+		if (strncmp(*ps, op[i], len[i]) == 0)
 		{
-			s += len[i];
-			*ps = s;
+			*ps += len[i];
 			return (tok[i]);
 		}
 		i++;
@@ -42,7 +47,7 @@ static t_token_type	get_op_token(char **ps)
 	return (TK_UNDEF_TOKEN);
 }
 
-static t_token_type	get_quoted_token(char **ps, char **q, char **eq)
+static t_token_type	get_quoted_type(char **ps, char **q, char **eq)
 {
 	char	*s;
 	char	quote_char;
@@ -56,33 +61,41 @@ static t_token_type	get_quoted_token(char **ps, char **q, char **eq)
 		s++;
 	if (*s != quote_char)
 		return (TK_PARSE_ERROR);
-	*eq = s;     // token化の際にヌル終端すべき場所
-	*ps = s + 1; // 次のトークンの先頭
+	*eq = s;     // トークンの終了位置（後で`\0`を挿入する位置）
+	*ps = s + 1; // 次のトークンの開始位置
 	if (quote_char == '\'')
-		return (TK_SQUOTED_STR);
+		return (TK_SQUOTE);
 	else
-		return (TK_DQUOTED_STR);
+		return (TK_DQUOTE);
 }
 
 static bool	is_meta_character(char c)
 {
-	static const char	*metacharacter = "|<> \t\n'\"";
+	static const char	*meta_character = "|<> '\" \t\n";
 
-	return (strchr(metacharacter, c) != 0);
+	return (strchr(meta_character, c) != 0);
 }
 
-static t_token_type	get_word_token(char **ps, char **q, char **eq)
+static t_token_type	get_word_or_ionum_type(char **ps, char **q, char **eq)
 {
 	char	*s;
+	bool	is_num;
 
 	s = *ps;
 	*q = s;
-	if (is_meta_character(*s))
-		return (TK_UNDEF_TOKEN);
+	is_num = true;
+	if (!*s || is_meta_character(*s))
+		return (TK_PARSE_ERROR);
 	while (*s && !is_meta_character(*s))
+	{
+		if (!isdigit(*s))
+			is_num = false;
 		s++;
-	*eq = s; // token化の際にヌル終端すべき位置
-	*ps = s; // 次のトークンの先頭
+	}
+	*eq = s; // トークンの終了位置（後で`\0`を挿入する位置）
+	*ps = s; // 次のトークンの開始位置
+	if (is_num && (*s == '<' || *s == '>'))
+		return (TK_IO_NUM);
 	return (TK_WORD);
 }
 
@@ -90,37 +103,33 @@ static t_token_type	get_token_type(char **ps, char **q, char **eq)
 {
 	t_token_type	type;
 
-	type = get_blank_token(ps);
+	type = get_blank_type(ps);
 	if (type != TK_UNDEF_TOKEN)
 		return (type);
-	type = get_op_token(ps);
+	type = get_op_type(ps);
 	if (type != TK_UNDEF_TOKEN)
 		return (type);
-	type = get_quoted_token(ps, q, eq);
+	type = get_quoted_type(ps, q, eq);
 	if (type != TK_UNDEF_TOKEN)
 		return (type);
-	type = get_word_token(ps, q, eq);
-	if (type != TK_UNDEF_TOKEN)
-		return (type);
-	return (TK_PARSE_ERROR);
+	return (get_word_or_ionum_type(ps, q, eq));
 }
 
+// TODO: error時にtokenを解放する処理
 static t_token	*new_token(t_token_type type, char **q, char **eq)
 {
 	t_token	*new_token;
 
 	new_token = calloc(1, sizeof(t_token));
 	if (!new_token)
-		fatal_error("calloc");
+		error_exit("calloc");
 	new_token->type = type;
-	if (strchr("a'\"", type))
+	if (is_word_or_quoted(new_token) || is_io_num(new_token))
 	{
 		if (!q || !eq || !*q)
-			fatal_error("new_token");
+			error_exit("new_token");
 		new_token->word = *q;
 		new_token->end = *eq;
-		if (!new_token->word)
-			fatal_error("strndup");
 	}
 	return (new_token);
 }
@@ -153,10 +162,18 @@ t_token	*lexer(char *s)
 		eq = NULL;
 		cur_token->next = new_token(get_token_type(&s, &q, &eq), &q, &eq);
 		if (!cur_token->next || cur_token->next->type == TK_PARSE_ERROR)
-			assert_error("Unexpected Token");
+		{
+			free_tokens(head_token.next);
+			error_exit("Lexer Error: Unexpected or invalid token encountered.");
+		}
 		cur_token = cur_token->next;
 	}
 	cur_token->next = new_token(TK_EOF, NULL, NULL);
+	if (!cur_token->next)
+	{
+		free_tokens(head_token.next);
+		error_exit("Lexer Error: Failed to allocate EOF token.");
+	}
 	insert_null_terminator(head_token.next);
 	return (head_token.next);
 }
