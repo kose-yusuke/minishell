@@ -22,15 +22,15 @@ void	skip_blanks(t_token **token)
 }
 
 /**
- * 現在のトークンが期待されるトークンタイプと一致するか見る。消費はしない
+ * 現在のトークンが期待されるトークンタイプと一致するか見る。blankは消費
+ * トークン自体は消費はしない
  */
 bool	peek(t_token **token, t_token_type type)
 {
-	t_token	*temp;
-
-	temp = *token;
-	skip_blanks(&temp);
-	return (temp && temp->type == type);
+	if (!token || !*token)
+		return (false);
+	skip_blanks(token);
+	return (*token && (*token)->type == type);
 }
 
 /**
@@ -39,13 +39,12 @@ bool	peek(t_token **token, t_token_type type)
  */
 bool	consume(t_token **token, t_token_type type)
 {
-	if (!token || !*token)
-		return (false);
-	skip_blanks(token);
-	if ((*token)->type != type)
-		return (false);
-	advance(token);
-	return (true);
+	bool	ret;
+
+	ret = peek(token, type);
+	if (ret)
+		advance(token);
+	return (ret);
 }
 
 /**
