@@ -5,24 +5,25 @@
 
 typedef enum e_token_type
 {
-	TK_UNDEF_TOKEN = -1, // 未定義のトークンは通常存在しない値を使う
+	TK_UNDEF_TOKEN = -1, // 未定義のトークン
 	TK_PARSE_ERROR = -2, // 構文エラー
-	TK_EOF = '\0',       // EOF
+	TK_EOF = 0,          // ファイルの終わり
 
-	// word token
-	TK_WORD = 'a',         // WORD 一般的な単語や文字列
-	TK_SQUOTED_STR = '\'', // シングルクオート文字列
-	TK_DQUOTED_STR = '\"', // ダブルクオート文字列
+	// Word tokens
+	TK_WORD,        // 一般的な単語や文字列
+	TK_SQUOTED_STR, // シングルクオートで囲まれた文字列
+	TK_DQUOTED_STR, // ダブルクオートで囲まれた文字列
+	TK_IO_NUMBER,   // IO番号
 
-	// meta and op token
-	TK_PIPE = '|',         // パイプ
-	TK_REDIR_IN = '<',     // リダイレクト入力
-	TK_REDIR_OUT = '>',    // リダイレクト出力
-	TK_HEREDOC = 'H',      // ヒアドキュメント、大文字で他と区別
-	TK_REDIR_APPEND = 'A', // リダイレクト追加、大文字で他と区別
-	TK_WHITESPACE = ' ',   // 空白
-	TK_TAB = '\t',         // タブ
-	TK_NEWLINE = '\n'      // 改行
+	// Meta and operator tokens
+	TK_PIPE,         // パイプ '|'
+	TK_REDIR_IN,     // リダイレクト入力 '<'
+	TK_REDIR_OUT,    // リダイレクト出力 '>'
+	TK_HEREDOC,      // ヒアドキュメント '<<'
+	TK_REDIR_APPEND, // リダイレクト追加 '>>'
+	TK_WHITESPACE,   // 空白 ' '
+	TK_TAB,          // タブ '\t'
+	TK_NEWLINE       // 改行 '\n'
 }						t_token_type;
 
 typedef struct s_token
