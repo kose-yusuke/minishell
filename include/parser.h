@@ -1,3 +1,4 @@
+/* parser.h - パーサー関連のヘッダーファイル */
 #ifndef PARSER_H
 # define PARSER_H
 

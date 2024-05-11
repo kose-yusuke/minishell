@@ -1,4 +1,4 @@
-// lexer.h
+/* lexer.h - 字句解析に関する関数の定義。 */
 #ifndef LEXER_H
 # define LEXER_H
 
