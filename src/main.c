@@ -1,11 +1,8 @@
-#include "lexer.h"
+/* main.c - メイン関数  */
 #include "minishell.h"
-#include "utils.h"
 
 static void	mgr_init(t_mgr *mgr)
 {
-	mgr->tok = NULL;
-	mgr->ast = NULL;
 	mgr->status = 0;
 	mgr->syntax_error = false;
 }
@@ -36,6 +33,8 @@ int	main(int argc, char **argv)
 	// TODO: signalの設定
 	// init_sigaction(server_signal_action);
 	if (argc == 1)
-		ft_readline(environ, &mgr);
+	{
+		input(environ, &mgr);
+	}
 	return (0);
 }
