@@ -2,7 +2,9 @@
 #ifndef EXECUTOR_H
 # define EXECUTOR_H
 
+# include "ast.h"
 # include "minishell.h"
+# include "token.h"
 
 // void	validate_access(const char *path, const char *filename);
 // int		exec(char *argv[]);
