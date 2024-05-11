@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "parser.h"
 #include "token.h"
 
 void	free_tokens(t_token *token)
@@ -11,6 +12,12 @@ void	free_tokens(t_token *token)
 		free(token);
 		token = next;
 	}
+}
+
+// 未実装
+void	free_cmd(t_cmd *cmd)
+{
+	free(cmd);
 }
 
 // koseki-san
