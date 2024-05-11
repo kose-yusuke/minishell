@@ -1,5 +1,5 @@
 #include "minishell.h"
-#include "parser.h"
+#include "ast.h"
 #include "token.h"
 
 void	free_tokens(t_token *token)

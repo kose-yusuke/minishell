@@ -1,5 +1,4 @@
 /* parser_utils.c - パーサー関連のユーティリティ関数 */
-#include "minishell.h"
 #include "parser.h"
 
 /**

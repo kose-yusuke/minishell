@@ -1,6 +1,5 @@
 /* lexer.c - 入力をトークンに分割する字句解析器の実装。 */
 #include "lexer.h"
-#include "minishell.h"
 
 static t_token_type	get_blank_type(char **ps)
 {

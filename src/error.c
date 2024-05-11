@@ -40,7 +40,7 @@ void	tokenize_error(const char *location, char **rest, char *line)
 }
 
 /**
- * sakitahaのコード
+ * sakitahaのコード（仮）
  */
 void	perror_exit(const char *msg)
 {
