@@ -34,7 +34,7 @@ int	main(int argc, char **argv)
 	// init_sigaction(server_signal_action);
 	if (argc == 1)
 	{
-		input(environ, &mgr);
+		ft_readline(environ, &mgr);
 	}
 	return (0);
 }

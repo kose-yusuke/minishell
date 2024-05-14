@@ -1,5 +1,5 @@
-/* input.c - 入力関連の関数 */
-#include "input.h"
+/* readline.c - 入力関連の関数 */
+#include "readline.h"
 
 // XXX: デバッグ用
 const char	*token_to_str(t_token_type type)
@@ -87,7 +87,7 @@ static void	interpret(char *line, t_mgr *mgr)
 	free_tokens(token);
 }
 
-int	input(char **envp, t_mgr *mgr)
+int	ft_readline(char **envp, t_mgr *mgr)
 {
 	char	*line;
 
