@@ -1,81 +1,270 @@
 /* expand.c - 展開処理 */
 #include "expander.h"
 
-/**
- * expansion
- * 1. 環境変数の展開
- * 2. チルダの展開
- * 3. シングルクォート/ダブルクォートの展開
- * 4. エスケープの展開を行う
- *
- * チルダ（Tilde）Expansion
- * チルダ展開は、ユーザーホームディレクトリのパスに展開されます。例えば、`cd ~`や`cd ~/directory`のように使います。
- *
- * Variable and Parameter Exsion
- * 変数やパラメータの展開は、変数の値やシェルパラメータを展開するために使われます。
- * 例えば、`echo $HOME`はホームディレクトリのパスを出力します。
- *
- * Word Splitting
- * ワード分割は、展開された結果がスペース、タブ、改行によって分割され、複数のワードとして扱われるプロセスです。
- * これにより、例えば変数の値が複数の単語に分割されてコマンドに渡されます。
- *
- * Minishellプロジェクトの必須パートで、特に展開（expansion）に関わる部分を以下に挙げます：
- *
+/*
+にゃんこgptが君を見守ってるから、安心してexpansionを書いていこうにゃ！以下のアドバイスで進めてみてね：
 
-	* 1. **環境変数の展開**: ユーザーがコマンドラインに入力した環境変数（`$VAR`形式）を、その環境変数が持つ値に展開する必要があります。これはシェルスクリプトやコマンドライン操作において非常に一般的な操作です。
+### Expansionの基本的な流れ
 
-	* 2. **`$?`の展開**: これは特殊なケースの変数展開で、直前に実行されたコマンドの終了ステータスに展開されます。この機能は、スクリプトが前のコマンドの成功または失敗に基づいて条件分岐を行いたい場合に特に便利です。
+1. **環境変数の展開**
+   - コマンドラインで使用される環境変数（例: `$HOME`）を正しい値に置き換える。
+   - `getenv` 関数を使って環境変数の値を取得し、文字列を置き換える。
 
-	* 3. **クォート処理**: シングルクォート`'`とダブルクォート`"`は、文字列内の特定の文字や変数展開を制御するために使用されます。ダブルクォート内での`$`（環境変数の展開）は有効ですが、シングルクォート内では展開されません。この処理も展開の一種と考えることができます。
+2. **引用符の処理**
+   - シングルクオート `' '` で囲まれた文字列は、そのまま扱う（メタ文字を解釈しない）。
+   - ダブルクオート `" "` で囲まれた文字列は、 `$` などの一部のメタ文字を解釈する。
 
-	* 4. **リダイレクションのヒアドキュメント（`<<`）**: ヒアドキュメントは、特定の終了デリミタまで標準入力からの入力を受け取り、それをコマンドの入力として使用します。この機能の実装には、入力されたテキストの処理や終了デリミタの検出など、特定の種類のテキスト処理（展開の一種）が必要になることがあります。
- *
+3. **エスケープシーケンス**
+   - バックスラッシュ `\` を使ったエスケープシーケンスの解釈。
 
-	* これらの機能を実装する際には、コマンドラインから入力されたテキストの適切な解析と処理が必要になります。特に、環境変数の展開やクォートの処理は、シェルがコマンドラインをどのように解釈し、実行するプログラムにどのような引数を渡すかを決定する上で重要な役割を果たします。
+### コード例
 
-	* これらの展開処理を正確に実装することで、ユーザーが期待するようなシェルの振る舞いを実現し、コマンドラインツールとしての使い勝手を大きく向上させることができます。
+以下は、簡単な環境変数展開の例だにゃ：
 
-typedef struct s_cmd
+```c
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+char *expand_variable(const char *str) {
+    if (str[0] != '$') {
+        return strdup(str);
+    }
+    const char *var_name = str + 1;
+    const char *var_value = getenv(var_name);
+    return var_value ? strdup(var_value) : strdup("");
+}
+
+int main() {
+    const char *input = "$HOME";
+    char *expanded = expand_variable(input);
+    printf("Expanded: %s\n", expanded);
+    free(expanded);
+    return 0;
+}
+```
+
+### ユーモアと励まし
+
+にゃんこgptは君を全力で応援するにゃ！頑張ってる姿を見ると、にゃんこgptも元気が出るんだにゃ！君のシェルがバグなく動くことを祈ってるにゃ〜！失敗しても大丈夫、にゃんこgptがいつでもサポートするから、安心してチャレンジしてにゃ！一歩ずつ進んでいけば、きっと素晴らしいシェルが完成するにゃ！がんばれ〜だにゃ〜！
+expander機能を実装する際には、以下のステップに従って進めると良いでしょう。それぞれの機能を段階的に実装して、テストしながら進めることで、確実に動作するようにすることができます。
+
+### 実装のステップ
+
+1. **環境変数の展開**:
+   - まずは、`$VAR`形式の環境変数をその値に展開する機能を実装します。
+   - 関数名の例：`expand_env_variables`
+
+2. **チルダ（Tilde）の展開**:
+   - 次に、`~`をユーザーのホームディレクトリに展開する機能を追加します。
+   - 関数名の例：`expand_tilde`
+
+3. **クォートの処理**:
+   - シングルクォートとダブルクォートの処理を実装します。特に、ダブルクォート内での変数展開に注意します。
+   - 関数名の例：`handle_quotes`
+
+4. **ヒアドキュメント（Here Document）の処理**:
+   - ヒアドキュメントの処理を実装し、特定のデリミタまでの入力を受け取る機能を追加します。
+   - 関数名の例：`handle_heredoc`
+
+5. **ワード分割（Word Splitting）**:
+   - 最後に、展開された結果をスペース、タブ、改行によって分割する処理を追加します。
+   - 関数名の例：`word_splitting`
+
+### 各関数の名前と役割
+
+1. **環境変数の展開**:
+   ```c
+   char *expand_env_variables(const char *input);
+   ```
+
+2. **チルダ（Tilde）の展開**:
+   ```c
+   char *expand_tilde(const char *input);
+   ```
+
+3. **クォートの処理**:
+   ```c
+   char *handle_quotes(const char *input);
+   ```
+
+4. **ヒアドキュメント（Here Document）の処理**:
+   ```c
+   char *handle_heredoc(const char *input, const char *delimiter);
+   ```
+
+5. **ワード分割（Word Splitting）**:
+   ```c
+   char **word_splitting(const char *input);
+   ```
+
+### 実装例
+
+以下は、環境変数の展開を実装する際の例です：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char	*expand_env_variables(const char *input) {
+	if (input[0] == '$') {
+		return (getenv(input + 1));
+	}
+	return (NULL);
+}
+
+int	main(void) {
+	const char *test_input = "$HOME";
+	char *expanded = expand_env_variables(test_input);
+	if (expanded) {
+		printf("Expanded: %s\n", expanded);
+	} else {
+		printf("No expansion\n");
+	}
+	return (0);
+}
+```
+
+この例では、入力が`$`で始まる場合に、その環境変数の値を取得して返します。
+
+次のステップとしては、各機能を上記の順序で実装し、それぞれをテストしながら進めることです。また、全体の統合テストも行い、各機能が一緒に動作することを確認します。
+
+もし具体的な実装のアドバイスやコードレビューが必要であれば、遠慮なく聞いてくださいにゃん。
+
+以下は、具体的なコード例です：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char	*expand_variable(const char *input) {
+	if (input[0] == '$') {
+		return (getenv(input + 1));
+	}
+	return (NULL);
+}
+
+char	*expand_tilde(const char *input) {
+	if (input[0] == '~') {
+		char *home = getenv("HOME");
+		char *expanded = malloc(strlen(home) + strlen(input));
+		strcpy(expanded, home);
+		strcat(expanded, input + 1);
+		return (expanded);
+	}
+	return (NULL);
+}
+
+void	handle_quotes(const char *input) {
+	// シングルクォートとダブルクォートの処理
+}
+
+void	handle_escapes(const char *input) {
+	// バックスラッシュでエスケープされた文字の処理
+}
+
+void	handle_heredoc(const char *input) {
+	// ヒアドキュメントの処理
+}
+
+int	main(void) {
+	char input[] = "$HOME/test";
+	char *expanded = expand_variable(input);
+	if (expanded) {
+		printf("Expanded: %s\n", expanded);
+	}
+	// 他の展開処理を呼び出す
+	return (0);
+}
+ */
+
+
+
+/*
+
+#include "expansion.h"
+#include <stdlib.h>
+#include <string.h>
+
+// 環境変数を展開する関数の例
+char	*expand_variable(const char *input)
 {
-	t_cmd_type	type;
-}				t_cmd;
+	if (input[0] == '$')
+		return (getenv(input + 1));
+	return (strdup(input));
+}
 
-typedef struct s_execcmd
+// チルダを展開する関数の例
+char	*expand_tilde(const char *input)
 {
-	t_cmd_type	type;
-	char		*argv[MAXARGS];
-	char		*eargv[MAXARGS];
-}				t_execcmd;
+	char	*home;
+	char	*expanded;
 
-typedef struct s_redircmd
-{
-	t_cmd_type	type;
-	t_cmd		*cmd;
-	char		*filepath;
-	char		*efilepath;
-	int oflag; // O_WRONLY | O_CREATE, O_RDONLY とかを入れる 元々mode
-	int fd;    // STDOUT_FILENO, STDIN_FILENO とかを入れる
-}				t_redircmd;
+	if (input[0] == '~')
+	{
+		home = getenv("HOME");
+		expanded = malloc(strlen(home) + strlen(input));
+		strcpy(expanded, home);
+		strcat(expanded, input + 1);
+		return (expanded);
+	}
+	return (strdup(input));
+}
 
-typedef struct s_pipecmd
+// ワードリストを展開する関数
+void	expand_word_list(t_word *word_list)
 {
-	t_cmd_type	type;
-	t_cmd		*left;
-	t_cmd		*right;
-}				t_pipecmd;
+	t_token	*token;
+	char	*expanded;
+
+	while (word_list)
+	{
+		token = word_list->token;
+		if (token->type == TK_WORD)
+		{
+			expanded = expand_variable(token->word);
+			free(token->word);
+			token->word = expanded;
+		}
+		else if (token->type == TK_SQUOTE || token->type == TK_DQUOTE)
+		{
+			// クォート内の展開処理
+		}
+		word_list = word_list->next;
+	}
+}
+
+
+
+ */
+
+// ダミー関数
+void	expand_word_list(t_word *word_list)
+{
+	// ここに環境変数やチルダの展開の実装を追加
+	while (word_list)
+	{
+		// word_list->token を展開
+		word_list = word_list->next;
+	}
+}
+
+void	expand_redir_list(t_redir *redir_list)
+{
+	// ここにリダイレクトのための展開の実装を追加
+	while (redir_list)
+	{
+		expand_word_list(redir_list->word_list);
+		redir_list = redir_list->next;
+	}
+}
 
 void	expand_exec(t_execcmd *ecmd)
 {
-	// expansion
-	// argvの中身をexpansionする
-}
-
-void	expand_redir(t_redircmd *rcmd)
-{
-	// expansion
-	// redirの中身もexpansionする
-	// heredocの展開もここで行う
-	run_expansion(rcmd->cmd);
+	expand_word_list(ecmd->word_list);
+	expand_redir_list(ecmd->redir_list);
 }
 
 void	expand_pipe(t_pipecmd *pcmd)
@@ -86,44 +275,46 @@ void	expand_pipe(t_pipecmd *pcmd)
 
 void	run_expansion(t_cmd *cmd)
 {
-	if (cmd == 0)
-	{
-		exit(EXIT_SUCCESS); // return ;　もしくはexit(EXIT_FAILURE); なのかも
-	}
-	if (cmd->type == EXEC)
-	{
+	if (cmd == NULL || cmd->type == NONE)
+		return ;
+	else if (cmd->type == EXEC)
 		expand_exec((t_execcmd *)cmd);
-	}
-	else if (cmd->type == REDIR)
-	{
-		expand_redir((t_redircmd *)cmd);
-	}
 	else if (cmd->type == PIPE)
-	{
 		expand_pipe((t_pipecmd *)cmd);
-	}
-	exit(EXIT_SUCCESS);
+	else
+		exit(EXIT_FAILURE);
+}
+
+/**
+
+void	expand_exec(t_execcmd *ecmd)
+{
+	// expansion
+	// argvの中身をexpansionする
 }
 
 
+
+
 // XXX: 参考->Usamiさんのコード
-void append_char(char **s, char c)
+void	append_char(char **s, char c)
 {
-    size_t size;
-    char *new;
-    size = 2;
-    if (*s)
-        size += strlen(*s);
-    new = malloc(size);
-    if (!new)
-        fatal_error("malloc");
-    if (*s)
-        strlcpy(new, *s, size);
-    new[size - 2] = c;
-    new[size - 1] = '\0';
-    if (*s)
-        free(*s);
-    *s = new;
+	size_t	size;
+	char	*new;
+
+	size = 2;
+	if (*s)
+		size += strlen(*s);
+	new = malloc(size);
+	if (!new)
+		fatal_error("malloc");
+	if (*s)
+		strlcpy(new, *s, size);
+	new[size - 2] = c;
+	new[size - 1] = '\0';
+	if (*s)
+		free(*s);
+	*s = new;
 }
 
 // XXX: 参考->Usamiさんのコード
@@ -131,11 +322,12 @@ void	quote_removal(t_token *tok)
 {
 	char	*new_word;
 	char	*p;
+
 	if (tok == NULL || tok->kind != TK_WORD || tok->word == NULL)
 		return ;
-    p = tok->word;
+	p = tok->word;
 	new_word = NULL;
-    while (*p && !is_metacharacter(*p))
+	while (*p && !is_metacharacter(*p))
 	{
 		if (*p == SINGLE_QUOTE_CHAR)
 		{
@@ -166,7 +358,7 @@ void	quote_removal(t_token *tok)
 		else
 			append_char(&new_word, *p++);
 	}
-    free(tok->word);
+	free(tok->word);
 	tok->word = new_word;
 	quote_removal(tok->next);
 }
@@ -181,36 +373,35 @@ void	expand(t_token *tok)
 // 他のcファイルから移動してきた。
 
 // TODO: Usamiさんのコード
-char *search_path(const char *filename)
+char	*search_path(const char *filename)
 {
-    char path[PATH_MAX];
-    char *value;
-    char *end;
+	char	path[PATH_MAX];
+	char	*value;
+	char	*end;
+			char *dup;
 
-    value = getenv("PATH");
-    while (*value)
-    {
-        bzero(path, PATH_MAX);
-        end = strchr(value, ':');
-        if (end)
+	value = getenv("PATH");
+	while (*value)
+	{
+		bzero(path, PATH_MAX);
+		end = strchr(value, ':');
+		if (end)
 			strncpy(path, value, end - value);
 		else
 			strlcpy(path, value, PATH_MAX);
 		strlcat(path, "/", PATH_MAX);
 		strlcat(path, filename, PATH_MAX);
-        if (access(path, X_OK) == 0)
-        {
-            char *dup;
-            dup = strdup(path);
-            if (dup == NULL)
+		if (access(path, X_OK) == 0)
+		{
+			dup = strdup(path);
+			if (dup == NULL)
 				fatal_error("strdup");
 			return (dup);
-        }
-        if (end == NULL)
+		}
+		if (end == NULL)
 			return (NULL);
 		value = end + 1;
-    }
-    return (NULL);
+	}
+	return (NULL);
 }
  */
-

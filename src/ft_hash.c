@@ -85,7 +85,7 @@ void	free_hash_table(t_hash_table *table)
 	free(table);
 }
 
-t_hash_table	*create_table(void)
+t_hash_table	*create_hash_table(void)
 {
 	t_hash_table	*table;
 
@@ -95,3 +95,6 @@ t_hash_table	*create_table(void)
 	memset(table, 0, sizeof(t_hash_table));
 	return (table);
 }
+
+
+
