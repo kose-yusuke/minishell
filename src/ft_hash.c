@@ -15,7 +15,7 @@ static unsigned long	hash_djb2(unsigned char *str)
 	return (hash);
 }
 
-void	insert(t_hash_table *table, const char *key, const char *value)
+static void	insert(t_hash_table *table, const char *key, const char *value)
 {
 	unsigned int	index;
 	t_hash_node		*new_var;
@@ -24,7 +24,7 @@ void	insert(t_hash_table *table, const char *key, const char *value)
 	new_var = malloc(sizeof(t_hash_node));
 	if (!new_var)
 	{
-		free_hash_table(table);
+		table->free(table);
 		perror_exit("malloc");
 	}
 	new_var->key = strdup(key);
@@ -33,14 +33,14 @@ void	insert(t_hash_table *table, const char *key, const char *value)
 	{
 		free(new_var->key);
 		free(new_var);
-		free_hash_table(table);
+		table->free(table);
 		perror_exit("strdup");
 	}
 	new_var->next = table->table[index];
 	table->table[index] = new_var;
 }
 
-char	*search(t_hash_table *table, const char *key)
+static char	*search(t_hash_table *table, const char *key)
 {
 	unsigned int	index;
 	t_hash_node		*var;
@@ -58,28 +58,24 @@ char	*search(t_hash_table *table, const char *key)
 	return (NULL);
 }
 
-void	free_hash_index(t_hash_node *node)
+static void	free_hash_table(t_hash_table *table)
 {
+	t_hash_node	*node;
 	t_hash_node	*tmp;
-
-	while (node)
-	{
-		tmp = node;
-		node = node->next;
-		free(tmp->key);
-		free(tmp->value);
-		free(tmp);
-	}
-}
-
-void	free_hash_table(t_hash_table *table)
-{
-	size_t	i;
+	size_t		i;
 
 	i = 0;
 	while (i < HASH_TABLE_SIZE)
 	{
-		free_hash_index(table->table[i]);
+		node = table->table[i];
+		while (node)
+		{
+			tmp = node;
+			node = node->next;
+			free(tmp->key);
+			free(tmp->value);
+			free(tmp);
+		}
 		i++;
 	}
 	free(table);
@@ -93,8 +89,8 @@ t_hash_table	*create_hash_table(void)
 	if (!table)
 		return (NULL);
 	memset(table, 0, sizeof(t_hash_table));
+	table->insert = insert;
+	table->search = search;
+	table->free = free_hash_table;
 	return (table);
 }
-
-
-
