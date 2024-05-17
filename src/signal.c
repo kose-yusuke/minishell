@@ -1,55 +1,82 @@
-// #include <signal.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
+/*   Updated: 2024/05/17 12:47:59 by koseki.yusu      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// volatile sig_atomic_t	flag = 0;
+#include "minishell.h"
+#include "signal.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
-// void	handler(int sig)
-// {
-// 	flag = 1;
-// }
+// シグナルハンドラ
+void handle_signal(int sig)
+{
+    if (sig == SIGINT)
+    {
+        printf("\n");
+        rl_on_new_line(); // 新しい行を表示
+        rl_replace_line("", 0); // 入力行を空に置き換える
+        rl_redisplay(); // 入力プロンプトを再表示
+    }
+    else if (sig == SIGQUIT)
+    {
+        printf("Quit (core dumped)\n");
+    }
+}
 
-// /*
-// 	`sigemptyset` initializes the signal set `sa_mask`,
-// 	excluding all signals and creating an empty set.
+// シグナルのセットアップ
+void setup_signals(void)
+{
+    struct sigaction sa;
 
-// 	`sigaddset` adds a specific signal (`SIGUSR2` or `SIGUSR1`)
-// 	to the designated signal set (`sa_usr1.sa_mask` or `sa_usr2.sa_mask`),
-// 	blocking `SIGUSR2` while handling `SIGUSR1`, and vice versa.
+    sa.sa_handler = handle_signal;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
 
-// 	`sigaction` assigns the `signal_action` handler to specified signals.
-// 	Error handling for `sigaction` is omitted for readability.
-// */
+    // SIGINTのハンドラを設定
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 
-// static void	signal_action(int sig, siginfo_t *info, void *ucontext)
-// {
-// 	(void)ucontext;
-// 	// if (g_signal_pid_state == IDLE)
-// 	// {
-// 	// 	g_signal_pid_state = info->si_pid;
-// 	// 	return ;
-// 	// }
-// 	// if (g_signal_pid_state != info->si_pid)
-// 	// 	return ;
-// 	// if (sig == SIGUSR1)
-// 	// 	g_signal_pid_state = ZERO;
-// 	// else if (sig == SIGUSR2)
-// 	// 	g_signal_pid_state = ONE;
-// }
+        // SIGQUITのハンドラを設定
+    if (sigaction(SIGQUIT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
+}
 
-// void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
-// {
-// 	struct sigaction	sa_usr1;
-// 	struct sigaction	sa_usr2;
+// シグナルのリセット
+void reset_signal(int signum)
+{
+    struct sigaction sa;
 
-// 	ft_bzero(&sa_usr1, sizeof(sa_usr1));
-// 	ft_bzero(&sa_usr2, sizeof(sa_usr2));
-// 	sa_usr1.sa_sigaction = signal_action;
-// 	sa_usr2.sa_sigaction = signal_action;
-// 	sa_usr1.sa_flags = SA_SIGINFO;
-// 	sa_usr2.sa_flags = SA_SIGINFO;
-// 	sigemptyset(&sa_usr1.sa_mask);
-// 	sigemptyset(&sa_usr2.sa_mask);
-// 	sigaddset(&sa_usr1.sa_mask, SIGUSR2);
-// 	sigaddset(&sa_usr2.sa_mask, SIGUSR1);
-// 	sigaction(SIGUSR1, &sa_usr1, NULL);
-// 	sigaction(SIGUSR2, &sa_usr2, NULL);
-// }
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = SIG_DFL;
+    if (sigaction(signum, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void reset_signals(void)
+{
+    reset_signal(SIGINT);
+    reset_signal(SIGQUIT);
+}

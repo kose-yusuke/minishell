@@ -3,6 +3,8 @@
 # define MINISHELL_H
 
 // # include "libft.h"
+# include "lexer.h"
+# include "parser.h"
 # include "token.h"
 # include <fcntl.h>
 # include <stdbool.h>
@@ -10,6 +12,11 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include <signal.h>
+# include <sys/wait.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+
 
 typedef struct s_mgr
 {
@@ -24,6 +31,8 @@ void	error_exit(const char *msg);
 /* free.c */
 void	free_tokens(t_token *token);
 
+/* signal.c */
+void setup_signals(void);
 // 以下は引き継いだ部分
 // void	fatal_error(const char *msg);
 // void	assert_error(const char *msg);

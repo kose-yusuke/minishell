@@ -2,10 +2,6 @@
 #ifndef READLINE_H
 # define READLINE_H
 
-# include "lexer.h"
-# include "minishell.h"
-# include "parser.h"
-# include "token.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 
