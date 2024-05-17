@@ -31,3 +31,4 @@ bool	is_redir_token(t_token *token)
 		return (true);
 	return (false);
 }
+

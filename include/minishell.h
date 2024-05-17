@@ -6,6 +6,8 @@
 # include "lexer.h"
 # include "parser.h"
 # include "token.h"
+#include "executor.h"
+#include "builtins.h"
 # include <fcntl.h>
 # include <stdbool.h>
 # include <stdio.h>
@@ -16,6 +18,7 @@
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <ctype.h>
 
 
 typedef struct s_mgr

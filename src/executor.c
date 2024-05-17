@@ -1,5 +1,6 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
-#include "executor.h"
+
+#include "minishell.h"
 
 static pid_t	fork_pid(void)
 {
@@ -126,6 +127,10 @@ static void	exec_cmd(t_cmd *cmd)
 		// TODO: execveを使わない時には自力でfdをクローズする必要
 		exit(0);
 	}
+	// ビルトインコマンドのチェックと実行
+    if (is_builtin(ecmd))
+        exec_builtin(ecmd);
+
 	// path = search_path(ecmd->word_list->token); //未実装
 	// TODO: ここで word_list を argv に変換する。仮にNULL
 	argv = NULL;
