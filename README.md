@@ -2,10 +2,12 @@
 
 ## Resources
 - [The Architecture of Open Source Applications](https://aosabook.org/en/index.html)
+- [AOSA 日本語版](https://m-takagi.github.io/aosa-ja/aosa.pdf)
 - [GNU Bison](https://www.gnu.org/software/bison/manual/bison.html)
 - [xv6](https://github.com/mit-pdos/xv6-public/tree/master)
 - [The Open Group Base Specifications Issue 7, 2018 edition](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html)
 - [低レイヤを知りたい人のためのCコンパイラ作成入門](https://www.sigbus.info/compilerbook)
+- [minishell resources](https://minishell.simple.ink/)
 
 ## minishellの使用関数についてのメモ
 
@@ -95,6 +97,71 @@ tgetnum, tgetstr, tgoto, tput
 ### ファイル情報取得
 - `stat`, `lstat`: ファイルの情報を取得する`lstat`はシンボリックリンク自体の情報を返す
 - `fstat`: 開かれているファイル記述子に関連するファイルの情報を取得する
+
+
+
+## BNFの例　（未完成）
+
+<minishell>     ::= <pipeline> <linebreak>
+                 | <linebreak>
+
+<pipeline>      ::= <command>
+                 | <pipeline> '|' <command>
+
+<command>       ::= <cmd_prefix> <cmd_name> <cmd_suffix>
+                 | <cmd_prefix> <cmd_name>
+                 | <cmd_name> <cmd_suffix>
+                 | <cmd_prefix>
+                 | <cmd_name>
+
+<cmd_name>      ::= <built-in> | <external_command>
+
+<built-in>      ::= 'echo -n' | 'cd' | 'pwd' | 'export' | 'unset' | 'env' | 'exit'
+
+<external_command> ::= <word>
+
+<cmd_prefix>    ::=             <io_redirect>
+                 | <cmd_prefix> <io_redirect>
+
+<cmd_suffix>    ::=             <io_redirect>
+                 | <cmd_suffix> <io_redirect>
+                 | <word>
+                 | <cmd_suffix> <word>
+
+<redirect_list> ::=                <io_redirect>
+                 | <redirect_list> <io_redirect>
+
+<io_redirect>   ::=          <io_file>
+                 | IO_NUMBER <io_file>
+                 |           <io_here>
+                 | IO_NUMBER <io_here>
+
+<io_file>       ::= '<' <word>
+                 |  '>' <word>
+                 | '>>' <word>
+
+<io_here>       ::= '<<' <word>
+
+<quoted_string> ::= '"' <inside_quotes> '"'
+                 | "'" <inside_quotes> "'"
+
+<inside_quotes> ::= <word> | <white_space> <word>
+
+<white_space>   ::= ' ' | '\t' | <white_space> <white_space>
+
+<word>          ::= <letter> | <word> <letter>
+                 | '$' <env_var>
+
+<env_var>       ::= <letter> | <env_var> <letter>
+
+<letter>        ::= [a-zA-Z0-9_./-]
+
+<newline_list>  ::= '\n'
+                 | <newline_list> '\n'
+
+<linebreak>        ::= <newline_list>
+                 | /* empty */
+
 
 ## 作業記録
 

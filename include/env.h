@@ -2,6 +2,9 @@
 #ifndef ENV_H
 # define ENV_H
 
+# include "ft_hash.h"
 # include "minishell.h"
 
-#endif
+t_hash_table	*create_env_table(void);
+
+#endif /* ENV_H */
