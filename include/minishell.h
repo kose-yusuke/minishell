@@ -8,6 +8,7 @@
 # include "token.h"
 #include "executor.h"
 #include "builtins.h"
+#include <limits.h>
 # include <fcntl.h>
 # include <stdbool.h>
 # include <stdio.h>
