@@ -13,5 +13,6 @@ void					skip_blanks(t_token **token);
 bool					peek(t_token **token, t_token_type type);
 bool					consume(t_token **token, t_token_type type);
 t_token					*next_token(t_token **token);
+t_cmd	*parser(t_token **token);
 
 #endif

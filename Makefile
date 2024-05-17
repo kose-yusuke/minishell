@@ -3,8 +3,8 @@ SRC_DIR		:= src
 INC_DIR		:= include
 OBJ_DIR		:= obj
 
-SRC_LIST	:= *.c
-SRCS		:= $(addprefix $(SRC_DIR)/, $(SRC_LIST))
+SRC_LIST	:= $(wildcard $(SRC_DIR)/*.c)
+SRCS		:= $(SRC_LIST)
 OBJS		:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 DEPS		:= $(OBJS:.o=.d)
 

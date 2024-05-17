@@ -1,5 +1,6 @@
 /* main.c - メイン関数  */
 #include "minishell.h"
+#include "readline.h"
 
 static void	mgr_init(t_mgr *mgr)
 {
@@ -31,6 +32,7 @@ int	main(int argc, char **argv)
 	mgr_init(&mgr);
 	// TODO: environの処理（必要であれば）<- 他の場所かも
 	// TODO: signalの設定
+	setup_signals();
 	// init_sigaction(server_signal_action);
 	if (argc == 1)
 	{

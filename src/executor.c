@@ -13,6 +13,21 @@ static pid_t	fork_pid(void)
 	return (pid);
 }
 
+int get_o_flag(t_token_type redir_type) {
+    if (redir_type == TK_REDIR_OUT) {
+        return O_WRONLY | O_CREAT | O_TRUNC;
+    } else if (redir_type == TK_REDIR_IN) {
+        return O_RDONLY;
+    } else if (redir_type == TK_APPEND) {
+        return O_WRONLY | O_CREAT | O_APPEND;
+    } else if (redir_type == TK_HEREDOC) {
+        // HEREDOC の場合、特別な処理が必要なため、ここではフラグは不要
+        return -1;
+    } else {
+        return -1;
+    }
+}
+
 static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2])
 {
 	// 不要なRead endを閉じる
@@ -111,7 +126,7 @@ static void	exec_cmd(t_cmd *cmd)
 		// TODO: execveを使わない時には自力でfdをクローズする必要
 		exit(0);
 	}
-	path = search_path(ecmd->word_list->token); //未実装
+	// path = search_path(ecmd->word_list->token); //未実装
 	// TODO: ここで word_list を argv に変換する。仮にNULL
 	argv = NULL;
 	// TODO: ここ、もしくはexpandの段階でpathの解決を行う (search_path関数)
@@ -151,6 +166,7 @@ void	exec_redir(t_cmd *cmd)
 		}
 		filepath = ecmd->word_list->token->word;    // expandで解決
 		oflag = get_o_flag(redir_list->redir_type); // 未実装
+
 		oldfd = open(filepath, oflag);
 		if (oldfd == -1)
 		{
