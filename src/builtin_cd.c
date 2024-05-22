@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:49:27 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/18 15:30:54 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/05/22 15:14:36 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ int	builtin_cd(char **argv)
         return (1);
     //今のPWDをOLDPWDに変える
     pwd = getenv("PWD");
+    insert(t_hash_table *table, "OLDPWD", pwd);
     //pathに新しい作業ディレクトリの値を格納(argv[1]の値で)
     if (set_newpath(&path, argv[1]) == 1)
     {
@@ -86,7 +87,7 @@ int	builtin_cd(char **argv)
     newpwd = update_pwd(pwd, path);
     if (newpwd) 
         // envmapにnewpwdをセット
-        
+        insert(t_hash_table *table, "PWD", newpwd);
     free(path);
     free(newpwd);
     //statusの値何で返すべきか後で確

@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/17 12:47:59 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/05/22 15:05:01 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 // シグナルハンドラ
 void handle_signal(int sig)
 {
+    //Ctrl + C
     if (sig == SIGINT)
     {
         printf("\n");
@@ -30,6 +31,7 @@ void handle_signal(int sig)
         rl_replace_line("", 0); // 入力行を空に置き換える
         rl_redisplay(); // 入力プロンプトを再表示
     }
+    // Ctrl + \\ 
     else if (sig == SIGQUIT)
     {
         printf("Quit (core dumped)\n");

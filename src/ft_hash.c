@@ -58,6 +58,34 @@ static char	*search(t_hash_table *table, const char *key)
 	return (NULL);
 }
 
+static int delete(t_hash_table *table, const char *key)
+{
+	unsigned int	index;
+	t_hash_node		*var;
+	t_hash_node		*prev;
+
+	index = hash_djb2((unsigned char *)key) % HASH_TABLE_SIZE;
+	var = table->table[index];
+	prev = NULL;
+	while (var)
+	{
+		if (strcmp(var->key, key) == 0)
+		{
+			if (prev)
+				prev->next = var->next;
+			else
+				table->table[index] = var->next;
+			free(var->key);
+			free(var->value);
+			free(var);
+			return (1);
+		}
+		prev = var;
+		var = var->next;
+	}
+	return (-1);
+}
+
 static void	free_hash_table(t_hash_table *table)
 {
 	t_hash_node	*node;
@@ -91,6 +119,7 @@ t_hash_table	*create_hash_table(void)
 	memset(table, 0, sizeof(t_hash_table));
 	table->insert = insert;
 	table->search = search;
+	table->search = delete;
 	table->free = free_hash_table;
 	return (table);
 }

@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/17 17:15:26 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/05/22 15:27:46 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,20 @@
 int	builtin_unset(char **argv)
 {
     int i;
+    int status;
     
     i = 1;
     while(argv[i])
     {
-        // if (環境変数のハッシュテーブルから削除する.)
+        if (delete(t_hash_table *table, argv[i]) < 0)
         {
             // エラーの場合
-            return (1);
+            builtin_error("unset", argv[i], "not a valid identifier");
+            status = 1;
         }
+        else
+            status = 0;
         i++; //代入される変数の分だけ繰り返す
     }
-    return (0);
+    return (status);
 }
