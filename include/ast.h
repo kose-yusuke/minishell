@@ -10,7 +10,6 @@ typedef struct s_word
 	struct s_word		*next;
 }						t_word;
 
-// filename または heredocのkeywordのためのword_list
 typedef struct s_redir
 {
 	enum e_token_type	redir_type;
@@ -45,9 +44,8 @@ typedef struct s_pipecmd
 	struct s_cmd		*right;
 }						t_pipecmd;
 
-/*
-ASTの操作に特化した関数（例えば、ASTノードの追加、削除、検索など）が存在する場合は、それらを ast_utils に分類
+void					free_word(t_word *word);
+void					free_redir(t_redir *redir);
+void					free_cmd(t_cmd *cmd);
 
-トークンの操作に関連する関数は parser_utils に留める
- */
 #endif
