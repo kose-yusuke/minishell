@@ -49,6 +49,7 @@ static char	*search(t_hash_table *table, const char *key)
 	var = table->table[index];
 	while (var)
 	{
+		// 比較の仕方は大丈夫か？
 		if (strcmp(var->key, key) == 0)
 		{
 			return (var->value);

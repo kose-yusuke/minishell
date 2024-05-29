@@ -31,6 +31,7 @@ typedef struct s_token
 	enum e_token_type	type;
 	char				*word;
 	char				*end;
+	bool				allocated;
 	struct s_token		*next;
 }						t_token;
 
@@ -40,5 +41,7 @@ bool					is_quoted_token(t_token *token);
 bool					is_word_or_quoted_token(t_token *token);
 bool					is_io_num_token(t_token *token);
 bool					is_redir_token(t_token *token);
+
+t_token					*new_token(t_token_type type, char **q, char **eq);
 
 #endif

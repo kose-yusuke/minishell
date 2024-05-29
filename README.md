@@ -8,6 +8,9 @@
 - [The Open Group Base Specifications Issue 7, 2018 edition](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html)
 - [低レイヤを知りたい人のためのCコンパイラ作成入門](https://www.sigbus.info/compilerbook)
 - [minishell resources](https://minishell.simple.ink/)
+- https://velog-io.translate.goog/@chez_bono/Minishell?_x_tr_sl=auto&_x_tr_tl=ja&_x_tr_hl=en-US&_x_tr_pto=wapp
+- [man bash/和訳](https://ja.manpages.org/bash)
+- [bash git](https://git.savannah.gnu.org/cgit/bash.git/)
 
 ## minishellの使用関数についてのメモ
 
@@ -97,7 +100,6 @@ tgetnum, tgetstr, tgoto, tput
 ### ファイル情報取得
 - `stat`, `lstat`: ファイルの情報を取得する`lstat`はシンボリックリンク自体の情報を返す
 - `fstat`: 開かれているファイル記述子に関連するファイルの情報を取得する
-
 
 
 ## BNFの例　（未完成）
@@ -199,4 +201,12 @@ tgetnum, tgetstr, tgoto, tput
 - `pipe2()`が使用可能であれば`O_CLOEXEC`フラグを使用できるが、minishellで許可されている関数には含まれないため利用は難しい
 - リダイレクトのみを行う子プロセスでは、プロセス終了直前に開いたすべてのFDを閉じる必要がある
 
+---
 
+#### hash関数
+
+http://www.cse.yorku.ca/~oz/hash.html
+
+作業メモ
+
+環境変数の展開で、mallocしていないのをmallocするように変えた方がいいかも

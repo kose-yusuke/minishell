@@ -56,6 +56,7 @@ static t_token_type	get_quoted_type(char **ps, char **q, char **eq)
 	if (quote_char != '\'' && quote_char != '"')
 		return (TK_UNDEF_TOKEN);
 	*q = ++s;
+	// TODO: バックスラッシュを考慮していないため要修正
 	while (*s && *s != quote_char)
 		s++;
 	if (*s != quote_char)
@@ -115,7 +116,7 @@ static t_token_type	get_token_type(char **ps, char **q, char **eq)
 }
 
 // TODO: error時にtokenを解放する処理
-static t_token	*new_token(t_token_type type, char **q, char **eq)
+t_token	*new_token(t_token_type type, char **q, char **eq)
 {
 	t_token	*new_token;
 
@@ -130,6 +131,7 @@ static t_token	*new_token(t_token_type type, char **q, char **eq)
 		new_token->word = *q;
 		new_token->end = *eq;
 	}
+	new_token->allocated = false;
 	return (new_token);
 }
 

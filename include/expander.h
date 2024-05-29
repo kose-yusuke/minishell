@@ -3,6 +3,7 @@
 # define EXPANDER_H
 
 # include "ast.h"
+# include "env.h"
 # include "minishell.h"
 
 #endif
