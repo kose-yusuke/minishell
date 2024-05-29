@@ -62,32 +62,29 @@ static void	print_tokens(t_token *token)
 
 static void	interpret(char *line, t_mgr *mgr)
 {
-	t_token	*token;
-	t_cmd	*cmd;
 
-	token = lexer(line);
-	if (token->type == TK_EOF)
+
+	mgr->token = lexer(line);
+	if (mgr->token->type == TK_EOF)
 	{
 		mgr->status = -1;
-		free_tokens(token);
+		free_tokens(mgr->token);
 		return ;
 	}
-	print_tokens(token);
-	cmd = parser(&token);
-	if (cmd == NULL)
+	print_tokens(mgr->token);
+	mgr->cmd = parser(mgr->token);
+	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
 		mgr->status = -1;
-		free_tokens(token);
-		free_cmd(cmd); // 未実装
+		free_tokens(mgr->token);
 		return ;
 	}
 	expand(cmd);        // 未実装
 	exec_cmd(cmd, mgr); // 未実装}
-
 	free_tokens(token);
 }
 
-int	ft_readline(char **envp, t_mgr *mgr)
+int	ft_readline(t_mgr *mgr)
 {
 	char	*line;
 
@@ -101,7 +98,7 @@ int	ft_readline(char **envp, t_mgr *mgr)
 		if (*line)
 			add_history(line);
 		// TODO: chdirコマンドの処理は、親プロセスで行う必要がある（未実装）
-		// ただしpipeコマンド下なら、cdは親プロセスに影響を与えない形で実行される
+		// ただしpipeコマンド下では、cdは親プロセスに影響を与えない形で実行される
 		interpret(line, mgr);
 		free(line);
 	}

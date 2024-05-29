@@ -3,6 +3,7 @@
 # define MINISHELL_H
 
 // # include "libft.h"
+# include "ft_hash.h"
 # include "token.h"
 # include <fcntl.h>
 # include <stdbool.h>
@@ -13,16 +14,19 @@
 
 typedef struct s_mgr
 {
-	int	status;
-	int	syntax_error;
-}		t_mgr;
+	int				status;
+	bool			syntax_error;
+	t_token			*token;
+	t_cmd			*cmd;
+	t_hash_table	*env_table;
+}					t_mgr;
 
 /* error.c */
-void	perror_exit(const char *msg);
-void	error_exit(const char *msg);
+void				perror_exit(const char *msg);
+void				error_exit(const char *msg);
 
 /* free.c */
-void	free_tokens(t_token *token);
+void				free_all(t_mgr *mgr);
 
 // 以下は引き継いだ部分
 // void	fatal_error(const char *msg);

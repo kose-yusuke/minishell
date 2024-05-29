@@ -3,15 +3,18 @@
 
 static void	mgr_init(t_mgr *mgr)
 {
-	mgr->status = 0;
-	mgr->syntax_error = false;
+	memset(mgr, 0, sizeof(t_mgr));
+	mgr->env_table = create_env_table();
+	if (!mgr->env_table)
+	{
+		error_exit("failed to create env_table");
+	}
 }
 
 int	main(int argc, char **argv)
 {
-	t_mgr		mgr;
-	extern char	**environ;
-	int			fd;
+	t_mgr			mgr;
+	int				fd;
 
 	// 端末デバイスファイル /dev/tty を開いて、FD 0, 1, 2 が開いていることを確認
 	while (1)
@@ -29,12 +32,9 @@ int	main(int argc, char **argv)
 	}
 	(void)argv;
 	mgr_init(&mgr);
-	// TODO: environの処理（必要であれば）<- 他の場所かも
-	// TODO: signalの設定
-	// init_sigaction(server_signal_action);
 	if (argc == 1)
 	{
-		ft_readline(environ, &mgr);
+		ft_readline(&mgr);
 	}
 	return (0);
 }

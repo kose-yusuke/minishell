@@ -31,3 +31,17 @@ bool	is_redir_token(t_token *token)
 		return (true);
 	return (false);
 }
+
+void	free_tokens(t_token *token)
+{
+	t_token	*next;
+
+	while (token)
+	{
+		next = token->next;
+		if (token->allocated)
+			free(token->word);
+		free(token);
+		token = next;
+	}
+}

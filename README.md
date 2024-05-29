@@ -210,3 +210,15 @@ http://www.cse.yorku.ca/~oz/hash.html
 作業メモ
 
 環境変数の展開で、mallocしていないのをmallocするように変えた方がいいかも
+
+TODO リスト
+
+- [ ] signalの設定
+- [ ] メモリ解放の設計
+
+
+kosekiさんより
+・一通りのbuildinコマンドの粗実装
+・きたはらさんのenvのhash table読んだので,これからbuildinに組み込む
+・シグナルとかbuildinをexec側に組み込むのはexec側の実装イメージがないと厳しそうなので, pipexのgithubとか見ながらなるはやで理解する
+・free/error処理をうまく統一できるようにする

@@ -2,7 +2,7 @@
 #include "expander.h"
 
 /*
-### minishellに 必要な展開
+### minishellに必要な展開
 
  **パラメータと変数の展開 (parameter and variable expansion)**：
    - `$` を用いて環境変数やシェル変数を展開
@@ -11,33 +11,14 @@
    - 囲まれていない文字列は展開され、スペースまたはタブで分割される
 
  **単語の分割 (word splitting)**：
-   - IFS に基づいて、展開された結果を単語に分割
-
-   注: IFS (Internal Field Separator) は、シェルが単語を分割する際に使用する内部フィールド区切り文字を指定するための環境変数
-   IFS=" \t\n" と設定されている場合、スペース、タブ、改行がフィールド区切り文字として扱われる
-
-### 実装のステップ
-
- **環境変数の展開**:
-   - まずは、`$VAR`形式の環境変数をその値に展開する機能を実装します。
-   - 関数名の例：`expand_env_variables`
-
- **ヒアドキュメント（Here Document）の処理**:
-   - ヒアドキュメントの処理を実装し、特定のデリミタまでの入力を受け取る機能を追加します。
-   - 関数名の例：`handle_heredoc`
-
- **ワード分割（Word Splitting）**:
-   - 最後に、展開された結果をスペース、タブ、改行によって分割する処理を追加します。
-   - 関数名の例：`word_splitting`
+   - IFS に基づいて、展開された結果を単語に分割 IFS=" \t\n" と設定
 
 ### 自信のないポイント
  - minishellにおいて環境変数とシェル変数をどのように扱うべきなのか。一緒にしてもいいのか。
  - hash_tableを使って環境変数を管理するのか、getenv()を中心に使うのか。
-
-
  */
 
-#define IFS " \t\n"
+#define IFS " \t\n" // TODO: move to header file
 
 void	expand_env_var(t_word *word_list, t_hash_table *env_table)
 {
@@ -57,7 +38,7 @@ void	expand_env_var(t_word *word_list, t_hash_table *env_table)
 	env_tail = dollar_ptr + 1;
 	while (*env_tail && !strchr(IFS, *env_tail))
 		env_tail++;
-	// ここの計算が怪しい strtrim()を使うべきかも
+	// ここの計算が怪しい + strtrim()を使うべきかも
 	env_key = strndup(dollar_ptr + 1, env_tail - dollar_ptr - 1);
 	if (!env_key)
 	{
@@ -101,29 +82,31 @@ void	word_splitting(t_word *word_list)
 	word_to_split = word_list->token->word;
 	while (*word_to_split)
 	{
-		if (strchr(IFS, *word_to_split))
+		if (!strchr(IFS, *word_to_split))
 		{
-			*word_to_split = '\0';
 			word_to_split++;
-			while (*word_to_split && strchr(IFS, *word_to_split))
-				word_to_split++;
-			if (*word_to_split == '\0')
-				break ;
-			added_word_list->next = calloc(1, sizeof(t_word));
-			if (!added_word_list->next)
-			{
-				// TODO: error handling
-			}
-			added_word_list = added_word_list->next;
-			added_word_list->token = new_token(TK_WORD, &word_to_split, NULL);
-			if (!added_word_list->token)
-			{
-				// TODO: error handling
-			}
-			added_word_list->next = NULL;
+			continue ;
 		}
-		else
+		*word_to_split = '\0';
+		word_to_split++;
+		while (*word_to_split && strchr(IFS, *word_to_split))
 			word_to_split++;
+		if (*word_to_split == '\0')
+			break ;
+		added_word_list->next = calloc(1, sizeof(t_word));
+		if (!added_word_list->next)
+		{
+			// TODO: error handling
+			perror_exit("calloc");
+		}
+		added_word_list = added_word_list->next;
+		added_word_list->token = new_token(TK_WORD, &word_to_split, NULL);
+		if (!added_word_list->token)
+		{
+			// TODO: error handling
+			perror_exit("new_token");
+		}
+		added_word_list->next = NULL;
 	}
 	if (head_to_throw.next)
 	{
@@ -152,7 +135,6 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 
 void	expand_redir_list(t_redir *redir_list, t_hash_table *env_table)
 {
-	// ここにリダイレクトのための展開の実装を追加
 	// TODO : here documentの処理を追加
 	while (redir_list)
 	{
@@ -175,15 +157,7 @@ void	expand_pipe(t_pipecmd *pcmd, t_hash_table *env_table)
 
 void	run_expansion(t_cmd *cmd, t_hash_table *env_table)
 {
-	t_hash_table	*env_table;
-
-	env_table = create_env_table();
-	if (!env_table)
-	{
-		// free resources and exit
-		exit(EXIT_FAILURE);
-	}
-	if (cmd == NULL || cmd->type == NONE)
+	if (!cmd || cmd->type == NONE || !env_table)
 		return ;
 	else if (cmd->type == EXEC)
 		expand_exec((t_execcmd *)cmd, env_table);

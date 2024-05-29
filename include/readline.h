@@ -9,6 +9,6 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
-int	ft_readline(char **envp, t_mgr *mgr);
+int	ft_readline(t_mgr *mgr);
 
 #endif
