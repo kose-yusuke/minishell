@@ -21,7 +21,7 @@ void	free_argv(char **argv)
 	free(argv);
 }
 
-void	free_all(t_mgr *mgr)
+void	free_mgr_resources(t_mgr *mgr)
 {
 	if (mgr->token)
 	{

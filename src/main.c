@@ -1,7 +1,8 @@
 /* main.c - メイン関数  */
+#include "ft_readline.h"
 #include "minishell.h"
 
-static void	mgr_init(t_mgr *mgr)
+static void	init_mgr(t_mgr *mgr)
 {
 	memset(mgr, 0, sizeof(t_mgr));
 	mgr->env_table = create_env_table();
@@ -13,28 +14,33 @@ static void	mgr_init(t_mgr *mgr)
 
 int	main(int argc, char **argv)
 {
-	t_mgr			mgr;
-	int				fd;
+	t_mgr	mgr;
+	int		fd;
 
+	(void)argv;
+	if (argc != 1)
+		error_exit("usage: ./minishell");
 	// 端末デバイスファイル /dev/tty を開いて、FD 0, 1, 2 が開いていることを確認
 	while (1)
 	{
 		fd = open("/dev/tty", O_RDWR);
 		if (fd == -1)
-		{
-			error_exit("fd open error");
-		}
+			error_exit("fd open error for /dev/tty");
 		if (fd > 2)
 		{
 			close(fd);
 			break ;
 		}
 	}
-	(void)argv;
-	mgr_init(&mgr);
-	if (argc == 1)
+	// TODO: signal handlerの実装
+	init_mgr(&mgr);
+	// ft_readline の中でエラーが発生した場合は、エラーメッセージを表示して終了する
+	if (ft_readline(&mgr) == -1)
 	{
-		ft_readline(&mgr);
+		free_mgr_resources(&mgr);
+		error_exit("ft_readline error");
 	}
-	return (0);
+	// クリーンアップ処理
+	free_mgr_resources(&mgr);
+	return (mgr.status);
 }

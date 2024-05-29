@@ -213,8 +213,8 @@ http://www.cse.yorku.ca/~oz/hash.html
 
 TODO リスト
 
-- [ ] signalの設定
-- [ ] メモリ解放の設計
+- [ ] signal handlingの設定
+- [ ] メモリ解放の設計の再検討
 
 
 kosekiさんより

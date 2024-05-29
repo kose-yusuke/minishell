@@ -26,7 +26,7 @@ void				perror_exit(const char *msg);
 void				error_exit(const char *msg);
 
 /* free.c */
-void				free_all(t_mgr *mgr);
+void				free_mgr_resources(t_mgr *mgr);
 
 // 以下は引き継いだ部分
 // void	fatal_error(const char *msg);

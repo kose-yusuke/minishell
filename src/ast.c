@@ -45,4 +45,5 @@ void	free_cmd(t_cmd *cmd)
 		free_cmd(((t_pipecmd *)cmd)->right);
 	}
 	free(cmd);
+
 }
