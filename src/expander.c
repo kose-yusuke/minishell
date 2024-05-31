@@ -117,12 +117,10 @@ void	word_splitting(t_word *word_list)
 	}
 }
 
-// ダミー関数
 void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 {
 	t_word	*next_word;
 
-	// ここに環境変数やチルダの展開の実装を追加
 	next_word = NULL;
 	while (word_list)
 	{
@@ -130,6 +128,88 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 		expand_env_var(word_list, env_table);
 		word_splitting(word_list);
 		word_list = next_word;
+	}
+}
+
+void	expand_word_list(t_word *word_list, t_hash_table *env_table)
+{
+	t_word	*word_to_expand;
+	t_word	*next;
+
+	word_to_expand = word_list;
+	next = NULL;
+	while (word_to_expand)
+	{
+		next = word_to_expand->next;
+		expand_env_var(word_to_expand, env_table);
+		word_splitting(word_to_expand);
+		word_to_expand = next;
+	}
+}
+
+/*
+
+TMP_FUNC_NAME は関数名を一時的につけたもので、適切な関数名に変更する必要がある
+
+ `aaa"ccccc"bbb` という文字列がある場合、`aaa` と `ccccc` と `bbb` にtokenとして
+ 分割されて、それぞれwordtoken, quotedtoken, wordtokenとなる。
+ トークンとして分割された状態で展開の処理を経て、最終的には
+ 統合して `aaaccccbbb` という文字列になりたいので、くっつける関数が必要になる
+ */
+
+bool	is_needed_to_connect(t_word *word)
+{
+	t_word	*next_word;
+
+	next_word = word->next;
+	if (!word || !next_word)
+		return (false);
+	if (!is_word_or_quoted_token(word->token))
+		return (false);
+	if (!is_word_or_quoted_token(next_word->token))
+		return (false);
+	/*
+	分割されたトークンが連続している場合、つなげる
+	間に他のtokenを挟む場合（空白など）はつなげない
+		*/
+	if (word->token->next == next_word->token)
+		return (true);
+	return (false);
+}
+
+void	connect_word(t_word *word)
+{
+	t_word	*next_word;
+	char	*new_word;
+	size_t len;
+
+	next_word = word->next;
+	len = strlen(word->token->word) + strlen(next_word->token->word) + 1;
+	new_word = calloc(len, sizeof(char));
+	if (!new_word)
+	{
+		// TODO: error handling
+		perror_exit("calloc");
+	}
+	strcpy(new_word, word->token->word);
+	strcat(new_word, next_word->token->word);
+	if (word->token->allocated)
+		free(word->token->word);
+	if (next_word->token->allocated)
+		free(next_word->token->word);
+}
+
+void	tmp_func_name(t_word *word_list)
+{
+	t_word	*word_to_check;
+
+	word_to_check = word_list;
+	while (word_to_check && word_to_check->next)
+	{
+		if (is_needed_to_connect(word_to_check))
+			connect_word(word_to_check);
+		else
+			word_to_check = word_to_check->next;
 	}
 }
 

@@ -3,27 +3,7 @@
 #include "minishell.h"
 
 // XXX: デバッグ用
-static void	print_tokens(t_token *token)
-{
-	t_token	*current;
-	size_t	i;
-
-	current = token;
-	i = 0;
-	while (current)
-	{
-		printf("--------------------------------\n");
-		printf("Token [%zu]\n", i++);
-		printf("Type: %s\n", token_to_str(current->type));
-		if (current->word)
-		{
-			printf("Word: %s\n", current->word);
-		}
-		current = current->next;
-	}
-}
-
-const char	*token_to_str(t_token_type type)
+static const char	*token_to_str(t_token_type type)
 {
 	switch (type)
 	{
@@ -60,9 +40,37 @@ const char	*token_to_str(t_token_type type)
 	}
 }
 
+static void	print_tokens(t_token *token)
+{
+	t_token	*current;
+	size_t	i;
+
+	current = token;
+	i = 0;
+	while (current)
+	{
+		printf("--------------------------------\n");
+		printf("Token [%zu]\n", i++);
+		printf("Type: %s\n", token_to_str(current->type));
+		if (current->word)
+		{
+			printf("Word: %s\n", current->word);
+		}
+		current = current->next;
+	}
+}
+
+static void	reset_resources(t_mgr *mgr)
+{
+	free_tokens(mgr->token);
+	free_cmd(mgr->cmd);
+	mgr->token = NULL;
+	mgr->cmd = NULL;
+}
+
 static void	interpret(char *line, t_mgr *mgr)
 {
-	mgr->token = lexer(line);
+	mgr->token = lexer(line, mgr);
 	if (!mgr->token)
 	{
 		mgr->status = -1;
@@ -75,7 +83,7 @@ static void	interpret(char *line, t_mgr *mgr)
 		// later to implement syntax error handling in lexer
 		return ;
 	}
-	print_tokens(mgr->token);
+	print_tokens(mgr->token); // デバッグ用
 	mgr->cmd = parser(mgr->token);
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
@@ -87,15 +95,7 @@ static void	interpret(char *line, t_mgr *mgr)
 	exec_cmd(mgr->cmd, mgr);
 }
 
-static void	reset_resources(t_mgr *mgr)
-{
-	free_tokens(mgr->token);
-	free_cmd(mgr->cmd);
-	mgr->token = NULL;
-	mgr->cmd = NULL;
-}
-
-int	ft_readline(t_mgr *mgr)
+void	ft_readline(t_mgr *mgr)
 {
 	char	*line;
 
@@ -106,8 +106,8 @@ int	ft_readline(t_mgr *mgr)
 		line = readline("minishell$ ");
 		if (!line)
 		{
-			mgr->status = -1;
-			break ;
+			free_mgr_resources(mgr);
+			error_exit("failed to read line");
 		}
 		if (*line)
 			add_history(line);
@@ -117,5 +117,4 @@ int	ft_readline(t_mgr *mgr)
 		free(line);
 		reset_resources(mgr);
 	}
-	return (mgr->status);
 }

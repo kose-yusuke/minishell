@@ -39,7 +39,7 @@ void	free_tokens(t_token *token)
 	while (token)
 	{
 		next = token->next;
-		if (token->allocated)
+		if (token->word && is_word_or_quoted_token(token))
 			free(token->word);
 		free(token);
 		token = next;

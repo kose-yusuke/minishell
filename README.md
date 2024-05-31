@@ -211,11 +211,17 @@ http://www.cse.yorku.ca/~oz/hash.html
 
 環境変数の展開で、mallocしていないのをmallocするように変えた方がいいかも
 
-TODO リスト
+TODO: リスト きたはら
 
-- [ ] signal handlingの設定
 - [ ] メモリ解放の設計の再検討
+- [ ] heredocの実装
+- [ ] execの実装
+- [ ] waitのマクロの使い方
 
+
+TODO: リスト こせきさん
+
+- [ ] signal handlerの実装
 
 kosekiさんより
 ・一通りのbuildinコマンドの粗実装

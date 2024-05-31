@@ -32,15 +32,8 @@ int	main(int argc, char **argv)
 			break ;
 		}
 	}
-	// TODO: signal handlerの実装
 	init_mgr(&mgr);
-	// ft_readline の中でエラーが発生した場合は、エラーメッセージを表示して終了する
-	if (ft_readline(&mgr) == -1)
-	{
-		free_mgr_resources(&mgr);
-		error_exit("ft_readline error");
-	}
-	// クリーンアップ処理
+	ft_readline(&mgr);
 	free_mgr_resources(&mgr);
 	return (mgr.status);
 }

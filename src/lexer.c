@@ -115,7 +115,6 @@ static t_token_type	get_token_type(char **ps, char **q, char **eq)
 	return (get_word_or_ionum_type(ps, q, eq));
 }
 
-// TODO: error時にtokenを解放する処理
 t_token	*new_token(t_token_type type, char **q, char **eq)
 {
 	t_token	*new_token;
@@ -135,20 +134,8 @@ t_token	*new_token(t_token_type type, char **q, char **eq)
 	return (new_token);
 }
 
-static void	insert_null_terminator(t_token *token)
-{
-	t_token	*cur_token;
 
-	cur_token = token;
-	while (cur_token)
-	{
-		if (cur_token->end)
-			*cur_token->end = '\0';
-		cur_token = cur_token->next;
-	}
-}
-
-t_token	*lexer(char *s)
+t_token	*lexer(char *s, t_mgr *mgr)
 {
 	t_token	head_token;
 	t_token	*cur_token;
@@ -164,7 +151,7 @@ t_token	*lexer(char *s)
 		cur_token->next = new_token(get_token_type(&s, &q, &eq), &q, &eq);
 		if (!cur_token->next || cur_token->next->type == TK_PARSE_ERROR)
 		{
-			free_tokens(head_token.next);
+			free_mgr_resources(mgr); // 終了していいのかな？
 			error_exit("Lexer Error: Unexpected or invalid token encountered.");
 		}
 		cur_token = cur_token->next;
@@ -175,6 +162,5 @@ t_token	*lexer(char *s)
 		free_tokens(head_token.next);
 		error_exit("Lexer Error: Failed to allocate EOF token.");
 	}
-	insert_null_terminator(head_token.next);
 	return (head_token.next);
 }
