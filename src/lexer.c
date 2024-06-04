@@ -56,12 +56,11 @@ static t_token_type	get_quoted_type(char **ps, char **q, char **eq)
 	if (quote_char != '\'' && quote_char != '"')
 		return (TK_UNDEF_TOKEN);
 	*q = ++s;
-	// TODO: バックスラッシュを考慮していないため要修正
-	while (*s && *s != quote_char)
+	while (*s && (*s != quote_char || (quote_char == '"' && *(s - 1) == '\\')))
 		s++;
 	if (*s != quote_char)
 		return (TK_PARSE_ERROR);
-	*eq = s;     // トークンの終了位置（後で`\0`を挿入する位置）
+	*eq = s;
 	*ps = s + 1; // 次のトークンの開始位置
 	if (quote_char == '\'')
 		return (TK_SQUOTE);
@@ -92,7 +91,7 @@ static t_token_type	get_word_or_ionum_type(char **ps, char **q, char **eq)
 			is_num = false;
 		s++;
 	}
-	*eq = s; // トークンの終了位置（後で`\0`を挿入する位置）
+	*eq = s;
 	*ps = s; // 次のトークンの開始位置
 	if (is_num && (*s == '<' || *s == '>'))
 		return (TK_IO_NUM);
@@ -118,7 +117,10 @@ static t_token_type	get_token_type(char **ps, char **q, char **eq)
 t_token	*new_token(t_token_type type, char **q, char **eq)
 {
 	t_token	*new_token;
+	size_t	len;
 
+	if (type == TK_UNDEF_TOKEN || type == TK_PARSE_ERROR)
+		return (NULL);
 	new_token = calloc(1, sizeof(t_token));
 	if (!new_token)
 		error_exit("calloc");
@@ -127,13 +129,16 @@ t_token	*new_token(t_token_type type, char **q, char **eq)
 	{
 		if (!q || !eq || !*q)
 			error_exit("new_token");
-		new_token->word = *q;
-		new_token->end = *eq;
+		len = *eq - *q;
+		new_token->word = strndup(*q, len);
+		if (!new_token->word)
+		{
+			free(new_token);
+			return (NULL);
+		}
 	}
-	new_token->allocated = false;
 	return (new_token);
 }
-
 
 t_token	*lexer(char *s, t_mgr *mgr)
 {
@@ -149,7 +154,7 @@ t_token	*lexer(char *s, t_mgr *mgr)
 		q = NULL;
 		eq = NULL;
 		cur_token->next = new_token(get_token_type(&s, &q, &eq), &q, &eq);
-		if (!cur_token->next || cur_token->next->type == TK_PARSE_ERROR)
+		if (!cur_token->next )
 		{
 			free_mgr_resources(mgr); // 終了していいのかな？
 			error_exit("Lexer Error: Unexpected or invalid token encountered.");
