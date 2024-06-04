@@ -38,7 +38,6 @@ void	expand_env_var(t_word *word_list, t_hash_table *env_table)
 	env_tail = dollar_ptr + 1;
 	while (*env_tail && !strchr(IFS, *env_tail))
 		env_tail++;
-	// ここの計算が怪しい + strtrim()を使うべきかも
 	env_key = strndup(dollar_ptr + 1, env_tail - dollar_ptr - 1);
 	if (!env_key)
 	{
@@ -64,71 +63,77 @@ void	expand_env_var(t_word *word_list, t_hash_table *env_table)
 	strcpy(new_word, word_list->token->word);
 	strcat(new_word, value);
 	strcat(new_word, env_tail);
-	if (word_list->token->allocated)
-		free(word_list->token->word); // 古いメモリを解放
+	free(word_list->token->word);
 	word_list->token->word = new_word;
-	word_list->token->allocated = true;
+}
+
+char	**ft_split_multidelim(char *str, const char *delimiters)
+{
+	char	**splitted;
+	size_t	i;
+
+	i = 0;
+	// ft_splitで複数の区切り文字を指定することができないため、区切り文字をスペースに変換する。
+	// （ft_splitの改良版をちゃんと作成した際には削除する）
+	while (str[i])
+	{
+		if (strchr(delimiters, str[i]))
+		{
+			str[i] = ' ';
+		}
+		i++;
+	}
+	splitted = ft_split(str, ' ');
+	return (splitted);
 }
 
 void	word_splitting(t_word *word_list)
 {
-	t_word	head_to_throw;
-	t_word	*added_word_list;
-	char	*word_to_split;
-
-	if (word_list->token->type != TK_WORD)
-		return ;
-	added_word_list = &head_to_throw;
-	word_to_split = word_list->token->word;
-	while (*word_to_split)
-	{
-		if (!strchr(IFS, *word_to_split))
-		{
-			word_to_split++;
-			continue ;
-		}
-		*word_to_split = '\0';
-		word_to_split++;
-		while (*word_to_split && strchr(IFS, *word_to_split))
-			word_to_split++;
-		if (*word_to_split == '\0')
-			break ;
-		added_word_list->next = calloc(1, sizeof(t_word));
-		if (!added_word_list->next)
-		{
-			// TODO: error handling
-			perror_exit("calloc");
-		}
-		added_word_list = added_word_list->next;
-		added_word_list->token = new_token(TK_WORD, &word_to_split, NULL);
-		if (!added_word_list->token)
-		{
-			// TODO: error handling
-			perror_exit("new_token");
-		}
-		added_word_list->next = NULL;
-	}
-	if (head_to_throw.next)
-	{
-		added_word_list->token->next = word_list->token->next;
-		added_word_list->next = word_list->next;
-		word_list->token->next = head_to_throw.next->token;
-		word_list->next = head_to_throw.next;
-	}
-}
-
-void	expand_word_list(t_word *word_list, t_hash_table *env_table)
-{
+	char	**splitted;
+	char	**q;
+	char	**eq;
+	size_t	i;
 	t_word	*next_word;
+	t_token	*next_token;
 
-	next_word = NULL;
-	while (word_list)
+	if (word_list->token->type != TK_WORD || !word_list->token->word
+		|| !word_list->token->word[0])
+		return ;
+	splitted = ft_split_multidelim(word_list->token->word, IFS);
+	if (!splitted)
 	{
-		next_word = word_list->next;
-		expand_env_var(word_list, env_table);
-		word_splitting(word_list);
-		word_list = next_word;
+		// TODO: error handling
+		error_exit("ft_split");
 	}
+	next_word = word_list->next;
+	next_token = word_list->token->next;
+	word_list->token->word = splitted[0];
+	word_list->token->next = NULL; // 必要？
+	word_list->next = NULL;        // 必要？
+	i = 1;
+	while (splitted[i])
+	{
+		q = &splitted[i];
+		eq = &splitted[i] + strlen(splitted[i]);
+		word_list->next = calloc(1, sizeof(t_word));
+		if (!word_list->next)
+		{
+			free_2d_array((void **)splitted);
+			error_exit("calloc");
+		}
+		word_list->next->token = new_token(TK_WORD, q, eq);
+		if (!word_list->next->token)
+		{
+			free_2d_array((void **)splitted);
+			error_exit("new_token");
+		}
+		word_list->token->next = word_list->next->token;
+		word_list = word_list->next;
+		i++;
+	}
+	free_2d_array((void **)splitted);
+	word_list->next = next_word;
+	word_list->token->next = next_token;
 }
 
 void	expand_word_list(t_word *word_list, t_hash_table *env_table)
@@ -137,7 +142,6 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 	t_word	*next;
 
 	word_to_expand = word_list;
-	next = NULL;
 	while (word_to_expand)
 	{
 		next = word_to_expand->next;
@@ -151,11 +155,11 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 
 TMP_FUNC_NAME は関数名を一時的につけたもので、適切な関数名に変更する必要がある
 
- `aaa"ccccc"bbb` という文字列がある場合、`aaa` と `ccccc` と `bbb` にtokenとして
- 分割されて、それぞれwordtoken, quotedtoken, wordtokenとなる。
- トークンとして分割された状態で展開の処理を経て、最終的には
- 統合して `aaaccccbbb` という文字列になりたいので、くっつける関数が必要になる
- */
+	`aaa"ccccc"bbb` という文字列がある場合、`aaa` と `ccccc` と `bbb` にtokenとして
+	分割されて、それぞれwordtoken, quotedtoken, wordtokenとなる。
+	トークンとして分割された状態で展開の処理を経て、最終的には
+	統合して `aaaccccbbb` という文字列になりたいので、くっつける関数が必要になる
+	*/
 
 bool	is_needed_to_connect(t_word *word)
 {
@@ -171,7 +175,7 @@ bool	is_needed_to_connect(t_word *word)
 	/*
 	分割されたトークンが連続している場合、つなげる
 	間に他のtokenを挟む場合（空白など）はつなげない
-		*/
+	*/
 	if (word->token->next == next_word->token)
 		return (true);
 	return (false);
@@ -180,8 +184,10 @@ bool	is_needed_to_connect(t_word *word)
 void	connect_word(t_word *word)
 {
 	t_word	*next_word;
+	t_word	*next_next_word;
+	t_token *next_next_token;
 	char	*new_word;
-	size_t len;
+	size_t	len;
 
 	next_word = word->next;
 	len = strlen(word->token->word) + strlen(next_word->token->word) + 1;
@@ -193,10 +199,15 @@ void	connect_word(t_word *word)
 	}
 	strcpy(new_word, word->token->word);
 	strcat(new_word, next_word->token->word);
-	if (word->token->allocated)
-		free(word->token->word);
-	if (next_word->token->allocated)
-		free(next_word->token->word);
+	free(word->token->word);
+	word->token->word = new_word;
+	next_next_word = next_word->next;
+	next_next_token = next_next_word->token;
+	free(next_word->token->word);
+	free(next_word->token);
+	free(next_word);
+	word->next = next_next_word;
+	word->token->next = next_next_token;
 }
 
 void	tmp_func_name(t_word *word_list)
