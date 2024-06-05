@@ -29,9 +29,6 @@ void	expand_env_var(t_word *word_list, t_hash_table *env_table)
 	size_t	len;
 	char	*new_word;
 
-	if (word_list->token->type != TK_WORD
-		&& word_list->token->type != TK_DQUOTE)
-		return ;
 	dollar_ptr = strchr(word_list->token->word, '$');
 	if (!dollar_ptr || *(dollar_ptr + 1) == '\0')
 		return ;
@@ -65,6 +62,26 @@ void	expand_env_var(t_word *word_list, t_hash_table *env_table)
 	strcat(new_word, env_tail);
 	free(word_list->token->word);
 	word_list->token->word = new_word;
+}
+
+void	expand_var_loop(t_word *word_list, t_hash_table *env_table)
+{
+	t_word	*word_to_expand;
+	t_word	*next;
+
+	word_to_expand = word_list;
+	if (word_list->token->type == TK_WORD)
+	{
+		expand_env_var(word_to_expand, env_table);
+		return ;
+	}
+	if (word_list->token->type == TK_DQUOTE)
+	{
+		while (strchr(word_to_expand->token->word, '$'))
+		{
+			expand_env_var(word_to_expand, env_table);
+		}
+	}
 }
 
 char	**ft_split_multidelim(char *str, const char *delimiters)
@@ -136,21 +153,6 @@ void	word_splitting(t_word *word_list)
 	word_list->token->next = next_token;
 }
 
-void	expand_word_list(t_word *word_list, t_hash_table *env_table)
-{
-	t_word	*word_to_expand;
-	t_word	*next;
-
-	word_to_expand = word_list;
-	while (word_to_expand)
-	{
-		next = word_to_expand->next;
-		expand_env_var(word_to_expand, env_table);
-		word_splitting(word_to_expand);
-		word_to_expand = next;
-	}
-}
-
 /*
 
 TMP_FUNC_NAME は関数名を一時的につけたもので、適切な関数名に変更する必要がある
@@ -161,31 +163,23 @@ TMP_FUNC_NAME は関数名を一時的につけたもので、適切な関数名
 	統合して `aaaccccbbb` という文字列になりたいので、くっつける関数が必要になる
 	*/
 
-bool	is_needed_to_connect(t_word *word)
+bool	should_merge(t_word *word)
 {
 	t_word	*next_word;
 
 	next_word = word->next;
 	if (!word || !next_word)
 		return (false);
-	if (!is_word_or_quoted_token(word->token))
-		return (false);
-	if (!is_word_or_quoted_token(next_word->token))
-		return (false);
-	/*
-	分割されたトークンが連続している場合、つなげる
-	間に他のtokenを挟む場合（空白など）はつなげない
-	*/
-	if (word->token->next == next_word->token)
-		return (true);
-	return (false);
+	if (is_word_or_quoted_token(word->token)
+		&& is_word_or_quoted_token(next_word->token))
+		return (word->token->next == next_word->token);
 }
 
-void	connect_word(t_word *word)
+void	merge_adjacent_words(t_word *word)
 {
 	t_word	*next_word;
 	t_word	*next_next_word;
-	t_token *next_next_token;
+	t_token	*next_next_token;
 	char	*new_word;
 	size_t	len;
 
@@ -210,26 +204,42 @@ void	connect_word(t_word *word)
 	word->token->next = next_next_token;
 }
 
-void	tmp_func_name(t_word *word_list)
+void	merge_words(t_word *word_list)
 {
 	t_word	*word_to_check;
 
 	word_to_check = word_list;
 	while (word_to_check && word_to_check->next)
 	{
-		if (is_needed_to_connect(word_to_check))
-			connect_word(word_to_check);
+		if (should_merge(word_to_check))
+			merge_adjacent_words(word_to_check);
 		else
 			word_to_check = word_to_check->next;
 	}
 }
 
+void	expand_word_list(t_word *word_list, t_hash_table *env_table)
+{
+	t_word	*word_to_expand;
+	t_word	*next;
+
+	word_to_expand = word_list;
+	while (word_to_expand)
+	{
+		next = word_to_expand->next;
+		expand_env_loop(word_to_expand, env_table);
+		word_splitting(word_to_expand);
+		word_to_expand = next;
+	}
+	merge_words(word_list);
+}
+
 void	expand_redir_list(t_redir *redir_list, t_hash_table *env_table)
 {
-	// TODO : here documentの処理を追加
 	while (redir_list)
 	{
 		expand_word_list(redir_list->word_list, env_table);
+		// TODO : here documentの処理を追加
 		redir_list = redir_list->next;
 	}
 }
