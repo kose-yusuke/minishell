@@ -40,6 +40,7 @@ static const char	*token_to_str(t_token_type type)
 	}
 }
 
+// XXX: デバッグ用
 static void	print_tokens(t_token *token)
 {
 	t_token	*current;
@@ -62,6 +63,8 @@ static void	print_tokens(t_token *token)
 
 static void	reset_resources(t_mgr *mgr)
 {
+	if (mgr->status == 0 && mgr->syntax_error) // これなんだっけ？
+		mgr->status = 1;
 	free_tokens(mgr->token);
 	free_cmd(mgr->cmd);
 	mgr->token = NULL;
@@ -70,28 +73,24 @@ static void	reset_resources(t_mgr *mgr)
 
 static void	interpret(char *line, t_mgr *mgr)
 {
-	mgr->token = lexer(line, mgr);
-	if (!mgr->token)
+	mgr->token = lexer(line);
+	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
-		mgr->status = -1;
-		fprintf(stderr, "lexer error\n");
+		report_error("lexer error", 0, 0); // ?
 		return ;
 	}
-	if (mgr->token->type == TK_PARSE_ERROR || mgr->token->type == TK_EOF)
+	if (mgr->token->type == TK_EOF)
 	{
-		fprintf(stderr, "empty command or parse error\n");
-		// later to implement syntax error handling in lexer
 		return ;
 	}
-	print_tokens(mgr->token); // デバッグ用
+	print_tokens(mgr->token); // debug
 	mgr->cmd = parser(mgr->token);
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
-		fprintf(stderr, "parser error\n");
-		// later to implement syntax error handling in parser
+		report_error("parser error", 0, 0); // ?
 		return ;
 	}
-	run_expansion(mgr->cmd, mgr->env_table); // mgrを直接渡すべきでは？
+	run_expansion(mgr->cmd, mgr);
 	exec_cmd(mgr->cmd, mgr);
 }
 
@@ -100,20 +99,20 @@ void	ft_readline(t_mgr *mgr)
 	char	*line;
 
 	rl_outstream = stderr;
-	mgr->status = 0;
-	while (mgr->status != -1)
+	mgr->status = 0; // ?
+	while (1)
 	{
 		line = readline("minishell$ ");
 		if (!line)
 		{
 			free_mgr_resources(mgr);
-			error_exit("failed to read line");
+			error_exit("failed to read line", EXIT_FAILURE); // ?
 		}
 		if (*line)
+		{
 			add_history(line);
-		// TODO: chdirコマンドの処理は、親プロセスで行う（未実装）
-		// ただしpipeのなかでのcdは、親プロセスに影響を与えない
-		interpret(line, mgr);
+			interpret(line, mgr);
+		}
 		free(line);
 		reset_resources(mgr);
 	}

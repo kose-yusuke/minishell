@@ -129,18 +129,17 @@ void	exec_redir(t_cmd *cmd)
 {
 	int			oldfd;
 	t_execcmd	*ecmd;
-	t_redir		*redir_list;
+	t_redir		**current_redir;
 	char		*filepath;
 	int			oflag;
 
 	if (cmd->type != EXEC)
 	{
-		error_exit("Error: exec_redir failed\n");
+		assert_error("Error: unexpected cmd", "exec_redir failed\n");
 	}
 	ecmd = (t_execcmd *)cmd;
 	redir_list = ecmd->redir_list;
-	// typeとfdが共に重複するredirectは、先頭のものしか実行されない
-	// 特定のredirectを無視する仕組みが未実装
+	// typeとfdが共に重複するredirectは、先頭のものしか実行されない <- 未実装
 	while (redir_list)
 	{
 		if (redir_list->redir_type == TK_HEREDOC)
@@ -175,7 +174,7 @@ void	run_cmd(t_cmd *cmd)
 {
 	if (!cmd || cmd->type == NONE)
 	{
-		exit(0);
+		return; // exit(0); ?
 	}
 	else if (cmd->type == EXEC)
 	{
@@ -189,7 +188,7 @@ void	run_cmd(t_cmd *cmd)
 	}
 	else
 	{
-		error_exit("Error: run_cmd failed\n");
+		assert_error("Error: ", "run_cmd failed\n");
 	}
 }
 
