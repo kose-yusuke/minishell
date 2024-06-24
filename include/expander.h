@@ -4,6 +4,10 @@
 
 # include "ast.h"
 # include "env.h"
-# include "minishell.h"
+# include <errno.h>
+
+# define IFS " \t\n" // TODO: move to header file
+
+void	run_expansion(t_cmd *cmd, t_mgr *mgr);
 
 #endif

@@ -123,24 +123,29 @@ t_token	*new_token(t_token_type type, char **q, char **eq)
 		return (NULL);
 	new_token = calloc(1, sizeof(t_token));
 	if (!new_token)
-		error_exit("calloc");
+		return (NULL);
 	new_token->type = type;
 	if (is_word_or_quoted_token(new_token) || is_io_num_token(new_token))
 	{
 		if (!q || !eq || !*q)
-			error_exit("new_token");
+		{
+			free(new_token);
+			report_error("new_token", NULL, "invalid arguments"); // ?
+			return (NULL);
+		}
 		len = *eq - *q;
 		new_token->word = strndup(*q, len);
 		if (!new_token->word)
 		{
 			free(new_token);
+			report_error("new_token", NULL, "strndup failed"); // ?
 			return (NULL);
 		}
 	}
 	return (new_token);
 }
 
-t_token	*lexer(char *s, t_mgr *mgr)
+t_token	*lexer(char *s)
 {
 	t_token	head_token;
 	t_token	*cur_token;
@@ -154,10 +159,10 @@ t_token	*lexer(char *s, t_mgr *mgr)
 		q = NULL;
 		eq = NULL;
 		cur_token->next = new_token(get_token_type(&s, &q, &eq), &q, &eq);
-		if (!cur_token->next )
+		if (!cur_token->next)
 		{
-			free_mgr_resources(mgr); // 終了していいのかな？
-			error_exit("Lexer Error: Unexpected or invalid token encountered.");
+			free_tokens(head_token.next);
+			return (NULL);
 		}
 		cur_token = cur_token->next;
 	}
@@ -165,7 +170,7 @@ t_token	*lexer(char *s, t_mgr *mgr)
 	if (!cur_token->next)
 	{
 		free_tokens(head_token.next);
-		error_exit("Lexer Error: Failed to allocate EOF token.");
+		return (NULL);
 	}
 	return (head_token.next);
 }
