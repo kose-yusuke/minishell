@@ -1,8 +1,6 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
 #include "executor.h"
 
-
- */
 static pid_t	fork_pid(void)
 {
 	pid_t	pid;
@@ -213,48 +211,4 @@ TODO:
 
 3. ファイルディスクリプタの管理
 不要になったfdのクリーンアップは、いつどこで実行されるべきか？
- */
-
-/*
-
-open_redir_file(); // 必要なfileをopenしたり、heredocの場合はpipeを作成したり
-do_redirect();     // dupを用いて、fdのredirectを行う
-exec_cmd();        // コマンドを実行する
-reset_redirect();  // dupを用いて、redirectしていたfdを元に戻す
-
-// 以下はkosekiさんから引き継いだ部分
-void	validate_access(const char *path, const char *filename)
-{
-	if (path == NULL)
-		err_exit(filename, "command not found", 127);
-	if (access(path, F_OK) < 0)
-		err_exit(filename, "command not found", 127);
-}
-
-int	exec(char *argv[])
-{
-	extern char	**environ;
-	const char	*path = argv[0];
-	pid_t		pid;
-	int			wstatus;
-
-	pid = fork();
-	if (pid < 0)
-		fatal_error("fork");
-	else if (pid == 0)
-	{
-		if (strchr(path, '/') == NULL)
-		{
-			path = search_path(path);
-		}
-		validate_access(path, argv[0]);
-		execve(path, argv, environ);
-		fatal_error("execve");
-	}
-	else{
-		wait(&wstatus);
-		return (WEXITSTATUS(wstatus));
-	}
-	return (0);
-}
  */
