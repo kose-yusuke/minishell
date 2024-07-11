@@ -138,8 +138,6 @@ void	exec_redir_list(t_cmd *cmd, t_mgr *mgr)
 	}
 
 /*
-
-
 #include "minishell.h"
 #include <fcntl.h>
 #include <unistd.h>

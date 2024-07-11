@@ -100,6 +100,7 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	char		**argv;
 	char		*path;
+	extern char **environ;
 
 	if (cmd->type != EXEC)
 	{
@@ -114,10 +115,8 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	}
 	path = search_path(ecmd->word_list->token); //未実装
 	// TODO: ここで word_list を argv に変換する。仮にNULL
-	argv = NULL;
-	// TODO: ここ、もしくはexpandの段階でpathの解決を行う (search_path関数)
-	// TODO: 環境変数はまだ実装していないから第三引数は正しくない仮
-	// builtinコマンドの場合は、ここで処理を行う
+	argv = NULL; // convert_word_list_to_argv(ecmd->word_list);
+	// TODO: fork して子プロセスで execve を実行（親プロセスで終了しないため）
 	if (execve(path, argv, environ) < 0)
 	{
 		assert_error("Error: execve failed\n", "exec_cmd failed\n");
@@ -125,7 +124,6 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	// TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
 	// そのため、自力でfdをクローズする必要がある
 	assert_error("Error: execve failed\n", "exec_cmd failed\n");
-	// close_fd();
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
@@ -141,8 +139,12 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		exec_redir(cmd, mgr);
-		exec_cmd(cmd, mgr);
-		// rezset_fd(cmd);
+		// if is_builtin
+		// 呼ぶ built-in
+		// else
+		exec_cmd(cmd, mgr); // ここか、この中でbuilt-inの呼び出し
+		// reset_fd(cmd); <- リソース管理
+		// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）
 	}
 	else if (cmd->type == PIPE)
 	{
@@ -152,6 +154,7 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: ", "run_cmd failed\n");
 	}
+
 }
 
 /*
