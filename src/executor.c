@@ -87,6 +87,7 @@ static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: close failed\n", "exec_pipe failed\n");
 	}
+	// wait でわかる子プロセスの終了状態の管理ができていない
 	if (waitpid(left_pid, NULL, 0) == -1 || waitpid(right_pid, NULL, 0) == -1)
 	{
 		assert_error("Error: waitpid failed\n", "exec_pipe failed\n");
@@ -98,7 +99,6 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
-	extern char	**environ;
 	char		*path;
 
 	if (cmd->type != EXEC)
@@ -142,7 +142,7 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		exec_redir(cmd, mgr);
 		exec_cmd(cmd, mgr);
-		// reset_fd(cmd); 未実装
+		// rezset_fd(cmd);
 	}
 	else if (cmd->type == PIPE)
 	{

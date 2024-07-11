@@ -28,8 +28,6 @@ void	handle_duplicate_fd(t_fd_mgr *fd_mgr, int fd)
 	fd_mgr->next = new_fd;
 }
 
-
-
 int is_fd_valid(int fd) {
     return write(fd, "", 0) != -1 || errno != EBADF;
 }
@@ -129,16 +127,15 @@ void	exec_redir_list(t_cmd *cmd, t_mgr *mgr)
 		{
 			if (dup2(oldfd, redir_list->fd) == -1)
 			{
-				assert_error("Error: dup2 failed\n", "exec_redir failed\n");
+				assert_error("Error: dup2 failed\n", "exec_redir failed\n"); // まちがい 標準入出力につけかえる
 			}
-			if (close(oldfd) == -1)
+			if (close(oldfd) == -1) // ?
 			{
 				assert_error("Error: close failed\n", "exec_redir failed\n");
 			}
 		}
 		redir_list = redir_list->next;
 	}
-}
 
 /*
 
