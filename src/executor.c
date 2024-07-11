@@ -1,8 +1,6 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
 #include "executor.h"
 
-
- */
 static pid_t	fork_pid(void)
 {
 	pid_t	pid;
@@ -89,6 +87,7 @@ static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: close failed\n", "exec_pipe failed\n");
 	}
+	// wait でわかる子プロセスの終了状態の管理ができていない
 	if (waitpid(left_pid, NULL, 0) == -1 || waitpid(right_pid, NULL, 0) == -1)
 	{
 		assert_error("Error: waitpid failed\n", "exec_pipe failed\n");
@@ -100,7 +99,6 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
-	extern char	**environ;
 	char		*path;
 
 	if (cmd->type != EXEC)
@@ -130,51 +128,6 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	// close_fd();
 }
 
-void	exec_redir(t_cmd *cmd, t_mgr *mgr)
-{
-	int			oldfd;
-	t_execcmd	*ecmd;
-	t_redir		**current_redir;
-	char		*filepath;
-	int			oflag;
-
-	if (cmd->type != EXEC)
-	{
-		assert_error("Error: unexpected cmd", "exec_redir failed\n");
-	}
-	ecmd = (t_execcmd *)cmd;
-	redir_list = ecmd->redir_list;
-	// typeとfdが共に重複するredirectは、先頭のものしか実行されない <- 未実装
-	while (redir_list)
-	{
-		if (redir_list->redir_type == TK_HEREDOC)
-		{
-			// TODO: heredocの処理
-			redir_list = redir_list->next;
-			continue ;
-		}
-		filepath = ecmd->word_list->token->word;    // expandで解決
-		oflag = get_o_flag(redir_list->redir_type); // 未実装
-		oldfd = open(filepath, oflag);
-		if (oldfd == -1)
-		{
-			assert_error("Error: open failed\n", "exec_redir failed\n");
-		}
-		if (oldfd != redir_list->fd)
-		{
-			if (dup2(oldfd, redir_list->fd) == -1)
-			{
-				assert_error("Error: dup2 failed\n", "exec_redir failed\n");
-			}
-			if (close(oldfd) == -1)
-			{
-				assert_error("Error: close failed\n", "exec_redir failed\n");
-			}
-		}
-		redir_list = redir_list->next;
-	}
-}
-
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	if (!mgr || !mgr->env_table)
@@ -187,9 +140,9 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	}
 	else if (cmd->type == EXEC)
 	{
-		// exec_redir(cmd);
+		exec_redir(cmd, mgr);
 		exec_cmd(cmd, mgr);
-		// reset_fd(cmd); 未実装
+		// rezset_fd(cmd);
 	}
 	else if (cmd->type == PIPE)
 	{
@@ -213,48 +166,4 @@ TODO:
 
 3. ファイルディスクリプタの管理
 不要になったfdのクリーンアップは、いつどこで実行されるべきか？
- */
-
-/*
-
-open_redir_file(); // 必要なfileをopenしたり、heredocの場合はpipeを作成したり
-do_redirect();     // dupを用いて、fdのredirectを行う
-exec_cmd();        // コマンドを実行する
-reset_redirect();  // dupを用いて、redirectしていたfdを元に戻す
-
-// 以下はkosekiさんから引き継いだ部分
-void	validate_access(const char *path, const char *filename)
-{
-	if (path == NULL)
-		err_exit(filename, "command not found", 127);
-	if (access(path, F_OK) < 0)
-		err_exit(filename, "command not found", 127);
-}
-
-int	exec(char *argv[])
-{
-	extern char	**environ;
-	const char	*path = argv[0];
-	pid_t		pid;
-	int			wstatus;
-
-	pid = fork();
-	if (pid < 0)
-		fatal_error("fork");
-	else if (pid == 0)
-	{
-		if (strchr(path, '/') == NULL)
-		{
-			path = search_path(path);
-		}
-		validate_access(path, argv[0]);
-		execve(path, argv, environ);
-		fatal_error("execve");
-	}
-	else{
-		wait(&wstatus);
-		return (WEXITSTATUS(wstatus));
-	}
-	return (0);
-}
  */
