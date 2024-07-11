@@ -128,51 +128,6 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	// close_fd();
 }
 
-void	exec_redir(t_cmd *cmd, t_mgr *mgr)
-{
-	int			oldfd;
-	t_execcmd	*ecmd;
-	t_redir		**current_redir;
-	char		*filepath;
-	int			oflag;
-
-	if (cmd->type != EXEC)
-	{
-		assert_error("Error: unexpected cmd", "exec_redir failed\n");
-	}
-	ecmd = (t_execcmd *)cmd;
-	redir_list = ecmd->redir_list;
-	// typeとfdが共に重複するredirectは、先頭のものしか実行されない <- 未実装
-	while (redir_list)
-	{
-		if (redir_list->redir_type == TK_HEREDOC)
-		{
-			// TODO: heredocの処理
-			redir_list = redir_list->next;
-			continue ;
-		}
-		filepath = ecmd->word_list->token->word;    // expandで解決
-		oflag = get_o_flag(redir_list->redir_type); // 未実装
-		oldfd = open(filepath, oflag);
-		if (oldfd == -1)
-		{
-			assert_error("Error: open failed\n", "exec_redir failed\n");
-		}
-		if (oldfd != redir_list->fd)
-		{
-			if (dup2(oldfd, redir_list->fd) == -1)
-			{
-				assert_error("Error: dup2 failed\n", "exec_redir failed\n");
-			}
-			if (close(oldfd) == -1)
-			{
-				assert_error("Error: close failed\n", "exec_redir failed\n");
-			}
-		}
-		redir_list = redir_list->next;
-	}
-}
-
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	if (!mgr || !mgr->env_table)
@@ -185,7 +140,7 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	}
 	else if (cmd->type == EXEC)
 	{
-		// exec_redir(cmd);
+		exec_redir(cmd, mgr);
 		exec_cmd(cmd, mgr);
 		// reset_fd(cmd); 未実装
 	}
