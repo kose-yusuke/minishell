@@ -84,6 +84,7 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 	}
 }
 
+
 /* 一個分のredirectを実行する */
 void	exec_redir(t_redir *redir, t_mgr *mgr)
 {
