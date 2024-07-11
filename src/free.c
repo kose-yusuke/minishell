@@ -1,24 +1,7 @@
-#include "minishell.h"
 #include "ast.h"
+#include "ft_hash.h"
+#include "minishell.h"
 #include "token.h"
-
-void	free_tokens(t_token *token)
-{
-	t_token	*next;
-
-	while (token)
-	{
-		next = token->next;
-		free(token);
-		token = next;
-	}
-}
-
-// 未実装
-void	free_cmd(t_cmd *cmd)
-{
-	free(cmd);
-}
 
 // koseki-san
 void	free_argv(char **argv)
@@ -36,4 +19,20 @@ void	free_argv(char **argv)
 		i++;
 	}
 	free(argv);
+}
+
+void	free_mgr_resources(t_mgr *mgr)
+{
+	if (mgr->token)
+	{
+		free_tokens(mgr->token);
+	}
+	if (mgr->cmd)
+	{
+		free_cmd(mgr->cmd);
+	}
+	if (mgr->env_table)
+	{
+		mgr->env_table->free(mgr->env_table);
+	}
 }

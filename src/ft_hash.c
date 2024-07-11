@@ -15,7 +15,8 @@ static unsigned long	hash_djb2(unsigned char *str)
 	return (hash);
 }
 
-static void	insert(t_hash_table *table, const char *key, const char *value)
+// insert失敗時のenv_table自体のメモリ解放は、呼び出し側の責任
+static char	*insert(t_hash_table *table, const char *key, const char *value)
 {
 	unsigned int	index;
 	t_hash_node		*new_var;
@@ -24,20 +25,20 @@ static void	insert(t_hash_table *table, const char *key, const char *value)
 	new_var = malloc(sizeof(t_hash_node));
 	if (!new_var)
 	{
-		table->free(table);
-		perror_exit("malloc");
+		return (NULL);
 	}
 	new_var->key = strdup(key);
 	new_var->value = strdup(value);
 	if (!new_var->key || !new_var->value)
 	{
-		free(new_var->key);
+		if (new_var->key)
+			free(new_var->key);
 		free(new_var);
-		table->free(table);
-		perror_exit("strdup");
+		return (NULL);
 	}
 	new_var->next = table->table[index];
 	table->table[index] = new_var;
+	return (table->table[index]->value);
 }
 
 static char	*search(t_hash_table *table, const char *key)
@@ -49,6 +50,7 @@ static char	*search(t_hash_table *table, const char *key)
 	var = table->table[index];
 	while (var)
 	{
+		// 比較の仕方は大丈夫？
 		if (strcmp(var->key, key) == 0)
 		{
 			return (var->value);

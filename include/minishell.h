@@ -3,12 +3,10 @@
 # define MINISHELL_H
 
 // # include "libft.h"
-# include "lexer.h"
-# include "parser.h"
+# include "ast.h"
+# include "ft_hash.h"
 # include "token.h"
-#include "executor.h"
-#include "builtins.h"
-#include <limits.h>
+# include <errno.h>
 # include <fcntl.h>
 # include <stdbool.h>
 # include <stdio.h>
@@ -24,25 +22,31 @@
 
 typedef struct s_mgr
 {
-	int	status;
-	int	syntax_error;
-}		t_mgr;
+	int				status;
+	bool			syntax_error;
+	t_token			*token;
+	t_cmd			*cmd;
+	t_hash_table	*env_table;
+}					t_mgr;
 
 /* error.c */
-void	perror_exit(const char *msg);
-void	error_exit(const char *msg);
+/* error.c -- Functions for handling errors. */
+# include "minishell.h"
+
+// TODO: おそらくdebug用の関数
+void				assert_error(const char *msg, char *location);
+// TODO: おそらくdebug用の関数
+void				todo(const char *msg);
+void				error_exit(const char *msg, int exit_status);
+void				lexer_error(const char *location, char **rest, char *line);
+void				report_error(char *cmd, char *file, char *info);
 
 /* free.c */
-void	free_tokens(t_token *token);
+void				free_mgr_resources(t_mgr *mgr);
 
 /* signal.c */
 void setup_signals(void);
 // 以下は引き継いだ部分
-// void	fatal_error(const char *msg);
-// void	assert_error(const char *msg);
-// void	err_exit(const char *location, const char *msg, int status);
-// void	todo(const char *msg);
-// void	tokenize_error(const char *location, char **rest, char *line);
 
 // // error
 // # define ERROR_TOKENIZE 258

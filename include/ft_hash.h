@@ -16,7 +16,7 @@ typedef struct s_hash_node
 typedef struct s_hash_table
 {
 	t_hash_node			*table[HASH_TABLE_SIZE];
-	void				(*insert)(struct s_hash_table *table, const char *key,
+	char				*(*insert)(struct s_hash_table *table, const char *key,
 						const char *value);
 	char				*(*search)(struct s_hash_table *table, const char *key);
 	void				(*free)(struct s_hash_table *table);

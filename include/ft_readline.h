@@ -2,9 +2,13 @@
 #ifndef READLINE_H
 # define READLINE_H
 
+# include "lexer.h"
+# include "parser.h"
+# include "token.h"
+# include "expander.h"
 # include <readline/history.h>
 # include <readline/readline.h>
 
-int	ft_readline(char **envp, t_mgr *mgr);
+int	ft_readline(t_mgr *mgr);
 
 #endif

@@ -32,3 +32,16 @@ bool	is_redir_token(t_token *token)
 	return (false);
 }
 
+void	free_tokens(t_token *token)
+{
+	t_token	*next;
+
+	while (token)
+	{
+		next = token->next;
+		if (is_word_or_quoted_token(token) || is_io_num_token(token))
+			free(token->word);
+		free(token);
+		token = next;
+	}
+}

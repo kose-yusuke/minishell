@@ -13,7 +13,7 @@ t_hash_table	*create_env_table(void)
 	env_table = create_hash_table();
 	if(!env_table)
 	{
-		perror_exit("malloc");
+		return (NULL);
 	}
 	i = 0;
 	while (environ[i])
@@ -22,13 +22,13 @@ t_hash_table	*create_env_table(void)
 		if (!env)
 		{
 			free_hash_table(env_table);
-			perror_exit("strdup");
+			return (NULL);
 		}
 		delimiter = strchr(env, '=');
-		if (delimiter)
+		if (delimiter) // if(delimiter && *delimiter) ？
 		{
 			*delimiter = '\0';
-			insert(env_table, env, delimiter + 1);
+			env_table->insert(env_table, env, delimiter + 1);
 		}
 		free(env);
 		i++;
