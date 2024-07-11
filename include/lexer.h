@@ -6,5 +6,6 @@
 # include "token.h"
 
 t_token	*lexer(char *s);
+int	ft_isdigit(int c);
 
 #endif

@@ -13,6 +13,12 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include <signal.h>
+# include <sys/wait.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <ctype.h>
+
 
 typedef struct s_mgr
 {
@@ -38,6 +44,8 @@ void				report_error(char *cmd, char *file, char *info);
 /* free.c */
 void				free_mgr_resources(t_mgr *mgr);
 
+/* signal.c */
+void setup_signals(void);
 // 以下は引き継いだ部分
 
 // // error

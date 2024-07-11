@@ -1,42 +1,22 @@
-NAME		:= minishell
-SRC_DIR		:= src
-INC_DIR		:= include
-OBJ_DIR		:= obj
-
-SRC_LIST	:= *.c
-SRCS		:= $(addprefix $(SRC_DIR)/, $(SRC_LIST))
-OBJS		:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
-DEPS		:= $(OBJS:.o=.d)
-
-INC			:= -I$(INC_DIR)
-LIBS		:= -lreadline
-
-CC			:= cc
-DFLAGS		:= -g -fsanitize=address
-CFLAGS		:= -Wall -Werror $(INC)
-#CFLAGS		:= -Wall -Wextra -Werror $(INC)
+NAME     = minishell
+CC       = cc 
+CFLAGS   = $(INCLUDES) -g -fsanitize=address
+# CFLAGS   = -Wall -Wextra -Werror $(INCLUDES)
+RLDIR    = $(shell brew --prefix readline)
+INCLUDES = -I include -I$(RLDIR)/include
+LIBS     = -lreadline -L$(RLDIR)/lib
+SRCS     = src/main.c src/readline.c src/lexer.c src/executor.c \
+src/parser_utils.c src/token_utils.c src/error.c src/expander.c \
+src/signal.c src/free.c src/heredoc.c src/parser.c src/redirect.c \
+src/builtin.c src/builtin_exit.c 
+OBJS     = $(SRCS:%.c=%.o)
 
 all: $(NAME)
-
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -MMD -c $< -o $@
-
+	$(CC) $(CFLAGS) $(LIBS) -o $(NAME) $(OBJS)
 clean:
-	rm -f $(OBJS)
-	rm -f $(DEPS)
-
+	$(RM) $(OBJS)
 fclean: clean
-	rm -f $(NAME)
-
+	$(RM) $(NAME)
 re: fclean all
-
-debug: clean $(OBJS)
-	$(CC) $(CFLAGS) $(DFLAGS) $(LIBS) -o $(NAME) $(OBJS)
-
-.PHONY: all clean fclean re debug
-
--include $(DEPS)
+.PHONY: all clean fclean re test

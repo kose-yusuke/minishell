@@ -8,5 +8,12 @@
 
 // void	validate_access(const char *path, const char *filename);
 // int		exec(char *argv[]);
+void	run_cmd(t_cmd *cmd);
+// static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2]);
+// static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2]);
+// static void	exec_pipe(t_cmd *cmd);
+// static void	exec_cmd(t_cmd *cmd);
+void	exec_redir(t_cmd *cmd);
+
 
 #endif

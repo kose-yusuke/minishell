@@ -1,6 +1,7 @@
 /* main.c - メイン関数  */
 #include "ft_readline.h"
 #include "minishell.h"
+#include "readline.h"
 
 static void	init_mgr(t_mgr *mgr)
 {
