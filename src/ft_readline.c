@@ -60,6 +60,56 @@ static void	print_tokens(t_token *token)
 		current = current->next;
 	}
 }
+void print_word_list(t_word *word_list)
+{
+    t_word *current = word_list;
+    while (current)
+    {
+        printf("Word: %s\n", current->token->word);
+        current = current->next;
+    }
+}
+
+void print_redir_list(t_redir *redir_list)
+{
+    t_redir *current = redir_list;
+    while (current)
+    {
+        printf("Redirection: %d, FD: %d\n", current->redir_type, current->fd);
+        printf("Redirection word :");
+		print_word_list(current->word_list);
+        current = current->next;
+    }
+}
+
+void print_cmd(t_cmd *cmd)
+{
+    if (!cmd)
+    {
+        printf("No command\n");
+        return;
+    }
+    if (cmd->type == EXEC)
+    {
+        t_execcmd *ecmd = (t_execcmd *)cmd;
+        printf("EXEC command:\n");
+        print_word_list(ecmd->word_list);
+        print_redir_list(ecmd->redir_list);
+    }
+    else if (cmd->type == PIPE)
+    {
+        t_pipecmd *pcmd = (t_pipecmd *)cmd;
+        printf("PIPE command:\n");
+        printf("Left:\n");
+        print_cmd(pcmd->left);
+        printf("Right:\n");
+        print_cmd(pcmd->right);
+    }
+    else
+    {
+        printf("Unknown command type\n");
+    }
+}
 
 static void	reset_resources(t_mgr *mgr)
 {
@@ -83,15 +133,16 @@ static void	interpret(char *line, t_mgr *mgr)
 	{
 		return ;
 	}
-	print_tokens(mgr->token); // debug
-	mgr->cmd = parser(mgr->token);
+	// print_tokens(mgr->token); // debug
+	mgr->cmd = parser(&mgr->token);
+	print_cmd(mgr->cmd); // デバッグ用の出力
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
 		report_error("parser error", 0, 0); // ?
 		return ;
 	}
-	run_expansion(mgr->cmd, mgr);
-	exec_cmd(mgr->cmd, mgr);
+	// run_expansion(mgr->cmd, mgr);
+	// exec_cmd(mgr->cmd, mgr);
 }
 
 void	ft_readline(t_mgr *mgr)

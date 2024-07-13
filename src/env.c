@@ -1,6 +1,5 @@
 /* env.c - 環境変数の操作に関連する関数の実装 */
-#include "env.h"
-#include "ft_hash.h"
+# include "minishell.h"
 
 t_hash_table	*create_env_table(void)
 {

@@ -32,12 +32,14 @@ int is_fd_valid(int fd) {
     return write(fd, "", 0) != -1 || errno != EBADF;
 }
 
-void	process_redir_out(t_redir *redir, t_mgr *mgr)
+void	process_redir_out(t_execcmd *ecmd, t_mgr *mgr)
 {
 	char	*filepath;
 	int		oflag;
 	int		fd;
+	t_redir *redir;
 
+	redir = ecmd->redir_list;
 	if (redir->opened)
 	{
 		return ;
@@ -80,22 +82,30 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 			redir = redir->next;
 			continue ;
 		}
+		if (redir->redir_type == TK_HEREDOC)
+    	{
+			redir->fd = ft_heredoc(redir->word_list->token->word);
+			return;
+    	}
 		filepath = redir->word_list->token->word; // TODO: 確認
 	}
 }
 
 
 /* 一個分のredirectを実行する */
-void	exec_redir(t_redir *redir, t_mgr *mgr)
+void	exec_redir(t_execcmd *ecmd, t_mgr *mgr) //引数をredirからecmdに変更しました.
 {
+	t_redir *redir;
+
+	redir = ecmd->redir_list;
 	if (redir->redir_type == TK_REDIR_OUT || redir->redir_type == TK_APPEND)
 	{
-		process_redir_out(redir, mgr);
+		process_redir_out(ecmd, mgr);
 	}
 	else if (redir->redir_type == TK_REDIR_IN
 		|| redir->redir_type == TK_HEREDOC)
 	{
-		process_redir_in(redir, mgr);
+		process_redir_in(ecmd, mgr);
 	}
 }
 
@@ -103,30 +113,32 @@ void	exec_redir_list(t_cmd *cmd, t_mgr *mgr)
 {
 	int			oldfd;
 	t_execcmd	*ecmd;
-	t_redir		**current_redir;
+	t_redir		*current_redir;
 	char		*filepath;
 	int			oflag;
 
 	ecmd = (t_execcmd *)cmd;
-	*current_redir = ecmd->redir_list;
-	while (*current_redir)
+	current_redir = ecmd->redir_list;
+	while (current_redir)
 	{
-		if (*current_redir->redir_type == TK_HEREDOC)
+		if (current_redir->redir_type == TK_HEREDOC)
 		{
 			// TODO: heredocの処理
-			redir_list = redir_list->next;
+			//eofを引数に入れる必要あり
+			current_redir->fd = ft_heredoc(current_redir->word_list->token->word);
+			current_redir = current_redir->next;
 			continue ;
 		}
 		filepath = ecmd->word_list->token->word;    // expandで解決
-		oflag = get_o_flag(redir_list->redir_type); // 未実装
+		oflag = get_open_flag(current_redir->redir_type); // 未実装->一旦get_open_flagにしちゃいました.
 		oldfd = open(filepath, oflag);
 		if (oldfd == -1)
 		{
 			assert_error("Error: open failed\n", "exec_redir failed\n");
 		}
-		if (oldfd != redir_list->fd)
+		if (oldfd != current_redir->fd)
 		{
-			if (dup2(oldfd, redir_list->fd) == -1)
+			if (dup2(oldfd, current_redir->fd) == -1)
 			{
 				assert_error("Error: dup2 failed\n", "exec_redir failed\n"); // まちがい 標準入出力につけかえる
 			}
@@ -135,9 +147,9 @@ void	exec_redir_list(t_cmd *cmd, t_mgr *mgr)
 				assert_error("Error: close failed\n", "exec_redir failed\n");
 			}
 		}
-		redir_list = redir_list->next;
+		current_redir = current_redir->next;
 	}
-
+}
 /*
 #include "minishell.h"
 #include <fcntl.h>
