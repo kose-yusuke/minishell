@@ -228,4 +228,13 @@ stashfdという関数は引数として受け取ったfdを、他と被らな�
 - redirectが複数行われる際は、redirectしたのと逆の順番でreset_redirectをしていく必要があることに注意が必要です。例えば `echo hello >f1 >f2 >f3`  のようなredirectを行った時、どのようにfdが増えたり減ったり変化していき、最終的にどのようにresetされるかの流れは先ほどの章に書いた通り。
 
 
+bash-3.2$ cat 1<tmp
+aaa
+cat: stdout: Bad file descriptor
+
+
+
+bash-3.2$ cat >> tmp
+a
+^C
  */

@@ -2,8 +2,9 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-// # include "libft.h"
-
+# include "ast.h"
+# include "ft_hash.h"
+# include "token.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <stdbool.h>
