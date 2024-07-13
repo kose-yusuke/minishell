@@ -37,6 +37,7 @@ typedef struct s_execcmd
 	enum e_cmd_type		type;
 	struct s_word		*word_list;
 	struct s_redir		*redir_list;
+	char *eof_word;
 }						t_execcmd;
 
 typedef struct s_pipecmd
