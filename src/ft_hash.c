@@ -121,7 +121,7 @@ t_hash_table	*create_hash_table(void)
 	memset(table, 0, sizeof(t_hash_table));
 	table->insert = insert;
 	table->search = search;
-	table->search = delete;
+	table->delete = delete;
 	table->free = free_hash_table;
 	return (table);
 }

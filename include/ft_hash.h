@@ -19,6 +19,7 @@ typedef struct s_hash_table
 	char				*(*insert)(struct s_hash_table *table, const char *key,
 						const char *value);
 	char				*(*search)(struct s_hash_table *table, const char *key);
+	int					*(delete)(struct s_hash_table *table, const char *key);
 	void				(*free)(struct s_hash_table *table);
 }						t_hash_table;
 
