@@ -36,7 +36,7 @@ static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 	assert_error("Error: run_cmd failed\n", "exec_leftcmd failed\n");
 }
 
-static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2])
+static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 {
 	// 不要なWrite endを閉じる
 	if (close(pfd[1]) == -1)
@@ -115,8 +115,8 @@ static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		exit(0);
 	}
 	// ビルトインコマンドのチェックと実行
-    if (is_builtin(ecmd))
-        exec_builtin(ecmd);
+    // if (is_builtin(ecmd))
+    //     exec_builtin(ecmd);
 
 	// path = search_path(ecmd->word_list->token); //未実装
 	// TODO: ここで word_list を argv に変換する。仮にNULL

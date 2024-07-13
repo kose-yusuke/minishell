@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/17 16:00:44 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/13 17:55:08 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,14 @@ char	**convert_list_to_array(t_execcmd *ecmd)
 		len++;
 	}
 	if (!(argv = (char **)malloc(sizeof(char *) * (len + 1))))
-		error_exit(NULL);
+		error_exit("usage: ./minishell", EXIT_FAILURE);
 	tmp_token = ecmd->word_list->token;
 	i = 0;
 	while (tmp_token)
 	{
         argv[i] = ft_strdup(tmp_token->word);
 		if (!argv[i])
-			error_exit(NULL);
+			error_exit("usage: ./minishell", EXIT_FAILURE);
 		tmp_token = tmp_token->next;
 		i++;
 	}

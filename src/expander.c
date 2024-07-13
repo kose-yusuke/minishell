@@ -88,6 +88,20 @@ char	**ft_split_multidelim(char *str, const char *delimiters)
 	return (splitted);
 }
 
+void free_2d_array(void **array)
+{
+    size_t i;
+
+    if (array == NULL)
+        return;
+
+    for (i = 0; array[i] != NULL; i++)
+    {
+        free(array[i]);
+    }
+    free(array);
+}
+
 void	word_splitting(t_word *word_list)
 {
 	char	**splitted;
@@ -210,7 +224,7 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 	while (word_to_expand)
 	{
 		next = word_to_expand->next;
-		expand_env_loop(word_to_expand, env_table);
+		// expand_env_loop(word_to_expand, env_table); これから作る予定？
 		word_splitting(word_to_expand);
 		word_to_expand = next;
 	}

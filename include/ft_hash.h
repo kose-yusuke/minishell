@@ -2,8 +2,6 @@
 #ifndef FT_HASH_H
 # define FT_HASH_H
 
-# include "minishell.h" // perror_exitのため
-
 # define HASH_TABLE_SIZE 101 // 適当に決めたサイズ
 
 typedef struct s_hash_node
@@ -19,10 +17,14 @@ typedef struct s_hash_table
 	char				*(*insert)(struct s_hash_table *table, const char *key,
 						const char *value);
 	char				*(*search)(struct s_hash_table *table, const char *key);
-	int					*(delete)(struct s_hash_table *table, const char *key);
+	int					(*delete)(struct s_hash_table *table, const char *key);
 	void				(*free)(struct s_hash_table *table);
 }						t_hash_table;
 
+# include "env.h" // perror_exitのため
+
 t_hash_table			*create_hash_table(void);
+void	free_hash_table(t_hash_table *table);
+t_hash_table	*create_hash_table(void);
 
 #endif /* FT_HASH_H */

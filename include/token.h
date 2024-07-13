@@ -3,6 +3,7 @@
 # define TOKEN_H
 
 # include <stdbool.h>
+# include <stdlib.h>
 
 typedef enum e_token_type
 {

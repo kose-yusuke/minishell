@@ -52,6 +52,24 @@ t_redir	*init_redir(t_token_type type, int fd, t_redir *next)
 	return (new_redir);
 }
 
+void free_word_list(t_word *word_list)
+{
+    t_word *current;
+    t_word *next;
+
+    current = word_list;
+    while (current)
+    {
+        next = current->next;
+        if (current->token)
+        {
+            free_tokens(current->token);
+        }
+        free(current);
+        current = next;
+    }
+}
+
 void	append_word(t_word **word_list, t_token *token)
 {
 	t_word	*new_word;

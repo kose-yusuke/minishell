@@ -1,5 +1,6 @@
 /* ft_hash.c - ハッシュテーブルの実装 */
 #include "ft_hash.h"
+#include "minishell.h"
 
 static unsigned long	hash_djb2(unsigned char *str)
 {
@@ -88,7 +89,7 @@ static int delete(t_hash_table *table, const char *key)
 	return (-1);
 }
 
-static void	free_hash_table(t_hash_table *table)
+void	free_hash_table(t_hash_table *table)
 {
 	t_hash_node	*node;
 	t_hash_node	*tmp;
