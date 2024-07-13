@@ -82,6 +82,11 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 			redir = redir->next;
 			continue ;
 		}
+		if (redir->redir_type == TK_HEREDOC)
+    	{
+			redir->fd = ft_heredoc(redir->word_list->token->word);
+			return;
+    	}
 		filepath = redir->word_list->token->word; // TODO: 確認
 	}
 }
@@ -119,6 +124,8 @@ void	exec_redir_list(t_cmd *cmd, t_mgr *mgr)
 		if (current_redir->redir_type == TK_HEREDOC)
 		{
 			// TODO: heredocの処理
+			//eofを引数に入れる必要あり
+			current_redir->fd = ft_heredoc(current_redir->word_list->token->word);
 			current_redir = current_redir->next;
 			continue ;
 		}

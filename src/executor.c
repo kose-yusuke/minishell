@@ -159,7 +159,6 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: ", "run_cmd failed\n");
 	}
-
 }
 
 /*
