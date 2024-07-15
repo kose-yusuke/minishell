@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 17:29:08 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 18:05:52 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ char	*ft_strdup(char *src)
 	char	*p;
 	long	len;
 
+	if (src == NULL)
+		return (NULL);
 	len = ft_strlen(src);
 	p = (char *)malloc(sizeof(char) * (len + 1));
 	if (!p)
@@ -53,6 +55,8 @@ char	*ft_strndup(char *src, long len)
 {
 	char	*p;
 
+	if (src == NULL)
+		return (NULL);
 	p = (char *)malloc(sizeof(char) * (len + 1));
 	if (!p)
 		return (0);
@@ -83,7 +87,8 @@ char	**convert_list_to_array(t_execcmd *ecmd)
 	{
         argv[i] = ft_strdup(tmp_token->word);
 		if (!argv[i])
-			error_exit("usage: ./minishell", EXIT_FAILURE);
+			// error_exit("usage: ./minishell", EXIT_FAILURE);
+			break;
 		tmp_token = tmp_token->next;
 		i++;
 	}

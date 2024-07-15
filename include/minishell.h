@@ -52,6 +52,7 @@ void				report_error(char *cmd, char *file, char *info);
 // debug
 void print_cmd(t_cmd *cmd);
 void print_redir_list(t_redir *redir_list);
+void	print_tokens(t_token *token);
 
 /* free.c */
 void				free_mgr_resources(t_mgr *mgr);

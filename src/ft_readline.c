@@ -41,7 +41,7 @@ static const char	*token_to_str(t_token_type type)
 }
 
 // XXX: デバッグ用
-static void	print_tokens(t_token *token)
+void	print_tokens(t_token *token)
 {
 	t_token	*current;
 	size_t	i;

@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:20:10 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 17:25:56 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 18:06:51 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,6 @@ int	builtin_env(char **argv, t_mgr *mgr, int var)
         i++;
     }
     if (var == 1)
-        printf("_=/usr/bin/env");
+        printf("_=/usr/bin/env\n");
 	return (0);
 }
