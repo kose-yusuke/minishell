@@ -135,14 +135,14 @@ static void	interpret(char *line, t_mgr *mgr)
 	}
 	// print_tokens(mgr->token); // debug
 	mgr->cmd = parser(&mgr->token);
-	print_cmd(mgr->cmd); // デバッグ用の出力
+	// print_cmd(mgr->cmd); // デバッグ用の出力
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
 		report_error("parser error", 0, 0); // ?
 		return ;
 	}
-	// run_expansion(mgr->cmd, mgr);
-	// exec_cmd(mgr->cmd, mgr);
+	run_expansion(mgr->cmd, mgr);
+	exec_cmd(mgr->cmd, mgr);
 }
 
 void	ft_readline(t_mgr *mgr)

@@ -96,7 +96,7 @@ static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	exit(EXIT_SUCCESS);
 }
 
-static void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
+void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
