@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:49:27 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 16:58:12 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 23:54:11 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,11 @@ static char *update_pwd(char *oldpwd, char *path)
 {
     char *newpwd;
 
+    newpwd = (char *)malloc(PATH_MAX);
+    if (!newpwd) {
+        perror("malloc");
+        return NULL;
+    }
     //pathが絶対パスかoldpwdがない場合
     if (*path == '/' || oldpwd == NULL)
         ft_strlcpy(newpwd, "/", PATH_MAX);
@@ -168,6 +173,7 @@ int	builtin_cd(char **argv, t_mgr *mgr)
     //pathに新しい作業ディレクトリの値を格納(argv[1]の値で)
     if (set_newpath(&path, argv[1]) == 1)
     {
+        free(path);
         perror("no new path");
         return (1);
     }
@@ -175,16 +181,19 @@ int	builtin_cd(char **argv, t_mgr *mgr)
     //cd ..やcd .は処理可能
     if (chdir(path) < 0)
     {
+        free(path);
         perror("path error");
         return (0);
     }
     //PWDを絶対パスで更新
     newpwd = update_pwd(pwd, path);
-    if (newpwd) 
+    if (newpwd)
+    {
         // envmapにnewpwdをセット
         insert(mgr->env_table, "PWD", newpwd);
+        free(newpwd);
+    } 
     free(path);
-    free(newpwd);
     //statusの値何で返すべきか後で確
     return (1);
 }

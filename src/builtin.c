@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 18:32:07 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 21:25:57 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,19 +62,38 @@ char	*ft_strdup(char *src)
 	return (p);
 }
 
-char	*ft_strndup(char *src, long len)
+char *ft_strncpy(char *dest, const char *src, size_t n)
 {
-	char	*p;
+    size_t i;
 
-	if (src == NULL)
-		return (NULL);
-	p = (char *)malloc(sizeof(char) * (len + 1));
-	if (!p)
-		return (0);
-	ft_strcpy(p, src);
-	return (p);
+    i = 0;
+    while (i < n && src[i] != '\0')
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n)
+    {
+        dest[i] = '\0';
+        i++;
+    }
+    return dest;
 }
 
+
+char *ft_strndup(char *src, long len)
+{
+    char *p;
+
+    if (src == NULL)
+        return (NULL);
+    p = (char *)malloc(sizeof(char) * (len + 1));
+    if (!p)
+        return (NULL);
+    ft_strncpy(p, src, len);
+    p[len] = '\0'; // 文字列終端を追加
+    return (p);
+}
 
 char	**convert_list_to_array(t_execcmd *ecmd)
 {

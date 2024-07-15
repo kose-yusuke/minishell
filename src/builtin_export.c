@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 17:27:56 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 21:39:14 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,10 @@ int set_key_value(char *string, char **key, char **value, t_mgr *mgr)
         *value = ft_strdup(key_end + 1);
     }
     if (*key != NULL && *value != NULL)
-        insert(mgr->env_table, *key, *value);
+    {
+        printf("Setting key: %s, value: %s\n", *key, *value); // デバッグ出力
+        insert(mgr->env_table, *key, *value); // 仮のinsert関数
+    }
     else
         return (-1);
     return (1);
@@ -55,8 +58,8 @@ int	builtin_export(char **argv, t_mgr *mgr)
 {
     int i;
     int status;
-    char **key;
-    char **value;
+    char *key;
+    char *value;
     
     if (argv[1] == NULL)
     {
@@ -67,12 +70,14 @@ int	builtin_export(char **argv, t_mgr *mgr)
     status = 0;
     while(argv[i])
     {
-        if(set_key_value(argv[i], key, value, mgr) < 0)
+        if(set_key_value(argv[i], &key, &value, mgr) < 0)
         {
             // エラーの場合
             perror("export");
             status = 1;
         }
+        free(key);
+        free(value);
         i++; //代入される変数の分だけ繰り返す
     }
     return (status);
