@@ -72,6 +72,7 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 {
 	t_redir	*redir;
 	char	*filepath;
+	int fd;
 
 	redir = ecmd->redir_list;
 	while (redir)
@@ -87,26 +88,61 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 			redir->fd = ft_heredoc(redir->word_list->token->word);
 			return;
     	}
-		filepath = redir->word_list->token->word; // TODO: 確認
+		if (redir->word_list)
+			filepath = redir->word_list->token->word; // TODO: 確認
+		if (filepath == NULL)
+        {
+            report_error("process_redir_in", NULL, "filepath is NULL");
+            return;
+        }
+		fd = open(filepath, O_RDONLY);
+        if (fd == -1)
+        {
+            perror("open");
+            return;
+        }
+
+        if (dup2(fd, STDIN_FILENO) == -1)
+        {
+            perror("dup2");
+            close(fd);
+            return;
+        }
+
+        close(fd);
+		print_redir_list(redir);
+        redir->opened = true;
+        redir = redir->next;
 	}
 }
 
 
 /* 一個分のredirectを実行する */
-void	exec_redir(t_execcmd *ecmd, t_mgr *mgr) //引数をredirからecmdに変更しました.
+void	exec_redir(t_cmd *cmd, t_mgr *mgr) 
 {
 	t_redir *redir;
 
+	t_execcmd *ecmd = (t_execcmd *)cmd;
 	redir = ecmd->redir_list;
-	if (redir->redir_type == TK_REDIR_OUT || redir->redir_type == TK_APPEND)
-	{
-		process_redir_out(ecmd, mgr);
-	}
-	else if (redir->redir_type == TK_REDIR_IN
-		|| redir->redir_type == TK_HEREDOC)
-	{
-		process_redir_in(ecmd, mgr);
-	}
+	while (redir)
+    {
+        if (redir->redir_type == TK_REDIR_OUT || redir->redir_type == TK_APPEND)
+		{
+			process_redir_out(ecmd, mgr);
+			// printf("%d", redir->redir_type);
+		}
+		else if (redir->redir_type == TK_REDIR_IN
+			|| redir->redir_type == TK_HEREDOC)
+		{
+			// printf("%d", redir->redir_type);
+			process_redir_in(ecmd, mgr);
+		}
+        redir = redir->next; // 次のリダイレクトに進む
+    }
+
+	// printf("%d", redir->redir_type);
+	// printf("%d", redir->redir_type);
+	// print_cmd(ecmd); // デバッグ用の出力 //最後にprintf入れるか入れないかで挙動が変わる
 }
 
 void	exec_redir_list(t_cmd *cmd, t_mgr *mgr)

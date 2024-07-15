@@ -102,6 +102,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	char		**argv;
 	char		*path;
 	extern char **environ;
+	pid_t		pid;
 
 	if (cmd->type != EXEC)
 	{
@@ -112,7 +113,8 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		// TODO: execveを使わない時には自力でfdをクローズする
 		// close_fd();
-		exit(0);
+		// exit(0);
+		return ;
 	}
 	// ビルトインコマンドのチェックと実行
     // if (is_builtin(ecmd))
@@ -122,17 +124,46 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	// TODO: ここで word_list を argv に変換する。仮にNULL
 	argv = NULL; // convert_word_list_to_argv(ecmd->word_list);
 	// TODO: fork して子プロセスで execve を実行（親プロセスで終了しないため）
-	if (execve(path, argv, environ) < 0)
+	// if (execve(path, argv, environ) < 0)
+	// {
+	// 	assert_error("Error: execve failed\n", "exec_cmd failed\n");
+	// }
+	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
+	// // そのため、自力でfdをクローズする必要がある
+	// assert_error("Error: execve failed\n", "exec_cmd failed\n");
+	
+	pid = fork();
+	if (pid < 0)
 	{
-		assert_error("Error: execve failed\n", "exec_cmd failed\n");
+		perror("fork");
+		exit(EXIT_FAILURE);
 	}
-	// TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
-	// そのため、自力でfdをクローズする必要がある
-	assert_error("Error: execve failed\n", "exec_cmd failed\n");
+	if (pid == 0)
+	{
+		// 子プロセスで実行
+		if (execve(path, argv, environ) < 0)
+		{
+			perror("execve");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		// 親プロセスで子プロセスの終了を待機
+		if (waitpid(pid, NULL, 0) == -1)
+		{
+			perror("waitpid");
+		}
+	}
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 {
+	int saved_stdin;
+	int saved_stdout;
+
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
 	if (!mgr || !mgr->env_table)
 	{
 		assert_error("Error: ", "run_cmd failed\n");
@@ -159,6 +190,14 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: ", "run_cmd failed\n");
 	}
+	// 標準入力と標準出力を元に戻す
+	if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout, STDOUT_FILENO) == -1)
+	{
+		perror("dup2");
+		exit(EXIT_FAILURE);
+	}
+	close(saved_stdin);
+	close(saved_stdout);
 }
 
 /*

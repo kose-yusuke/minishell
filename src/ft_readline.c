@@ -111,7 +111,7 @@ void print_cmd(t_cmd *cmd)
     }
 }
 
-static void	reset_resources(t_mgr *mgr)
+void	reset_resources(t_mgr *mgr)
 {
 	if (mgr->status == 0 && mgr->syntax_error) // これなんだっけ？
 		mgr->status = 1;
@@ -121,7 +121,7 @@ static void	reset_resources(t_mgr *mgr)
 	mgr->cmd = NULL;
 }
 
-static void	interpret(char *line, t_mgr *mgr)
+void	interpret(char *line, t_mgr *mgr)
 {
 	mgr->token = lexer(line);
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
@@ -135,16 +135,17 @@ static void	interpret(char *line, t_mgr *mgr)
 	}
 	// print_tokens(mgr->token); // debug
 	mgr->cmd = parser(&mgr->token);
-	// print_cmd(mgr->cmd); // デバッグ用の出力
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
 		report_error("parser error", 0, 0); // ?
 		return ;
 	}
-	run_expansion(mgr->cmd, mgr);
-	exec_cmd(mgr->cmd, mgr);
+	// print_cmd(mgr->cmd); // デバッグ用の出力
+	// run_expansion(mgr->cmd, mgr);
+	run_cmd(mgr->cmd, mgr);
 }
 
+//一周でなぜか終わる
 void	ft_readline(t_mgr *mgr)
 {
 	char	*line;
@@ -158,6 +159,7 @@ void	ft_readline(t_mgr *mgr)
 		{
 			free_mgr_resources(mgr);
 			error_exit("failed to read line", EXIT_FAILURE); // ?
+			// break ;
 		}
 		if (*line)
 		{

@@ -10,5 +10,7 @@
 # include <readline/readline.h>
 
 void	ft_readline(t_mgr *mgr);
+void	interpret(char *line, t_mgr *mgr);
+void	reset_resources(t_mgr *mgr);
 
 #endif

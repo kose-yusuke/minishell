@@ -49,6 +49,10 @@ void				error_exit(const char *msg, int exit_status);
 void				lexer_error(const char *location, char **rest, char *line);
 void				report_error(char *cmd, char *file, char *info);
 
+// debug
+void print_cmd(t_cmd *cmd);
+void print_redir_list(t_redir *redir_list);
+
 /* free.c */
 void				free_mgr_resources(t_mgr *mgr);
 
