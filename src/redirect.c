@@ -77,7 +77,8 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 	redir = ecmd->redir_list;
 	while (redir)
 	{
-		if ((redir->redir_type != TK_REDIR_IN && redir->redir_type != TK_APPEND)
+		//これなんだっけ
+		if ((redir->redir_type != TK_REDIR_IN && redir->redir_type != TK_HEREDOC)
 			|| redir->opened)
 		{
 			redir = redir->next;
@@ -85,6 +86,7 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 		}
 		if (redir->redir_type == TK_HEREDOC)
     	{
+			print_redir_list(redir);
 			redir->fd = ft_heredoc(redir->word_list->token->word);
 			return;
     	}
@@ -110,7 +112,6 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
         }
 
         close(fd);
-		print_redir_list(redir);
         redir->opened = true;
         redir = redir->next;
 	}
