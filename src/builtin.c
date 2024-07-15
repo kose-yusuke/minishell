@@ -6,11 +6,22 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 18:05:52 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 18:32:07 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+
+void print_argv(char **argv)
+{
+    int i = 0;
+    while (argv[i])
+    {
+        printf("argv[%d]: %s\n", i, argv[i]);
+        i++;
+    }
+}
 
 size_t	ft_strlen(const char *str)
 {
@@ -83,14 +94,17 @@ char	**convert_list_to_array(t_execcmd *ecmd)
 		error_exit("usage: ./minishell", EXIT_FAILURE);
 	tmp_token = ecmd->word_list->token;
 	i = 0;
-	while (tmp_token)
+	while (tmp_token->type != TK_EOF)
 	{
-        argv[i] = ft_strdup(tmp_token->word);
-		if (!argv[i])
-			// error_exit("usage: ./minishell", EXIT_FAILURE);
-			break;
+        if (tmp_token->type == TK_WORD || tmp_token->type == TK_DQUOTE || tmp_token->type == TK_SQUOTE)
+		{
+			argv[i] = ft_strdup(tmp_token->word);
+			i++;
+		}
 		tmp_token = tmp_token->next;
-		i++;
+		// if (!argv[i])
+			// error_exit("usage: ./minishell", EXIT_FAILURE);
+			// break;
 	}
 	argv[i] = NULL;
 	return (argv);
@@ -102,6 +116,7 @@ int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
     char	**argv;
 
     argv = convert_list_to_array(ecmd);
+	// print_argv(argv);
     if (strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);
 	else if (strcmp(argv[0], "export") == 0)
