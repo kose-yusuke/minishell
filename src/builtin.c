@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/13 17:55:08 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 17:29:08 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,17 @@ char	*ft_strdup(char *src)
 	return (p);
 }
 
+char	*ft_strndup(char *src, long len)
+{
+	char	*p;
+
+	p = (char *)malloc(sizeof(char) * (len + 1));
+	if (!p)
+		return (0);
+	ft_strcpy(p, src);
+	return (p);
+}
+
 
 char	**convert_list_to_array(t_execcmd *ecmd)
 {
@@ -80,7 +91,7 @@ char	**convert_list_to_array(t_execcmd *ecmd)
 	return (argv);
 }
 
-int		exec_builtin(t_execcmd *ecmd)
+int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
 {
     int status;
     char	**argv;
@@ -88,19 +99,18 @@ int		exec_builtin(t_execcmd *ecmd)
     argv = convert_list_to_array(ecmd);
     if (strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);
-	// else if (strcmp(argv[0], "export") == 0)
-	// 	status = builtin_export(argv);
-	// else if (strcmp(argv[0], "unset") == 0)
-	// 	status = builtin_unset(argv);
-	// else if (strcmp(argv[0], "env") == 0)
-	// 	status = builtin_env(argv);
-	// else if (strcmp(argv[0], "cd") == 0)
-	// 	status = builtin_cd(argv);
-	// else if (strcmp(argv[0], "echo") == 0)
-	// 	status = builtin_echo(argv);
-	// else if (strcmp(argv[0], "pwd") == 0)
-	// 	status = builtin_pwd(argv);
-    
+	else if (strcmp(argv[0], "export") == 0)
+		status = builtin_export(argv,mgr);
+	else if (strcmp(argv[0], "unset") == 0)
+		status = builtin_unset(argv,mgr);
+	else if (strcmp(argv[0], "env") == 0)
+		status = builtin_env(argv,mgr,1);
+	else if (strcmp(argv[0], "cd") == 0)
+		status = builtin_cd(argv,mgr);
+	else if (strcmp(argv[0], "echo") == 0)
+		status = builtin_echo(argv);
+	else if (strcmp(argv[0], "pwd") == 0)
+		status = builtin_pwd(argv);
     return (status);
 }
 

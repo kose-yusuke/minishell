@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/22 15:27:46 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 17:28:33 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 
 // 返り値 : 正常が0, エラーは1
-int	builtin_unset(char **argv)
+int	builtin_unset(char **argv, t_mgr *mgr)
 {
     int i;
     int status;
@@ -23,10 +23,10 @@ int	builtin_unset(char **argv)
     i = 1;
     while(argv[i])
     {
-        if (delete(t_hash_table *table, argv[i]) < 0)
+        if (delete(mgr->env_table, argv[i]) < 0)
         {
             // エラーの場合
-            builtin_error("unset", argv[i], "not a valid identifier");
+            perror("unset");
             status = 1;
         }
         else

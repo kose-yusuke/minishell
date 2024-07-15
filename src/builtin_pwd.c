@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:44:10 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/17 17:52:17 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 17:26:45 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	builtin_pwd(char **argv)
     
     if (getcwd(cwd_path, PATH_MAX) == NULL)
     {
-        builtin_error("pwd", NULL, "getcwd");
+        perror("pwd");
         return (1);
     }
     write(1, cwd_path, ft_strlen(cwd_path));
