@@ -22,7 +22,6 @@ char	*search_path(const char *word)
 	char	*tmp_path;
 
 	value = getenv("PATH");
-	printf(value);
 	while (*value)
 	{
 		// /bin:/usr/bin
