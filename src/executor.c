@@ -14,6 +14,42 @@ static pid_t	fork_pid(void)
 	return (pid);
 }
 
+char	*search_path(const char *word)
+{
+	char	path[PATH_MAX];
+	char	*value;
+	char	*end;
+	char	*tmp_path;
+
+	value = getenv("PATH");
+	printf(value);
+	while (*value)
+	{
+		// /bin:/usr/bin
+		//     ^
+		//     end
+		ft_bzero(path, PATH_MAX);
+		end = ft_strchr(value, ':');
+		if (end)
+			ft_strlcpy(path, value, end - value + 1);
+		else
+			ft_strlcpy(path, value, PATH_MAX);
+		ft_strlcat(path, "/", PATH_MAX);
+		ft_strlcat(path, word, PATH_MAX);
+		if (access(path, X_OK) == 0)
+		{
+			tmp_path = ft_strdup(path);
+			if (tmp_path == NULL)
+				perror("strdup");
+			return (tmp_path);
+		}
+		if (end == NULL)
+			return (NULL);
+		value = end + 1;
+	}
+	return (NULL);
+}
+
 static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 {
 	// 不要なRead endを閉じる
@@ -103,6 +139,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	char		*path;
 	extern char **environ;
 	pid_t		pid;
+	int i;
 
 	if (cmd->type != EXEC)
 	{
@@ -117,15 +154,22 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		return ;
 	}
 	// ビルトインコマンドのチェックと実行
-    if (is_builtin(ecmd))
+    if (is_builtin(ecmd)) {
         exec_builtin(ecmd, mgr);
-	// path = search_path(ecmd->word_list->token); //未実装
+        return;
+    } else {
+        path = search_path(ecmd->word_list->token->word);
+        if (!path) {
+            printf("Command not found: %s\n", ecmd->word_list->token->word);
+            return;
+        }
+    }
 	// TODO: ここで word_list を argv に変換する。仮にNULL
-	argv = NULL; // convert_word_list_to_argv(ecmd->word_list);
+	argv = convert_list_to_array(ecmd);
+	// print_argv(argv); 
 	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
 	// // そのため、自力でfdをクローズする必要がある
 	// assert_error("Error: execve failed\n", "exec_cmd failed\n");
-	
 	pid = fork();
 	if (pid < 0)
 	{
@@ -149,6 +193,15 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 			perror("waitpid");
 		}
 	}
+	free(path);
+    // free argv
+	i = 0;
+    while(argv && argv[i])
+	{
+		free(argv[i]);
+		i++;
+	}
+    free(argv);
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)

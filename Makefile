@@ -12,7 +12,7 @@ src/builtin.c src/ft_split.c src/env.c \
 src/ft_hash.c src/redirect.c src/ast.c \
 src/builtin_exit.c src/builtin_cd.c src/builtin_env.c \
 src/builtin_echo.c src/builtin_export.c src/builtin_pwd.c \
-src/builtin_unset.c 
+src/builtin_unset.c src/utils.c
 OBJS     = $(SRCS:%.c=%.o)
 
 all: $(NAME)

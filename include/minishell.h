@@ -40,6 +40,7 @@ typedef struct s_mgr
 # include "lexer.h"
 # include "parser.h"
 # include "redirect.h"
+# include "utils.h"
 
 // TODO: おそらくdebug用の関数
 void				assert_error(const char *msg, char *location);

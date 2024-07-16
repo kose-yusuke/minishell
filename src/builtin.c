@@ -6,19 +6,26 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 21:25:57 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/16 11:55:55 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 
-void print_argv(char **argv)
-{
+void print_argv(char **argv) {
     int i = 0;
-    while (argv[i])
-    {
-        printf("argv[%d]: %s\n", i, argv[i]);
+    if (argv == NULL) {
+        printf("argv is NULL\n");
+        return;
+    }
+    printf("argv:\n");
+    while (argv[i]) {
+        if (argv[i] == NULL) {
+            printf("argv[%d] is NULL\n", i);
+        } else {
+            printf("argv[%d]: %s\n", i, argv[i]);
+        }
         i++;
     }
 }
