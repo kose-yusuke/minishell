@@ -54,21 +54,24 @@ static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 	// 不要なRead endを閉じる
 	if (close(pfd[0]) == -1)
 	{
-		assert_error("Error: close failed\n", "exec_leftcmd failed\n");
+		perror("close");
+		exit(EXIT_FAILURE);
 	}
 	if (pfd[1] != STDOUT_FILENO)
 	{
 		if (dup2(pfd[1], STDOUT_FILENO) == -1)
 		{
-			assert_error("Error: dup2 failed\n", "exec_leftcmd failed\n");
+			perror("dup2");
+			exit(EXIT_FAILURE);
 		}
 		if (close(pfd[1]) == -1)
 		{
-			assert_error("Error: close failed\n", "exec_leftcmd failed\n");
+			perror("close");
+			exit(EXIT_FAILURE);
 		}
 	}
 	run_cmd(pcmd->left, mgr);
-	assert_error("Error: run_cmd failed\n", "exec_leftcmd failed\n");
+	exit(EXIT_SUCCESS);
 }
 
 static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
@@ -76,21 +79,24 @@ static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 	// 不要なWrite endを閉じる
 	if (close(pfd[1]) == -1)
 	{
-		assert_error("Error: close failed\n", "exec_rightcmd failed\n");
+		perror("close");
+		exit(EXIT_FAILURE);
 	}
 	if (pfd[0] != STDIN_FILENO)
 	{
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
 		{
-			assert_error("Error: dup2 failed\n", "exec_rightcmd failed\n");
+			perror("dup2");
+			exit(EXIT_FAILURE);
 		}
 		if (close(pfd[0]) == -1)
 		{
-			assert_error("Error: close failed\n", "exec_rightcmd failed\n");
+			perror("close");
+			exit(EXIT_FAILURE);
 		}
 	}
 	run_cmd(pcmd->right, mgr);
-	assert_error("Error: run_cmd failed\n", "exec_rightcmd failed\n");
+	exit(EXIT_SUCCESS);
 }
 
 static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
@@ -109,6 +115,11 @@ static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: pipe failed\n", "exec_pipe failed\n");
 	}
+	if (pipe(pfd) == -1)
+	{
+		perror("pipe");
+		exit(EXIT_FAILURE);
+	}
 	left_pid = fork_pid();
 	if (left_pid == 0)
 	{
@@ -121,14 +132,15 @@ static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	}
 	if (close(pfd[0]) == -1 || close(pfd[1]) == -1)
 	{
-		assert_error("Error: close failed\n", "exec_pipe failed\n");
+		perror("close");
+		exit(EXIT_FAILURE);
 	}
 	// wait でわかる子プロセスの終了状態の管理ができていない
 	if (waitpid(left_pid, NULL, 0) == -1 || waitpid(right_pid, NULL, 0) == -1)
 	{
-		assert_error("Error: waitpid failed\n", "exec_pipe failed\n");
+		perror("waitpid");
+		exit(EXIT_FAILURE);
 	}
-	exit(EXIT_SUCCESS);
 }
 
 void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
@@ -221,9 +233,6 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		exec_redir(cmd, mgr);
-		// if is_builtin
-		// 呼ぶ built-in
-		// else
 		exec_cmd(cmd, mgr); // ここか、この中でbuilt-inの呼び出し
 		// reset_fd(cmd); <- リソース管理
 		// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）
