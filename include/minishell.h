@@ -40,6 +40,7 @@ typedef struct s_mgr
 # include "lexer.h"
 # include "parser.h"
 # include "redirect.h"
+# include "utils.h"
 
 // TODO: おそらくdebug用の関数
 void				assert_error(const char *msg, char *location);
@@ -48,6 +49,11 @@ void				todo(const char *msg);
 void				error_exit(const char *msg, int exit_status);
 void				lexer_error(const char *location, char **rest, char *line);
 void				report_error(char *cmd, char *file, char *info);
+
+// debug
+void print_cmd(t_cmd *cmd);
+void print_redir_list(t_redir *redir_list);
+void	print_tokens(t_token *token);
 
 /* free.c */
 void				free_mgr_resources(t_mgr *mgr);

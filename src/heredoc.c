@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/13 19:24:38 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 16:00:21 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	ft_heredoc(const char *eof)
 		assert_error("pipe", "pipe");
 	while (1)
 	{
-		line = readline("> ");
+		line = readline("heredoc> ");
 		if (line == NULL)
 			break ;
 		if (strcmp(line, eof) == 0)

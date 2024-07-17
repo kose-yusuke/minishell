@@ -26,5 +26,8 @@ typedef struct s_hash_table
 t_hash_table			*create_hash_table(void);
 void	free_hash_table(t_hash_table *table);
 t_hash_table	*create_hash_table(void);
+char	*insert(t_hash_table *table, const char *key, const char *value);
+char	*search(t_hash_table *table, const char *key);
+int delete(t_hash_table *table, const char *key);
 
 #endif /* FT_HASH_H */

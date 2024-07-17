@@ -10,6 +10,6 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr);
 static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr);
 static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr);
 static void     exec_pipe(t_cmd *cmd, t_mgr *mgr);
-static void     exec_cmd(t_cmd *cmd, t_mgr *mgr);
+void     exec_cmd(t_cmd *cmd, t_mgr *mgr);
 
 #endif

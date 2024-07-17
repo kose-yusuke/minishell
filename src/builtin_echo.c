@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:28:09 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/17 17:35:53 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 18:36:36 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,18 @@ int	builtin_echo(char **argv)
 	bool	echo_newline;
 	size_t	i;
 
-	i = 1;
 	echo_newline = true;
-    //オプション -n がある場合、最後に改行しない.
+	// -nオプションのみ実装. このオプションがあるときは改行しない.
 	if (argv[1] && strncmp(argv[1], "-n", 2) == 0)
 	{
 		i++;
 		echo_newline = false;
 	}
 	is_first_arg = true;
+	if (echo_newline)
+		i = 1;
+	else
+		i = 2;
 	while (argv[i])
 	{
 		if (!is_first_arg)

@@ -6,18 +6,28 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/22 15:50:54 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/15 21:39:14 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void print_all_env()
+char	*ft_strchr(const char *s, int c)
 {
-    // 全ての環境変数を出力する.
+	while (*s != '\0')
+	{
+		while (*s == (char)c)
+		{
+			return ((char *)s);
+		}
+		s++;
+	}
+	if (c == '\0')
+		return ((char *)s);
+	return (NULL);
 }
 
-int set_key_value(char *string, char **key, char **value)
+int set_key_value(char *string, char **key, char **value, t_mgr *mgr)
 {
     char *key_end;
 
@@ -34,35 +44,40 @@ int set_key_value(char *string, char **key, char **value)
         *value = ft_strdup(key_end + 1);
     }
     if (*key != NULL && *value != NULL)
-        insert(t_hash_table *table, *key, *value);
+    {
+        printf("Setting key: %s, value: %s\n", *key, *value); // デバッグ出力
+        insert(mgr->env_table, *key, *value); // 仮のinsert関数
+    }
     else
         return (-1);
     return (1);
 }
 
 // 返り値 : 正常が0, エラーは1
-int	builtin_export(char **argv)
+int	builtin_export(char **argv, t_mgr *mgr)
 {
     int i;
     int status;
-    char **key;
-    char **value;
+    char *key;
+    char *value;
     
     if (argv[1] == NULL)
     {
-        print_all_env();
+        builtin_env(argv,mgr,0);
         return (0);
     }
     i = 1;
     status = 0;
     while(argv[i])
     {
-        if((set_key_value(argv[i]), &key, &value) < 0)
+        if(set_key_value(argv[i], &key, &value, mgr) < 0)
         {
             // エラーの場合
-            builtin_error("export", argv[i], "not a valid identifier");
+            perror("export");
             status = 1;
         }
+        free(key);
+        free(value);
         i++; //代入される変数の分だけ繰り返す
     }
     return (status);

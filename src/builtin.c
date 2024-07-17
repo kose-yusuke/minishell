@@ -6,11 +6,29 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/13 17:55:08 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/16 11:55:55 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+
+void print_argv(char **argv) {
+    int i = 0;
+    if (argv == NULL) {
+        printf("argv is NULL\n");
+        return;
+    }
+    printf("argv:\n");
+    while (argv[i]) {
+        if (argv[i] == NULL) {
+            printf("argv[%d] is NULL\n", i);
+        } else {
+            printf("argv[%d]: %s\n", i, argv[i]);
+        }
+        i++;
+    }
+}
 
 size_t	ft_strlen(const char *str)
 {
@@ -41,6 +59,8 @@ char	*ft_strdup(char *src)
 	char	*p;
 	long	len;
 
+	if (src == NULL)
+		return (NULL);
 	len = ft_strlen(src);
 	p = (char *)malloc(sizeof(char) * (len + 1));
 	if (!p)
@@ -49,6 +69,38 @@ char	*ft_strdup(char *src)
 	return (p);
 }
 
+char *ft_strncpy(char *dest, const char *src, size_t n)
+{
+    size_t i;
+
+    i = 0;
+    while (i < n && src[i] != '\0')
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n)
+    {
+        dest[i] = '\0';
+        i++;
+    }
+    return dest;
+}
+
+
+char *ft_strndup(char *src, long len)
+{
+    char *p;
+
+    if (src == NULL)
+        return (NULL);
+    p = (char *)malloc(sizeof(char) * (len + 1));
+    if (!p)
+        return (NULL);
+    ft_strncpy(p, src, len);
+    p[len] = '\0'; // 文字列終端を追加
+    return (p);
+}
 
 char	**convert_list_to_array(t_execcmd *ecmd)
 {
@@ -68,39 +120,43 @@ char	**convert_list_to_array(t_execcmd *ecmd)
 		error_exit("usage: ./minishell", EXIT_FAILURE);
 	tmp_token = ecmd->word_list->token;
 	i = 0;
-	while (tmp_token)
+	while (tmp_token->type != TK_EOF)
 	{
-        argv[i] = ft_strdup(tmp_token->word);
-		if (!argv[i])
-			error_exit("usage: ./minishell", EXIT_FAILURE);
+        if (tmp_token->type == TK_WORD || tmp_token->type == TK_DQUOTE || tmp_token->type == TK_SQUOTE)
+		{
+			argv[i] = ft_strdup(tmp_token->word);
+			i++;
+		}
 		tmp_token = tmp_token->next;
-		i++;
+		// if (!argv[i])
+			// error_exit("usage: ./minishell", EXIT_FAILURE);
+			// break;
 	}
 	argv[i] = NULL;
 	return (argv);
 }
 
-int		exec_builtin(t_execcmd *ecmd)
+int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
 {
     int status;
     char	**argv;
 
     argv = convert_list_to_array(ecmd);
+	// print_argv(argv);
     if (strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);
-	// else if (strcmp(argv[0], "export") == 0)
-	// 	status = builtin_export(argv);
-	// else if (strcmp(argv[0], "unset") == 0)
-	// 	status = builtin_unset(argv);
-	// else if (strcmp(argv[0], "env") == 0)
-	// 	status = builtin_env(argv);
-	// else if (strcmp(argv[0], "cd") == 0)
-	// 	status = builtin_cd(argv);
-	// else if (strcmp(argv[0], "echo") == 0)
-	// 	status = builtin_echo(argv);
-	// else if (strcmp(argv[0], "pwd") == 0)
-	// 	status = builtin_pwd(argv);
-    
+	else if (strcmp(argv[0], "export") == 0)
+		status = builtin_export(argv,mgr);
+	else if (strcmp(argv[0], "unset") == 0)
+		status = builtin_unset(argv,mgr);
+	else if (strcmp(argv[0], "env") == 0)
+		status = builtin_env(argv,mgr,1);
+	else if (strcmp(argv[0], "cd") == 0)
+		status = builtin_cd(argv,mgr);
+	else if (strcmp(argv[0], "echo") == 0)
+		status = builtin_echo(argv);
+	else if (strcmp(argv[0], "pwd") == 0)
+		status = builtin_pwd(argv);
     return (status);
 }
 
