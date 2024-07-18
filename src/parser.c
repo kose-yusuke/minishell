@@ -1,7 +1,7 @@
 /* parser.c - パーサー関連の関数 */
 #include "parser.h"
 
-t_cmd	*init_execcmd(void)
+static t_cmd	*init_execcmd(void)
 {
 	struct s_execcmd	*cmd;
 
@@ -15,7 +15,7 @@ t_cmd	*init_execcmd(void)
 	return ((t_cmd *)cmd);
 }
 
-t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
+static t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
 {
 	struct s_pipecmd	*cmd;
 
@@ -34,7 +34,7 @@ t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
 	return ((t_cmd *)cmd);
 }
 
-t_redir	*init_redir(t_token_type type, int fd, t_redir *next)
+static t_redir	*init_redir(t_token_type type, int fd, t_redir *next)
 {
 	struct s_redir	*new_redir;
 
@@ -52,7 +52,7 @@ t_redir	*init_redir(t_token_type type, int fd, t_redir *next)
 	return (new_redir);
 }
 
-void free_word_list(t_word *word_list)
+static void free_word_list(t_word *word_list)
 {
     t_word *current;
     t_word *next;
@@ -70,7 +70,7 @@ void free_word_list(t_word *word_list)
     }
 }
 
-void	append_word(t_word **word_list, t_token *token)
+static void	append_word(t_word **word_list, t_token *token)
 {
 	t_word	*new_word;
 	t_word	*current;
@@ -79,7 +79,7 @@ void	append_word(t_word **word_list, t_token *token)
 	if (!new_word)
 	{
 		report_error("append_word", NULL, "memory allocation failed");
-		free_word_list(*word_list);
+		free_word_list(*word_list); // ?
 		return ;
 	}
 	new_word->token = token;
@@ -97,7 +97,7 @@ void	append_word(t_word **word_list, t_token *token)
 	current->next = new_word;
 }
 
-void	process_redir_words(t_word **word_list, t_token **token)
+static void	process_redir_words(t_word **word_list, t_token **token)
 {
 	while (is_word_or_quoted_token(*token))
 	{
@@ -106,7 +106,7 @@ void	process_redir_words(t_word **word_list, t_token **token)
 	}
 }
 
-int	parse_io_number(t_token **token)
+static int	parse_io_number(t_token **token)
 {
 	int		fd;
 	char	*endptr;
@@ -127,7 +127,7 @@ int	parse_io_number(t_token **token)
 	return (fd);
 }
 
-void	prepend_redir(t_redir **redir_list, t_token **token)
+static void	prepend_redir(t_redir **redir_list, t_token **token)
 {
 	t_redir	*new_redir;
 	int		fd;
@@ -151,7 +151,7 @@ void	prepend_redir(t_redir **redir_list, t_token **token)
 	}
 }
 
-t_cmd	*parse_exec(t_token **token)
+static t_cmd	*parse_exec(t_token **token)
 {
 	t_execcmd	*exec_cmd;
 
