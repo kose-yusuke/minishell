@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/16 11:55:55 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/20 17:59:45 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ char	**convert_list_to_array(t_execcmd *ecmd)
 		error_exit("usage: ./minishell", EXIT_FAILURE);
 	tmp_token = ecmd->word_list->token;
 	i = 0;
-	while (tmp_token->type != TK_EOF)
+	while (tmp_token->type != TK_EOF && tmp_token->type != TK_PIPE)
 	{
         if (tmp_token->type == TK_WORD || tmp_token->type == TK_DQUOTE || tmp_token->type == TK_SQUOTE)
 		{
@@ -142,6 +142,7 @@ int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
     char	**argv;
 
     argv = convert_list_to_array(ecmd);
+	// printf("%s",ecmd->word_list->token->word);
 	// print_argv(argv);
     if (strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);

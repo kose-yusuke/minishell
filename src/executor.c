@@ -113,10 +113,6 @@ static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	pcmd = (t_pipecmd *)cmd;
 	if (pipe(pfd) == -1)
 	{
-		assert_error("Error: pipe failed\n", "exec_pipe failed\n");
-	}
-	if (pipe(pfd) == -1)
-	{
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
@@ -164,6 +160,8 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// exit(0);
 		return ;
 	}
+	argv = convert_list_to_array(ecmd);
+	print_argv(argv);
 	// ビルトインコマンドのチェックと実行
     if (is_builtin(ecmd)) {
         exec_builtin(ecmd, mgr);
@@ -175,9 +173,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
             return;
         }
     }
-	// TODO: ここで word_list を argv に変換する。仮にNULL
-	argv = convert_list_to_array(ecmd);
-	// print_argv(argv); 
+	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり. 
 	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
 	// // そのため、自力でfdをクローズする必要がある
 	// assert_error("Error: execve failed\n", "exec_cmd failed\n");
