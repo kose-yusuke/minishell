@@ -1,41 +1,39 @@
-# IDE and editor files
+# IDE and editor settings
 .idea/
 .vscode/
 
 # Logs and temporary files
 *.log
 *.tmp
-tmp.c
+tmp.*
 
-# Sensitive information
+# Sensitive configuration files
 config.ini
 secrets.txt
 
-# Compiled code
+# Compiled object files and executables
 *.o
 *.d
 *.class
 a.out
+minishell
+mock
+test
 
 # Generated documentation
 docs/
 
-# User-specific files
+# System-specific files
 .DS_Store
 ._.DS_Store
 
-# Executables and project-specific ignores
-minishell
-mock
-test
-mock.c
-mock.h
-mock2.c
+# Specific source files
 sh.c
 
-# Miscellaneous
-markdown
-temporary
-xv6-public
-sandbox
-xbox
+# Miscellaneous and test files
+markdown/
+temporary/
+xv6-public/
+sandbox/
+xbox/
+test*
