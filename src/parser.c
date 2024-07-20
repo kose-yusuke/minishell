@@ -46,6 +46,7 @@ static t_redir	*init_redir(t_token_type type, int fd)
 	}
 	new_redir->redir_type = type;
 	new_redir->fd = fd;
+	new_redir->backup_fd = -1;
 	new_redir->word_list = NULL;
 	new_redir->next = NULL;
 	return (new_redir);

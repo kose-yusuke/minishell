@@ -6,6 +6,7 @@
 # include "parser.h"
 # include "token.h"
 # include "expander.h"
+# include <stdio.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 

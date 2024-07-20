@@ -266,3 +266,16 @@ http://www.cse.yorku.ca/~oz/hash.html
 word に対するパラメータ展開・コマンド置換・算術式展開・ パス名展開は全く行われません。 word が一部でもクォートされている場合は、 delimiter は word のクォートをほどいた結果 (クォート文字を削除した結果) となり、 ヒアドキュメントに含まれる行では展開が行われなくなります。 word がクォートされていなければ、 ヒアドキュメント中の全ての行に対して パラメータ展開・コマンド置換・算術式展開が行われます。 word がクォートされていない場合には、 \<newline> という文字列は無視され、 \, $, ` といった文字は \ を用いてクォートしなければなりません。
 
 リダイレクト演算子が <<- ならば、行頭にあるタブ文字は全て入力行および delimiter を含む行から取り除かれます。 これにより、シェルスクリプト中のヒアドキュメントを 自然な形でインデントさせることができます。
+
+/*
+TODO: "Bad file descriptor" のmsgをどこで出すか確認 <- あとで
+
+bash-3.2$ cat 1<tmp
+aaa
+cat: stdout: Bad file descriptor
+
+bash-3.2$ echo aaa 1<<EOF
+> a
+> EOF
+bash: echo: write error: Bad file descriptor
+ */
