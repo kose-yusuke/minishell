@@ -73,11 +73,12 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 	t_redir	*redir;
 	char	*filepath;
 	int fd;
+	// char *eof;
 
 	redir = ecmd->redir_list;
 	while (redir)
 	{
-		//これなんだっけ
+		//これなんだっけ→リダイレクト系の記号しか入らないはずだから,これなくても良さそうだけど, 何らかのエラー処理は必要そう
 		if ((redir->redir_type != TK_REDIR_IN && redir->redir_type != TK_HEREDOC)
 			|| redir->opened)
 		{
@@ -86,8 +87,17 @@ void	process_redir_in(t_execcmd *ecmd, t_mgr *mgr)
 		}
 		if (redir->redir_type == TK_HEREDOC)
     	{
-			print_redir_list(redir);
+			// print_redir_list(redir);
 			redir->fd = ft_heredoc(redir->word_list->token->word);
+			if (dup2(redir->fd, STDIN_FILENO) == -1)
+        	{
+            	perror("dup2");
+            	close(fd);
+            	return;
+        	}
+			close(redir->fd);
+			// fdからreadして出力する
+			// ft_heredoc_output(redir->fd);
 			return;
     	}
 		if (redir->word_list)

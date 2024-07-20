@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 16:00:21 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/20 23:06:29 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,15 @@
 #include <readline/readline.h>
 #include "minishell.h"
 
+
+//一時的なファイルを作って, そこに書き込んでcatで出力する.ファイルは後で消す. パイプは上限があるから, 膨大な量を入力されると詰むらしい.
 int	ft_heredoc(const char *eof)
 {
 	char	*line;
 	int		pfd[2];
 
 	if (pipe(pfd) < 0)
-		assert_error("pipe", "pipe");
+		perror("pipe");
 	while (1)
 	{
 		line = readline("heredoc> ");
@@ -41,6 +43,19 @@ int	ft_heredoc(const char *eof)
 	close(pfd[1]);
 	return (pfd[0]);
 }
+
+// void ft_heredoc_output(int fd)
+// {
+// 	char buffer[1024];
+// 	ssize_t bytes_read;
+
+// 	while ((bytes_read = read(fd, buffer, sizeof(buffer) - 1)) > 0)
+// 	{
+// 		buffer[bytes_read] = '\0';
+// 		write(STDOUT_FILENO, buffer, bytes_read);
+// 	}
+// 	close(fd);
+// }
 
 // char	*expand_heredoc_line(char *line)
 // {

@@ -7,6 +7,7 @@
 
 void	exec_redir(t_cmd *cmd, t_mgr *mgr);
 int	ft_heredoc(const char *eof);
+void ft_heredoc_output(int fd);
 
 
 typedef struct s_fd_mgr
