@@ -1,7 +1,7 @@
 /* parser.c - パーサー関連の関数 */
 #include "parser.h"
 
-t_cmd	*init_execcmd(void)
+static t_cmd	*init_execcmd(void)
 {
 	struct s_execcmd	*cmd;
 
@@ -15,7 +15,7 @@ t_cmd	*init_execcmd(void)
 	return ((t_cmd *)cmd);
 }
 
-t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
+static t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
 {
 	struct s_pipecmd	*cmd;
 
@@ -34,7 +34,7 @@ t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
 	return ((t_cmd *)cmd);
 }
 
-t_redir	*init_redir(t_token_type type, int fd, t_redir *next)
+static t_redir	*init_redir(t_token_type type, int fd)
 {
 	struct s_redir	*new_redir;
 
@@ -42,35 +42,35 @@ t_redir	*init_redir(t_token_type type, int fd, t_redir *next)
 	if (!new_redir)
 	{
 		report_error("init_redir", NULL, "memory allocation failed");
-		free_redir(next);
 		return (NULL);
 	}
 	new_redir->redir_type = type;
 	new_redir->fd = fd;
+	new_redir->backup_fd = -1;
 	new_redir->word_list = NULL;
-	new_redir->next = next;
+	new_redir->next = NULL;
 	return (new_redir);
 }
 
-void free_word_list(t_word *word_list)
+static void	free_word_list(t_word *word_list)
 {
-    t_word *current;
-    t_word *next;
+	t_word	*current;
+	t_word	*next;
 
-    current = word_list;
-    while (current)
-    {
-        next = current->next;
-        if (current->token)
-        {
-            free_tokens(current->token);
-        }
-        free(current);
-        current = next;
-    }
+	current = word_list;
+	while (current)
+	{
+		next = current->next;
+		if (current->token)
+		{
+			free_tokens(current->token);
+		}
+		free(current);
+		current = next;
+	}
 }
 
-void	append_word(t_word **word_list, t_token *token)
+static void	append_word(t_word **word_list, t_token *token)
 {
 	t_word	*new_word;
 	t_word	*current;
@@ -79,7 +79,7 @@ void	append_word(t_word **word_list, t_token *token)
 	if (!new_word)
 	{
 		report_error("append_word", NULL, "memory allocation failed");
-		free_word_list(*word_list);
+		free_word_list(*word_list); // ?
 		return ;
 	}
 	new_word->token = token;
@@ -97,8 +97,15 @@ void	append_word(t_word **word_list, t_token *token)
 	current->next = new_word;
 }
 
-void	process_redir_words(t_word **word_list, t_token **token)
+static void	process_redir_words(t_word **word_list, t_token **token)
 {
+	if (!is_word_or_quoted_token(*token))
+	{
+		// bash: syntax error near unexpected token 'newline' <- 本来のError message
+		report_error("parse_redir", NULL, "syntax error(1)");
+		// XXX: この構文エラーは、ここでparseをやめて処理を終了する（未対応）
+		return;
+	}
 	while (is_word_or_quoted_token(*token))
 	{
 		append_word(word_list, *token);
@@ -106,7 +113,7 @@ void	process_redir_words(t_word **word_list, t_token **token)
 	}
 }
 
-int	parse_io_number(t_token **token)
+static int	parse_io_number(t_token **token)
 {
 	int		fd;
 	char	*endptr;
@@ -115,7 +122,7 @@ int	parse_io_number(t_token **token)
 	if (peek(token, TK_IO_NUM))
 	{
 		errno = 0;
-		fd = strtol((*token)->word, &endptr, 10);
+		fd = (int)strtol((*token)->word, &endptr, 10); // あとで ft_strtol に変更
 		if (*endptr != '\0' || errno != 0)
 			fd = -1;
 		consume(token, TK_IO_NUM);
@@ -127,7 +134,24 @@ int	parse_io_number(t_token **token)
 	return (fd);
 }
 
-void	prepend_redir(t_redir **redir_list, t_token **token)
+static void	append_redir(t_redir **redir_list, t_redir *new_redir)
+{
+	t_redir	*current;
+
+	if (!*redir_list)
+	{
+		*redir_list = new_redir;
+		return ;
+	}
+	current = *redir_list;
+	while (current->next)
+	{
+		current = current->next;
+	}
+	current->next = new_redir;
+}
+
+static void	parse_redir(t_redir **redir_list, t_token **token)
 {
 	t_redir	*new_redir;
 	int		fd;
@@ -137,21 +161,17 @@ void	prepend_redir(t_redir **redir_list, t_token **token)
 		fd = parse_io_number(token);
 		if (!is_redir_token(*token))
 		{
-			report_error("prepend_redir", NULL, "syntax error(0)");
+			report_error("parse_redir", NULL, "syntax error(0)");
 		}
-		new_redir = init_redir((*token)->type, fd, *redir_list);
-		advance(token);
-		skip_blanks(token);
-		if (!is_word_or_quoted_token(*token))
-		{
-			report_error("prepend_redir", NULL, "syntax error(1)");
-		}
+		new_redir = init_redir((*token)->type, fd);
+		advance(token);     // redirect tokenをskipしている
+		skip_blanks(token); // redirect token直後の空白をskipしている
 		process_redir_words(&new_redir->word_list, token);
-		*redir_list = new_redir;
+		append_redir(redir_list, new_redir);
 	}
 }
 
-t_cmd	*parse_exec(t_token **token)
+static t_cmd	*parse_exec(t_token **token)
 {
 	t_execcmd	*exec_cmd;
 
@@ -161,7 +181,7 @@ t_cmd	*parse_exec(t_token **token)
 		report_error("parse_exec", NULL, "memory allocation failed(0)");
 		return (NULL);
 	}
-	prepend_redir(&exec_cmd->redir_list, token);
+	parse_redir(&exec_cmd->redir_list, token);
 	while (!peek(token, TK_PIPE) && !peek(token, TK_EOF))
 	{
 		if (!is_word_or_quoted_token(*token))
@@ -170,7 +190,7 @@ t_cmd	*parse_exec(t_token **token)
 		}
 		append_word(&exec_cmd->word_list, *token);
 		advance(token);
-		prepend_redir(&exec_cmd->redir_list, token);
+		parse_redir(&exec_cmd->redir_list, token);
 	}
 	return ((t_cmd *)exec_cmd);
 }
