@@ -88,18 +88,17 @@ char	**ft_split_multidelim(char *str, const char *delimiters)
 	return (splitted);
 }
 
-void free_2d_array(void **array)
+void	free_2d_array(void **array)
 {
-    size_t i;
+	size_t	i;
 
-    if (array == NULL)
-        return;
-
-    for (i = 0; array[i] != NULL; i++)
-    {
-        free(array[i]);
-    }
-    free(array);
+	if (array == NULL)
+		return ;
+	for (i = 0; array[i] != NULL; i++)
+	{
+		free(array[i]);
+	}
+	free(array);
 }
 
 void	word_splitting(t_word *word_list)
@@ -162,14 +161,12 @@ TMP_FUNC_NAME は関数名を一時的につけたもので、適切な関数名
 
 bool	should_merge(t_word *word)
 {
-	t_word	*next_word;
-
-	next_word = word->next;
-	if (!word || !next_word)
+	if (!word || !word->next)
 		return (false);
-	if (is_word_or_quoted_token(word->token)
-		&& is_word_or_quoted_token(next_word->token))
-		return (word->token->next == next_word->token);
+	if (!is_word_or_quoted_token(word->token)
+		|| !is_word_or_quoted_token(word->next->token))
+		return (false);
+	return (word->token->next == word->next->token);
 }
 
 void	merge_adjacent_words(t_word *word)
@@ -260,15 +257,14 @@ void	expand_pipe(t_pipecmd *pcmd, t_hash_table *env_table)
 	run_expansion(pcmd->right, env_table);
 }
 
-void	run_expansion(t_cmd *cmd, t_mgr *mgr)
+void	run_expansion(t_cmd *cmd, t_hash_table *env_table)
 {
-	if (!cmd || cmd->type == NONE || !mgr->env_table)
+	if (!cmd || cmd->type == NONE || !env_table)
 		return ;
 	else if (cmd->type == EXEC)
-		expand_exec((t_execcmd *)cmd, mgr->env_table);
+		expand_exec((t_execcmd *)cmd, env_table);
 	else if (cmd->type == PIPE)
-		expand_pipe((t_pipecmd *)cmd, mgr->env_table);
+		expand_pipe((t_pipecmd *)cmd, env_table);
 	else
 		exit(EXIT_FAILURE);
 }
-

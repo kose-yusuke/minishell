@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/05/22 15:05:01 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/23 01:04:22 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void handle_signal(int sig)
         rl_replace_line("", 0); // 入力行を空に置き換える
         rl_redisplay(); // 入力プロンプトを再表示
     }
-    // Ctrl + \\ 
+    // Ctrl + \\
     else if (sig == SIGQUIT)
     {
         printf("Quit (core dumped)\n");
