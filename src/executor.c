@@ -1,18 +1,9 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
 
+#include "executor.h"
 #include "minishell.h"
 
-static pid_t	fork_pid(void)
-{
-	pid_t	pid;
 
-	pid = fork();
-	if (pid == -1)
-	{
-		assert_error("Error: fork failed\n", "fork_pid failed\n");
-	}
-	return (pid);
-}
 
 char	*search_path(const char *word)
 {
@@ -49,104 +40,14 @@ char	*search_path(const char *word)
 	return (NULL);
 }
 
-static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
-{
-	// 不要なRead endを閉じる
-	if (close(pfd[0]) == -1)
-	{
-		perror("close");
-		exit(EXIT_FAILURE);
-	}
-	if (pfd[1] != STDOUT_FILENO)
-	{
-		if (dup2(pfd[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2");
-			exit(EXIT_FAILURE);
-		}
-		if (close(pfd[1]) == -1)
-		{
-			perror("close");
-			exit(EXIT_FAILURE);
-		}
-	}
-	run_cmd(pcmd->left, mgr);
-	exit(EXIT_SUCCESS);
-}
-
-static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
-{
-	// 不要なWrite endを閉じる
-	if (close(pfd[1]) == -1)
-	{
-		perror("close");
-		exit(EXIT_FAILURE);
-	}
-	if (pfd[0] != STDIN_FILENO)
-	{
-		if (dup2(pfd[0], STDIN_FILENO) == -1)
-		{
-			perror("dup2");
-			exit(EXIT_FAILURE);
-		}
-		if (close(pfd[0]) == -1)
-		{
-			perror("close");
-			exit(EXIT_FAILURE);
-		}
-	}
-	run_cmd(pcmd->right, mgr);
-	exit(EXIT_SUCCESS);
-}
-
-static void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
-{
-	t_pipecmd	*pcmd;
-	int			pfd[2];
-	pid_t		left_pid;
-	pid_t		right_pid;
-
-	if (cmd->type != PIPE)
-	{
-		assert_error("Error: unexpected cmd", "exec_pipe failed\n");
-	}
-	pcmd = (t_pipecmd *)cmd;
-	if (pipe(pfd) == -1)
-	{
-		perror("pipe");
-		exit(EXIT_FAILURE);
-	}
-	left_pid = fork_pid();
-	if (left_pid == 0)
-	{
-		exec_leftcmd(pcmd, pfd, mgr);
-	}
-	right_pid = fork_pid();
-	if (right_pid == 0)
-	{
-		exec_rightcmd(pcmd, pfd, mgr);
-	}
-	if (close(pfd[0]) == -1 || close(pfd[1]) == -1)
-	{
-		perror("close");
-		exit(EXIT_FAILURE);
-	}
-	// wait でわかる子プロセスの終了状態の管理ができていない
-	if (waitpid(left_pid, NULL, 0) == -1 || waitpid(right_pid, NULL, 0) == -1)
-	{
-		perror("waitpid");
-		exit(EXIT_FAILURE);
-	}
-}
-
 void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
 	char		*path;
-	extern char **environ;
+	extern char	**environ;
 	pid_t		pid;
-	int i;
+	int			i;
 
 	if (cmd->type != EXEC)
 	{
@@ -201,20 +102,21 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		}
 	}
 	free(path);
-    // free argv
+	// free argv
 	i = 0;
-    while(argv && argv[i])
+	while (argv && argv[i])
 	{
 		free(argv[i]);
 		i++;
 	}
-    free(argv);
+	free(argv);
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 {
-	int saved_stdin;
-	int saved_stdout;
+	int			saved_stdin;
+	int			saved_stdout;
+	t_execcmd	*ecmd;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
@@ -228,10 +130,11 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	}
 	else if (cmd->type == EXEC)
 	{
-		exec_redir(cmd, mgr);
-		exec_cmd(cmd, mgr); // ここか、この中でbuilt-inの呼び出し
-		// reset_fd(cmd); <- リソース管理
-		// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）
+		ecmd = (t_execcmd *)cmd;
+		exec_redir(ecmd->redir_list, mgr); // TODO: 呼び出し位置をあとで考える
+		exec_cmd(cmd, mgr);                // ここか、この中でbuilt-inの呼び出し
+											// reset_fd(cmd); <- リソース管理
+											// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）
 	}
 	else if (cmd->type == PIPE)
 	{
@@ -242,7 +145,8 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 		assert_error("Error: ", "run_cmd failed\n");
 	}
 	// 標準入力と標準出力を元に戻す
-	if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout, STDOUT_FILENO) == -1)
+	if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout,
+			STDOUT_FILENO) == -1)
 	{
 		perror("dup2");
 		exit(EXIT_FAILURE);

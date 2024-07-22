@@ -12,8 +12,8 @@ void ft_heredoc_output(int fd);
 
 typedef struct s_fd_mgr
 {
-	int fd;
+	int				fd;
 	struct s_fd_mgr	*next;
-}						t_fd_mgr;
+}					t_fd_mgr;
 
 #endif
