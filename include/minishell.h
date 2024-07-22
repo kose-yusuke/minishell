@@ -2,26 +2,24 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-// # include "libft.h"
-
+# include "ast.h"
+# include "env.h"
+# include "ft_hash.h"
+# include "token.h"
+# include <ctype.h>
 # include <errno.h>
 # include <fcntl.h>
-# include <stdbool.h>
+# include <limits.h>
 # include <stdio.h>
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <signal.h>
+# include <stdbool.h>
+# include <stddef.h>
 # include <stdlib.h>
 # include <string.h>
-#include <limits.h>
-# include <unistd.h>
-# include <signal.h>
 # include <sys/wait.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <ctype.h>
-#include <stddef.h>
-
-# include "env.h"
-# include "token.h"
-# include "ast.h"
+# include <unistd.h>
 
 typedef struct s_mgr
 {
@@ -33,10 +31,10 @@ typedef struct s_mgr
 }					t_mgr;
 
 # include "builtins.h"
-#include "executor.h"
-#include "expander.h"
+# include "executor.h"
+# include "expander.h"
 # include "ft_hash.h"
-#include "ft_readline.h"
+# include "ft_readline.h"
 # include "lexer.h"
 # include "parser.h"
 # include "redirect.h"
@@ -51,16 +49,19 @@ void				lexer_error(const char *location, char **rest, char *line);
 void				report_error(char *cmd, char *file, char *info);
 
 // debug
-void print_cmd(t_cmd *cmd);
-void print_redir_list(t_redir *redir_list);
-void	print_tokens(t_token *token);
+void				print_cmd(t_cmd *cmd);
+void				print_redir_list(t_redir *redir_list);
+void				print_tokens(t_token *token);
 
 /* free.c */
 void				free_mgr_resources(t_mgr *mgr);
 
 // calloc
-void	*ft_calloc(size_t count, size_t size);
+void				*ft_calloc(size_t count, size_t size);
 /* signal.c */
-void setup_signals(void);
+void				setup_signals(void);
 
+/* safe_*.c */
+int					safe_dup(int fildes);
+int					safe_dup2(int fildes, int fildes2);
 #endif
