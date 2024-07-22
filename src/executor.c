@@ -62,7 +62,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		return ;
 	}
 	argv = convert_list_to_array(ecmd);
-	print_argv(argv);
+	// print_argv(argv);
 	// ビルトインコマンドのチェックと実行
     if (is_builtin(ecmd)) {
         exec_builtin(ecmd, mgr);

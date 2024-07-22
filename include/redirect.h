@@ -5,8 +5,10 @@
 # include "minishell.h"
 # include "token.h"
 
-int					ft_heredoc(const char *eof);
-void				exec_redir(t_redir *redir_list, t_mgr *mgr);
+void	exec_redir(t_cmd *cmd, t_mgr *mgr);
+int	ft_heredoc(const char *eof);
+void ft_heredoc_output(int fd);
+
 
 typedef struct s_fd_mgr
 {
