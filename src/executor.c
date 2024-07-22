@@ -61,24 +61,20 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// exit(0);
 		return ;
 	}
-	// ビルトインコマンドのチェックと実行
-	if (is_builtin(ecmd))
-	{
-		exec_builtin(ecmd, mgr);
-		return ;
-	}
-	else
-	{
-		path = search_path(ecmd->word_list->token->word);
-		if (!path)
-		{
-			printf("Command not found: %s\n", ecmd->word_list->token->word);
-			return ;
-		}
-	}
-	// TODO: ここで word_list を argv に変換する。仮にNULL
 	argv = convert_list_to_array(ecmd);
-	// print_argv(argv);
+	print_argv(argv);
+	// ビルトインコマンドのチェックと実行
+    if (is_builtin(ecmd)) {
+        exec_builtin(ecmd, mgr);
+        return;
+    } else {
+        path = search_path(ecmd->word_list->token->word);
+        if (!path) {
+            printf("Command not found: %s\n", ecmd->word_list->token->word);
+            return;
+        }
+    }
+	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり. 
 	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
 	// // そのため、自力でfdをクローズする必要がある
 	// assert_error("Error: execve failed\n", "exec_cmd failed\n");

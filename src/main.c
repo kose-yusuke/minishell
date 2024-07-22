@@ -1,5 +1,12 @@
 /* main.c - メイン関数  */
 #include "minishell.h"
+#include <libc.h>
+
+// __attribute__((destructor))
+// static void destructor() {
+//     system("leaks -q minishell");
+// }
+
 
 static void	init_mgr(t_mgr *mgr)
 {

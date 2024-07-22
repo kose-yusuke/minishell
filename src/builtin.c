@@ -183,6 +183,7 @@ int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
     char	**argv;
 
     argv = convert_list_to_array(ecmd);
+	// printf("%s",ecmd->word_list->token->word);
 	// print_argv(argv);
     if (strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);
