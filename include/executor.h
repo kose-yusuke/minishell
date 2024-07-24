@@ -11,4 +11,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr);
 
 /* exec_pipe.c */
 void	exec_pipe(t_cmd *cmd, t_mgr *mgr);
+/* merge_words.c */
+void	merge_words(t_word *word_list);
+
 #endif
