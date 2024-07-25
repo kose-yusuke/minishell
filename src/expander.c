@@ -1,85 +1,8 @@
 /* expand.c - 展開処理 */
 #include "expander.h"
 #include "minishell.h"
-
-char	**ft_split_multidelim(char *str, const char *delimiters)
-{
-	char	**splitted;
-	size_t	i;
-
-	i = 0;
-	// ft_splitで複数の区切り文字を指定することができないため、区切り文字をスペースに変換する。
-	while (str[i])
-	{
-		if (strchr(delimiters, str[i]))
-		{
-			str[i] = ' ';
-		}
-		i++;
-	}
-	splitted = ft_split(str, ' ');
-	return (splitted);
-}
-
-void	free_2d_array(void **array)
-{
-	size_t	i;
-
-	if (array == NULL)
-		return ;
-	for (i = 0; array[i] != NULL; i++)
-	{
-		free(array[i]);
-	}
-	free(array);
-}
-
-// 改装中
-void	word_splitting(t_word *word_list)
-{
-	char	**splitted;
-	char	**q;
-	char	**eq;
-	size_t	i;
-	t_word	*next_word;
-	t_token	*next_token;
-
-	if (word_list->token->type != TK_WORD || !word_list->token->word
-		|| !word_list->token->word[0])
-		return ;
-	splitted = ft_split_multidelim(word_list->token->word, IFS);
-	if (!splitted)
-	{
-		assert_error("ft_split_multidelim failed", "word_splitting");
-	}
-	next_word = word_list->next;
-	next_token = word_list->token->next;
-	word_list->token->word = splitted[0];
-	i = 1;
-	while (splitted[i])
-	{
-		q = &splitted[i];
-		eq = &splitted[i] + strlen(splitted[i]);
-		word_list->next = calloc(1, sizeof(t_word));
-		if (!word_list->next)
-		{
-			free_2d_array((void **)splitted);
-			assert_error("calloc failed", "word_splitting");
-		}
-		word_list->next->token = new_token(TK_WORD, q, eq);
-		if (!word_list->next->token)
-		{
-			free_2d_array((void **)splitted);
-			assert_error("new_token failed", "word_splitting");
-		}
-		word_list->token->next = word_list->next->token;
-		word_list = word_list->next;
-		i++;
-	}
-	free_2d_array((void **)splitted);
-	word_list->next = next_word;
-	word_list->token->next = next_token;
-}
+//後で消す
+void	merge_words(t_word *word_list);
 
 char	*extract_env_key(char *env_head, char **env_tail)
 {
@@ -186,10 +109,11 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 	while (word_to_expand)
 	{
 		next_word = word_to_expand->next;
-		expand_word_token(word_to_expand, env_table);
-		word_splitting(word_to_expand);
+		expand_word_token(word_to_expand->token, env_table);
+		split_word_token(word_to_expand);
 		word_to_expand = next_word;
 	}
+	merge_words(word_list);
 }
 
 void	expand_redir_list(t_redir *redir_list, t_hash_table *env_table)
@@ -205,12 +129,9 @@ void	expand_redir_list(t_redir *redir_list, t_hash_table *env_table)
 					$ cat <<"EOF"      <- heredocは変数展開されない
 					$ cat <<$EOF       <- デリミタは変数展開されず、heredocは変数展開される
 					$ cat <<"$EOF"     <- デリミタは変数展開されず、heredocは変数展開されない
-
 				いずれの場合も、heredocの中身がword splittingされることはない
-
 				デリミタがquoteをまたいで、複数のtokenにまたがる場合は
 				heredoc実行の前にデリミタがmergeされていなければならない
-
 				ただしデリミタがquoteを含むかどうかは、heredocの変数展開に必要な情報なので
 				mergeされる際には、quoteが含まれるかどうかを保持しておく必要がある
 				TODO: あとで実装
@@ -248,6 +169,7 @@ void	run_expansion(t_cmd *cmd, t_hash_table *env_table)
 }
 /*
 note: exapansionの対象となるのは以下の構造体におけるword_listとredir_listである
+以下は構造体のメモ
 
 typedef struct s_token
 {
