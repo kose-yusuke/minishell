@@ -2,9 +2,9 @@
 #ifndef EXPANDER_H
 # define EXPANDER_H
 
-# include "minishell.h"
 # include "ast.h"
 # include "env.h"
+# include "minishell.h"
 # include <errno.h>
 
 # define IFS " \t\n" // TODO: move to header file
@@ -12,6 +12,6 @@
 void	run_expansion(t_cmd *cmd, t_hash_table *env_table);
 // Util
 char	**ft_split(char const *s, char c);
-
-
+/* exp_split_word.c */
+void	split_word_token(t_word *word);
 #endif

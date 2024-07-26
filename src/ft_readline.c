@@ -141,7 +141,8 @@ void	interpret(char *line, t_mgr *mgr)
 		return ;
 	}
 	// print_cmd(mgr->cmd); // デバッグ用の出力
-	// run_expansion(mgr->cmd, mgr);
+
+	run_expansion(mgr->cmd, mgr->env_table);
 	run_cmd(mgr->cmd, mgr);
 }
 
