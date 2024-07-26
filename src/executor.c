@@ -62,15 +62,23 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		return ;
 	}
 	argv = convert_list_to_array(ecmd);
+	if(!argv)
+		return ;
 	// print_argv(argv);
 	// ビルトインコマンドのチェックと実行
     if (is_builtin(ecmd)) {
         exec_builtin(ecmd, mgr);
+		// system("leaks -q minishell");
+		free_argv(argv);
         return;
-    } else {
+    } 
+	else 
+	{
         path = search_path(ecmd->word_list->token->word);
-        if (!path) {
+        if (!path) 
+		{
             printf("Command not found: %s\n", ecmd->word_list->token->word);
+			free_argv(argv);
             return;
         }
     }

@@ -143,7 +143,7 @@ t_token	*new_token(t_token_type type, char **q, char **eq)
 			return (NULL);
 		}
 		len = *eq - *q;
-		new_token->word = strndup(*q, len);
+		new_token->word = ft_strndup(*q, len);
 		if (!new_token->word)
 		{
 			free(new_token);

@@ -12,6 +12,8 @@ static t_cmd	*init_execcmd(void)
 		return (NULL);
 	}
 	cmd->type = EXEC;
+	cmd->word_list = NULL;
+	cmd->redir_list = NULL;
 	return ((t_cmd *)cmd);
 }
 
@@ -79,7 +81,7 @@ static void	append_word(t_word **word_list, t_token *token)
 	if (!new_word)
 	{
 		report_error("append_word", NULL, "memory allocation failed");
-		free_word_list(*word_list); // ?
+		free_word_list(*word_list);
 		return ;
 	}
 	new_word->token = token;
