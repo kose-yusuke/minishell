@@ -55,6 +55,7 @@ void				print_tokens(t_token *token);
 
 /* free.c */
 void				free_mgr_resources(t_mgr *mgr);
+void				free_argv(char **argv);
 
 // calloc
 void				*ft_calloc(size_t count, size_t size);

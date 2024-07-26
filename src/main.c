@@ -2,10 +2,10 @@
 #include "minishell.h"
 #include <libc.h>
 
-// __attribute__((destructor))
-// static void destructor() {
-//     system("leaks -q minishell");
-// }
+__attribute__((destructor))
+static void destructor() {
+    system("leaks -q minishell");
+}
 
 
 static void	init_mgr(t_mgr *mgr)

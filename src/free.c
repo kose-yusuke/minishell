@@ -3,7 +3,6 @@
 #include "minishell.h"
 #include "token.h"
 
-// koseki-san
 void	free_argv(char **argv)
 {
 	int	i;

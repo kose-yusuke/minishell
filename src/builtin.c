@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/23 00:07:29 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/07/26 11:23:27 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,9 +129,10 @@ char	**convert_list_to_array(t_execcmd *ecmd)
         argv[i] = ft_strdup(tmp_word->token->word);
 		if (!argv[i])
 		{
-			while (i > 0)
-				free(argv[--i]);
-			free(argv);
+			// while (i > 0)
+			// 	free(argv[--i]);
+			// free(argv);
+			free_argv(argv);
 			perror("strdup");
 		}
 		i++;
@@ -183,6 +184,8 @@ int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
     char	**argv;
 
     argv = convert_list_to_array(ecmd);
+	if (!argv)
+		return (0);
 	// printf("%s",ecmd->word_list->token->word);
 	// print_argv(argv);
     if (strcmp(argv[0], "exit") == 0)
@@ -199,6 +202,7 @@ int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr)
 		status = builtin_echo(argv);
 	else if (strcmp(argv[0], "pwd") == 0)
 		status = builtin_pwd(argv);
+	free_argv(argv);
     return (status);
 }
 
