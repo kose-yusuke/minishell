@@ -2,11 +2,26 @@
 #include "ast.h"
 #include "minishell.h"
 
+// static void free_token(t_token *token) 
+// {
+// 		if (token->word) 
+// 		{
+//             free(token->word); // wordを解放
+//             token->word = NULL; // ポインタをNULLに設定
+//         }
+//         free(token); // token構造体を解放
+// 		system("leaks -q minishell");
+// }
+
 /* free_word - リンクリスト形式のt_word構造体を解放する関数 */
 void	free_word(t_word *word)
 {
 	t_word	*next;
 
+	if (word && word->token)
+	{
+		free_tokens(word->token); // tokenを解放
+    }
 	while (word)
 	{
 		next = word->next;
@@ -32,11 +47,15 @@ void	free_redir(t_redir *redir)
 /* free_cmd - t_cmd構造体およびその派生構造体を解放する関数 */
 void	free_cmd(t_cmd *cmd)
 {
+	t_execcmd *ecmd;
+
+	ecmd = (t_execcmd *)cmd;
 	if (!cmd)
 		return ;
 	if (cmd->type == EXEC)
 	{
-		free_word(((t_execcmd *)cmd)->word_list);
+		free_word(ecmd->word_list);
+		ecmd->word_list = NULL;
 		free_redir(((t_execcmd *)cmd)->redir_list);
 	}
 	else if (cmd->type == PIPE)
@@ -44,6 +63,7 @@ void	free_cmd(t_cmd *cmd)
 		free_cmd(((t_pipecmd *)cmd)->left);
 		free_cmd(((t_pipecmd *)cmd)->right);
 	}
+	if (ecmd->eof_word)
+		free(ecmd->eof_word);
 	free(cmd);
-
 }
