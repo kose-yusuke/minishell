@@ -17,7 +17,7 @@ static unsigned long	hash_djb2(unsigned char *str)
 }
 
 // insert失敗時のenv_table自体のメモリ解放は、呼び出し側の責任
-char	*insert(t_hash_table *table, const char *key, const char *value)
+char	*insert(t_hash_table *table, char *key, char *value)
 {
 	unsigned int	index;
 	t_hash_node		*new_var;
@@ -28,8 +28,9 @@ char	*insert(t_hash_table *table, const char *key, const char *value)
 	{
 		return (NULL);
 	}
-	new_var->key = strdup(key);
-	new_var->value = strdup(value);
+	new_var->key = ft_strdup(key);
+	if (value)
+		new_var->value = ft_strdup(value);
 	if (!new_var->key || !new_var->value)
 	{
 		if (new_var->key)
