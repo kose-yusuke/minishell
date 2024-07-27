@@ -7,10 +7,6 @@ void	free_word(t_word *word)
 {
 	t_word	*next;
 
-	if (word && word->token)
-	{
-		free_tokens(word->token); // tokenを解放
-    }
 	while (word)
 	{
 		next = word->next;
