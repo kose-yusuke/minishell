@@ -115,7 +115,7 @@ void	reset_resources(t_mgr *mgr)
 {
 	if (mgr->status == 0 && mgr->syntax_error) // これなんだっけ？
 		mgr->status = 1;
-	// free_tokens(mgr->token); //cmdの方でtokenはfreeしているから, 二重フリーになってしまう.
+	free_tokens(mgr->token); 
 	free_cmd(mgr->cmd);
 	mgr->token = NULL;
 	mgr->cmd = NULL;
@@ -134,7 +134,7 @@ void	interpret(char *line, t_mgr *mgr)
 		return ;
 	}
 	// print_tokens(mgr->token); // debug
-	mgr->cmd = parser(&mgr->token);
+	mgr->cmd = parser(mgr->token);
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
 		report_error("parser error", 0, 0); // ?
@@ -168,7 +168,6 @@ void	ft_readline(t_mgr *mgr)
 			interpret(line, mgr);
 		}
 		free(line);
-		// system("leaks -q minishell");
 		reset_resources(mgr);
 		system("leaks -q minishell");
 	}

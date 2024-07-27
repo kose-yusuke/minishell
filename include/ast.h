@@ -49,5 +49,6 @@ typedef struct s_pipecmd
 void					free_word(t_word *word);
 void					free_redir(t_redir *redir);
 void					free_cmd(t_cmd *cmd);
+void					free_rignt_cmd(t_cmd *cmd);
 
 #endif

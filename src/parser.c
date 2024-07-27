@@ -210,12 +210,14 @@ static t_cmd	*parse_pipe(t_token **token)
 	return (cmd);
 }
 
-t_cmd	*parser(t_token **token)
+t_cmd	*parser(t_token *token)
 {
 	t_cmd	*cmd;
+	t_token *token_ps;
 
-	cmd = parse_pipe(token);
-	if (!peek(token, TK_EOF))
+	token_ps = token;
+	cmd = parse_pipe(&token_ps);
+	if (!peek(&token_ps, TK_EOF))
 	{
 		report_error("parser", NULL, "remaining tokens when EOF is expected");
 		free_cmd(cmd);

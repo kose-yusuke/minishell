@@ -6,7 +6,7 @@
 # include "minishell.h"
 # include <errno.h>
 
-t_cmd	*parser(t_token **token);
+t_cmd	*parser(t_token *token);
 
 /* parser_utils.c - パーサー関連のユーティリティ関数 */
 void	advance(t_token **token);
