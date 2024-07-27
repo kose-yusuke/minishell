@@ -2,17 +2,6 @@
 #include "ast.h"
 #include "minishell.h"
 
-// static void free_token(t_token *token) 
-// {
-// 		if (token->word) 
-// 		{
-//             free(token->word); // wordを解放
-//             token->word = NULL; // ポインタをNULLに設定
-//         }
-//         free(token); // token構造体を解放
-// 		system("leaks -q minishell");
-// }
-
 /* free_word - リンクリスト形式のt_word構造体を解放する関数 */
 void	free_word(t_word *word)
 {
@@ -93,9 +82,7 @@ void	free_cmd(t_cmd *cmd)
 		//左と右両方やると, 二重freeになる箇所あり. たぶんleftのtokenとかword_listで, rightの内容も含んでる部分だと思う. 個別対応必須.
 		free_cmd(((t_pipecmd *)cmd)->left);
 		// free_cmd(((t_pipecmd *)cmd)->right);
-		system("leaks -q minishell");
 		free_right_cmd(((t_pipecmd *)cmd)->right);
-		// system("leaks -q minishell");
 	}
 	if (ecmd->eof_word)
 		free(ecmd->eof_word);

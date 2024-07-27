@@ -168,7 +168,6 @@ void	ft_readline(t_mgr *mgr)
 			interpret(line, mgr);
 		}
 		free(line);
-		// system("leaks -q minishell");
 		reset_resources(mgr);
 		// system("leaks -q minishell");
 	}
