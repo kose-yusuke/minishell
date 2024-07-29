@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/15 21:39:14 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/28 00:19:10 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ char	*ft_strchr(const char *s, int c)
 {
 	while (*s != '\0')
 	{
-		while (*s == (char)c)
+		if (*s == (char)c)
 		{
 			return ((char *)s);
 		}
@@ -34,23 +34,25 @@ int set_key_value(char *string, char **key, char **value, t_mgr *mgr)
     key_end = ft_strchr(string, '=');
     if (key_end == NULL)
     {
-        *key = string;
+        *key = ft_strdup(string);
         *value = NULL;
-        return (-1);
     }
     else
     {
         *key = ft_strndup(string, key_end - string);
         *value = ft_strdup(key_end + 1);
     }
-    if (*key != NULL && *value != NULL)
+    if (*key != NULL)
     {
-        printf("Setting key: %s, value: %s\n", *key, *value); // デバッグ出力
-        insert(mgr->env_table, *key, *value); // 仮のinsert関数
+        insert(mgr->env_table, *key, *value);
+        free(*key);
+        if (*value)
+            free(*value);
+        return (1);
     }
-    else
-        return (-1);
-    return (1);
+    if (*key)
+        free(*key);
+    return (-1);
 }
 
 // 返り値 : 正常が0, エラーは1
@@ -76,8 +78,6 @@ int	builtin_export(char **argv, t_mgr *mgr)
             perror("export");
             status = 1;
         }
-        free(key);
-        free(value);
         i++; //代入される変数の分だけ繰り返す
     }
     return (status);

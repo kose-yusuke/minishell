@@ -48,7 +48,7 @@ void	print_tokens(t_token *token)
 
 	current = token;
 	i = 0;
-	while (current)
+	while (current && current->next)
 	{
 		printf("--------------------------------\n");
 		printf("Token [%zu]\n", i++);
@@ -63,7 +63,7 @@ void	print_tokens(t_token *token)
 void print_word_list(t_word *word_list)
 {
     t_word *current = word_list;
-    while (current)
+    while (current && current->next)
     {
         printf("Word: %s\n", current->token->word);
         current = current->next;
@@ -115,7 +115,7 @@ void	reset_resources(t_mgr *mgr)
 {
 	if (mgr->status == 0 && mgr->syntax_error) // これなんだっけ？
 		mgr->status = 1;
-	free_tokens(mgr->token);
+	free_tokens(mgr->token); 
 	free_cmd(mgr->cmd);
 	mgr->token = NULL;
 	mgr->cmd = NULL;
@@ -134,14 +134,13 @@ void	interpret(char *line, t_mgr *mgr)
 		return ;
 	}
 	// print_tokens(mgr->token); // debug
-	mgr->cmd = parser(&mgr->token);
+	mgr->cmd = parser(mgr->token);
 	if (!mgr->cmd || mgr->cmd->type == NONE)
 	{
 		report_error("parser error", 0, 0); // ?
 		return ;
 	}
 	// print_cmd(mgr->cmd); // デバッグ用の出力
-
 	run_expansion(mgr->cmd, mgr->env_table);
 	run_cmd(mgr->cmd, mgr);
 }
@@ -153,6 +152,7 @@ void	ft_readline(t_mgr *mgr)
 
 	rl_outstream = stderr;
 	mgr->status = 0; // ?
+	setup_signals();
 	while (1)
 	{
 		line = readline("minishell$ ");
@@ -169,5 +169,6 @@ void	ft_readline(t_mgr *mgr)
 		}
 		free(line);
 		reset_resources(mgr);
+		system("leaks -q minishell");
 	}
 }
