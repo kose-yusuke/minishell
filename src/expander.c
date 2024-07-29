@@ -4,7 +4,7 @@
 #include "minishell.h"
 
 //後で移動する（本当はexecにmerge_wordsを実装したいため）
-void		merge_words(t_word *word_list);
+void					merge_words(t_word *word_list);
 
 char	*extract_env_key(char *env_head, char **env_tail)
 {
@@ -24,7 +24,7 @@ char	*extract_env_key(char *env_head, char **env_tail)
 	return (env_key);
 }
 
-void	expand_env(t_token *word_token, char **cur_ptr, t_hash_table *env_table)
+void	expand_env(char **word, char **cur_ptr, t_hash_table *env_table)
 {
 	char	*dollar_ptr;
 	char	*env_key;
@@ -72,8 +72,8 @@ void	expand_env(t_token *word_token, char **cur_ptr, t_hash_table *env_table)
 	free(env_key);
 	*dollar_ptr = '\0';
 	// env_tailにはenv_keyが終了した位置（IFSまたは文字列の終端）が入っている
-	len = strlen(word_token->word) + strlen(value) + strlen(env_tail);
-	updated_len = strlen(word_token->word) + strlen(value);
+	len = strlen(*word) + strlen(value) + strlen(env_tail);
+	updated_len = strlen(*word) + strlen(value);
 	// TODO: ft_strlenに変更
 	new_word = calloc(len + 1, sizeof(char));
 	if (!new_word)
@@ -84,12 +84,12 @@ void	expand_env(t_token *word_token, char **cur_ptr, t_hash_table *env_table)
 		return ;
 	}
 	// TODO: この辺も、のちにft_strcpy, ft_strcatに変更が必要
-	strcpy(new_word, word_token->word);
+	strcpy(new_word, *word);
 	strcat(new_word, value);
 	strcat(new_word, env_tail);
-	free(word_token->word);
-	word_token->word = new_word;
-	*cur_ptr = new_word + updated_len;
+	free(*word);
+	*word = new_word;
+	*cur_ptr = *word + updated_len;
 }
 
 void	expand_word_token(t_token *word_token, t_hash_table *env_table)
@@ -101,7 +101,7 @@ void	expand_word_token(t_token *word_token, t_hash_table *env_table)
 	current_ptr = word_token->word;
 	while (current_ptr && *current_ptr)
 	{
-		expand_env(word_token, &current_ptr, env_table);
+		expand_env(&(word_token->word), &current_ptr, env_table);
 	}
 }
 
@@ -182,3 +182,82 @@ void	run_expansion(t_cmd *cmd, t_hash_table *env_table)
 		run_expansion(pcmd->right, env_table);
 	}
 }
+
+/*
+参考:
+各構造体の定義は以下の通り
+
+
+typedef enum e_token_type
+{
+	TK_UNDEF_TOKEN = -1, // 未定義のトークン
+	TK_PARSE_ERROR = -2, // 構文エラー
+	TK_EOF = 0,          // ファイルの終わり
+
+	// Word tokens
+	TK_WORD,   // 一般的な単語や文字列
+	TK_SQUOTE, // シングルクオートで囲まれた文字列
+	TK_DQUOTE, // ダブルクオートで囲まれた文字列
+	TK_IO_NUM, // IO番号
+
+	// Meta and operator tokens
+	TK_PIPE,      // パイプ '|'
+	TK_REDIR_IN,  // リダイレクト入力 '<'
+	TK_REDIR_OUT, // リダイレクト出力 '>'
+	TK_HEREDOC,   // ヒアドキュメント '<<'
+	TK_APPEND,    // リダイレクト追加 '>>'
+	TK_BLANK,     // 空白 ' ' または '\t'
+	TK_NL         // 改行 '\n'
+}						t_token_type;
+
+typedef struct s_token
+{
+	enum e_token_type	type;
+	char				*word;
+	struct s_token		*next;
+}						t_token;
+
+typedef struct s_word
+{
+	struct s_token		*token;
+	struct s_word		*next;
+}						t_word;
+
+typedef struct s_redir
+{
+	enum e_token_type	redir_type;
+	int					fd;
+	int backup_fd;            // リダイレクト前のfdを保持
+	struct s_word *word_list; // TODO: このexpand処理->統合を確認
+	struct s_redir		*next;
+}						t_redir;
+
+typedef enum e_cmd_type
+{
+	NONE,
+	EXEC,
+	PIPE
+}						t_cmd_type;
+
+typedef struct s_cmd
+{
+	enum e_cmd_type		type;
+}						t_cmd;
+
+typedef struct s_execcmd
+{
+	enum e_cmd_type		type;
+	struct s_word		*word_list;
+	struct s_redir		*redir_list;
+	char				*eof_word;
+}						t_execcmd;
+
+typedef struct s_pipecmd
+{
+	enum e_cmd_type		type;
+	struct s_cmd		*left;
+	struct s_cmd		*right;
+}						t_pipecmd;
+
+
+ */

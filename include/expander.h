@@ -8,7 +8,7 @@
 # include <errno.h>
 
 # define IFS " \t\n" // TODO: move to header file
-
+void	expand_env(char **word, char **cur_ptr, t_hash_table *env_table);
 void	run_expansion(t_cmd *cmd, t_hash_table *env_table);
 // Util
 char	**ft_split(char const *s, char c);

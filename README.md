@@ -283,20 +283,15 @@ bash: syntax error near unexpected token `|'
 
 
 
-
-			/*
-				ここでの展開処理はheredocのデリミタに対してのみ行う
-				heredocの中身に対する展開処理は、redirect処理の際に行う
-				NOTE: bashにおけるheredocの挙動について
-					$ cat <<EOF        <- heredocは変数展開される
-					$ cat <<'EOF'      <- heredocは変数展開されない
-					$ cat <<"EOF"      <- heredocは変数展開されない
-					$ cat <<$EOF       <- デリミタは変数展開されず、heredocは変数展開される
-					$ cat <<"$EOF"     <- デリミタは変数展開されず、heredocは変数展開されない
-				いずれの場合も、heredocの中身がword splittingされることはない
-				デリミタがquoteをまたいで、複数のtokenにまたがる場合は
-				heredoc実行の前にデリミタがmergeされていなければならない
-				ただしデリミタがquoteを含むかどうかは、heredocの変数展開に必要な情報なので
-				mergeされる際には、quoteが含まれるかどうかを保持しておく必要がある
-				TODO: あとで実装
-			*/
+heredocの中身に対する展開処理は、redirect処理の際に行う
+NOTE: bashにおけるheredocの挙動について
+    $ cat <<EOF        <- heredocは変数展開される
+    $ cat <<'EOF'      <- heredocは変数展開されない
+    $ cat <<"EOF"      <- heredocは変数展開されない
+    $ cat <<$EOF       <- デリミタは変数展開されず、heredocは変数展開される
+    $ cat <<"$EOF"     <- デリミタは変数展開されず、heredocは変数展開されない
+いずれの場合も、heredocの中身がword splittingされることはない
+デリミタがquoteをまたいで、複数のtokenにまたがる場合は
+heredoc実行の前にデリミタがmergeされていなければならない
+ただしデリミタがquoteを含むかどうかは、heredocの変数展開に必要な情報なので
+mergeされる際には、quoteが含まれるかどうかを保持しておく必要がある

@@ -67,8 +67,6 @@ static int	open_filepath(t_redir *redir)
 	return (fd);
 }
 
-
-
 void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 {
 	t_redir	*redir;
@@ -78,7 +76,7 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	while (redir)
 	{
 		if (redir->redir_type == TK_HEREDOC) // eofを引数に入れる
-			filefd = ft_heredoc(redir->word_list->token->word);
+			filefd = ft_heredoc(redir->word_list->token, mgr->env_table);
 		else
 			filefd = open_filepath(redir);
 		if (filefd == -1)
@@ -93,13 +91,12 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	}
 }
 
-
+//　この関数は使わないかも　仮置き
 // void	restore_redir(t_redir *redir)
 // {
 // 	if(!redir)
 // 		return ;
 // 	restore_redir(redir->next);
-
 // 	if(redir->backup_fd != -1)
 // 	{
 // 		safe_dup2(redir->backup_fd, redir->fd);
