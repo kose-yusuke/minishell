@@ -4,7 +4,7 @@
 #include "minishell.h"
 
 //後で移動する（本当はexecにmerge_wordsを実装したいため）
-void					merge_words(t_word *word_list);
+void		merge_words(t_word *word_list);
 
 char	*extract_env_key(char *env_head, char **env_tail)
 {
@@ -32,8 +32,9 @@ void	expand_env(t_token *word_token, char **cur_ptr, t_hash_table *env_table)
 	char	*value;
 	size_t	len;
 	char	*new_word;
+	size_t	updated_len;
 
-	dollar_ptr = strchr(*cur_ptr, '$');         // TODO: ft_strchrに変更
+	dollar_ptr = strchr(*cur_ptr, '$'); // TODO: ft_strchrに変更
 	if (!dollar_ptr || *(dollar_ptr + 1) == '\0')
 	{
 		*cur_ptr = NULL;
@@ -72,7 +73,7 @@ void	expand_env(t_token *word_token, char **cur_ptr, t_hash_table *env_table)
 	*dollar_ptr = '\0';
 	// env_tailにはenv_keyが終了した位置（IFSまたは文字列の終端）が入っている
 	len = strlen(word_token->word) + strlen(value) + strlen(env_tail);
-	size_t updated_len = strlen(word_token->word) + strlen(value);
+	updated_len = strlen(word_token->word) + strlen(value);
 	// TODO: ft_strlenに変更
 	new_word = calloc(len + 1, sizeof(char));
 	if (!new_word)
@@ -117,29 +118,41 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 		split_word_token(word_to_expand);
 		word_to_expand = next_word;
 	}
-	merge_words(word_list);
+	merge_words(word_list); // TODO: 本来はexecに移動する
+}
+
+static bool	is_quoted_heredoc(t_word *word)
+{
+	t_word	*current_word;
+
+	current_word = word;
+	while (current_word)
+	{
+		if (current_word->token->type == TK_SQUOTE)
+			return (true);
+		if (current_word->token->type == TK_DQUOTE)
+			return (true);
+		current_word = current_word->next;
+	}
+	return (false);
 }
 
 void	expand_redir_list(t_redir *redir_list, t_hash_table *env_table)
 {
+	bool	has_quote;
+
 	while (redir_list)
 	{
 		if (redir_list->redir_type == TK_HEREDOC)
 		{
-			/*
-				NOTE: bashにおけるheredocの挙動について
-					$ cat <<EOF        <- heredocは変数展開される
-					$ cat <<'EOF'      <- heredocは変数展開されない
-					$ cat <<"EOF"      <- heredocは変数展開されない
-					$ cat <<$EOF       <- デリミタは変数展開されず、heredocは変数展開される
-					$ cat <<"$EOF"     <- デリミタは変数展開されず、heredocは変数展開されない
-				いずれの場合も、heredocの中身がword splittingされることはない
-				デリミタがquoteをまたいで、複数のtokenにまたがる場合は
-				heredoc実行の前にデリミタがmergeされていなければならない
-				ただしデリミタがquoteを含むかどうかは、heredocの変数展開に必要な情報なので
-				mergeされる際には、quoteが含まれるかどうかを保持しておく必要がある
-				TODO: あとで実装
-			*/
+			// heredocのdelimiterは変数展開されず、meregeだけ。
+			// merege時にquoteを有するまたいでいるかどうかを保持しておく
+			has_quote = is_quoted_heredoc(redir_list->word_list);
+			merge_words(redir_list->word_list);
+			if (has_quote)
+			{
+				redir_list->word_list->token->type = TK_SQUOTE;
+			}
 		}
 		else
 		{

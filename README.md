@@ -267,7 +267,6 @@ word に対するパラメータ展開・コマンド置換・算術式展開・
 
 リダイレクト演算子が <<- ならば、行頭にあるタブ文字は全て入力行および delimiter を含む行から取り除かれます。 これにより、シェルスクリプト中のヒアドキュメントを 自然な形でインデントさせることができます。
 
-/*
 TODO: "Bad file descriptor" のmsgをどこで出すか確認 <- あとで
 
 bash-3.2$ cat 1<tmp
@@ -278,4 +277,26 @@ bash-3.2$ echo aaa 1<<EOF
 > a
 > EOF
 bash: echo: write error: Bad file descriptor
- */
+
+bash-3.2$ << | echo a
+bash: syntax error near unexpected token `|'
+
+
+
+
+			/*
+				ここでの展開処理はheredocのデリミタに対してのみ行う
+				heredocの中身に対する展開処理は、redirect処理の際に行う
+				NOTE: bashにおけるheredocの挙動について
+					$ cat <<EOF        <- heredocは変数展開される
+					$ cat <<'EOF'      <- heredocは変数展開されない
+					$ cat <<"EOF"      <- heredocは変数展開されない
+					$ cat <<$EOF       <- デリミタは変数展開されず、heredocは変数展開される
+					$ cat <<"$EOF"     <- デリミタは変数展開されず、heredocは変数展開されない
+				いずれの場合も、heredocの中身がword splittingされることはない
+				デリミタがquoteをまたいで、複数のtokenにまたがる場合は
+				heredoc実行の前にデリミタがmergeされていなければならない
+				ただしデリミタがquoteを含むかどうかは、heredocの変数展開に必要な情報なので
+				mergeされる際には、quoteが含まれるかどうかを保持しておく必要がある
+				TODO: あとで実装
+			*/

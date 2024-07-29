@@ -14,7 +14,7 @@ typedef struct s_redir
 {
 	enum e_token_type	redir_type;
 	int					fd;
-	int					backup_fd;
+	int backup_fd;            // リダイレクト前のfdを保持
 	struct s_word *word_list; // TODO: このexpand処理->統合を確認
 	struct s_redir		*next;
 }						t_redir;
@@ -36,7 +36,7 @@ typedef struct s_execcmd
 	enum e_cmd_type		type;
 	struct s_word		*word_list;
 	struct s_redir		*redir_list;
-	char *eof_word;
+	char				*eof_word;
 }						t_execcmd;
 
 typedef struct s_pipecmd
