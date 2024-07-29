@@ -62,11 +62,9 @@ void	expand_env(char **word, char **cur_ptr, t_hash_table *env_table)
 	if (value == NULL)
 	{
 		free(env_key);
-		// 環境変数が見つからない場合の処理
 		memmove(dollar_ptr, env_tail, strlen(env_tail) + 1);
 		// TODO: ft_memmoveに変更
 		*cur_ptr = dollar_ptr;
-		// 次の展開処理を続けるためにcur_ptrを更新
 		return ;
 	}
 	free(env_key);
