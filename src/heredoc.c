@@ -3,26 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/20 23:06:29 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/07/30 02:42:04 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <readline/readline.h>
+#include "expander.h"
 #include "minishell.h"
+#include <fcntl.h>
+#include <readline/readline.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-
-//一時的なファイルを作って, そこに書き込んでcatで出力する.ファイルは後で消す. パイプは上限があるから, 膨大な量を入力されると詰むらしい.
-int	ft_heredoc(const char *eof)
+void	expand_heredoc(char **line, t_hash_table *env_table)
 {
-	char	*line;
-	int		pfd[2];
+	char	*current_ptr;
+
+	if (line == NULL || *line == NULL)
+		return ;
+	current_ptr = *line;
+	while (current_ptr && *current_ptr)
+	{
+		expand_env(line, &current_ptr, env_table);
+	}
+}
+
+// TODO: 大きな入力に対応できるようにする -> 一時ファイル
+// 本家は、pipeと一時ファイルの両方を使っているらしい？（詳細は不明）
+//一時的なファイルを作って, そこに書き込んでcatで出力する.ファイルは後で消す. パイプは上限があるから, 膨大な量を入力されると詰むらしい.
+int	ft_heredoc(t_token *delimi_token, t_hash_table *env_table)
+{
+	char		*line;
+	int			pfd[2];
+	const char	*eof = delimi_token->word;
 
 	if (pipe(pfd) < 0)
 		perror("pipe");
@@ -36,6 +52,8 @@ int	ft_heredoc(const char *eof)
 			free(line);
 			break ;
 		}
+		if (delimi_token->type == TK_WORD)
+			expand_heredoc(&line, env_table);
 		write(pfd[1], line, strlen(line));
 		write(pfd[1], "\n", 1);
 		free(line);
