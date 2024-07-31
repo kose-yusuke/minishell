@@ -75,6 +75,7 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	redir = redir_list;
 	while (redir)
 	{
+		expand_word_list_for_exit_status(redir->word_list, mgr->status);
 		if (redir->redir_type == TK_HEREDOC) // eofを引数に入れる
 			filefd = ft_heredoc(redir->word_list->token, mgr->env_table);
 		else
