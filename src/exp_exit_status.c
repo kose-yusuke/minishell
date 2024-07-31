@@ -77,5 +77,4 @@ void	expand_word_list_for_exit_status(t_word *word_list, int exit_status)
 		expand_word_token_for_exit_status(word_to_expand->token, exit_status);
 		word_to_expand = word_to_expand->next;
 	}
-	merge_words(word_list); // TODO: 本来はexecに移動する
 }

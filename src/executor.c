@@ -59,6 +59,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		return ;
 	}
 	expand_word_list_for_exit_status(ecmd->word_list, mgr->status);
+	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
 	if (!argv)
 		return ;
