@@ -88,13 +88,14 @@ static void	expand_redir_for_exit_status(t_redir *redir, int exit_status)
 	bool	has_quote;
 
 	has_quote = false;
-	expand_word_list_for_exit_status(redir->word_list, exit_status);
 	if (redir->redir_type == TK_HEREDOC)
 	{
 		// heredocのdelimiterは変数展開されず、meregeだけ。
 		// merege時にquoteを有するまたいでいるかどうかを保持しておく
 		has_quote = is_quoted_heredoc(redir->word_list);
 	}
+	else
+		expand_word_list_for_exit_status(redir->word_list, exit_status);
 	merge_words(redir->word_list);
 	if (has_quote)
 	{

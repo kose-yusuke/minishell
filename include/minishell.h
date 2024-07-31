@@ -4,6 +4,7 @@
 
 # include "ast.h"
 # include "env.h"
+#include <stdio.h>  // これを追加
 # include "ft_hash.h"
 # include "token.h"
 # include <ctype.h>
