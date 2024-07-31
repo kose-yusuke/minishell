@@ -1,9 +1,6 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
-
 #include "executor.h"
 #include "minishell.h"
-
-
 
 char	*search_path(const char *word)
 {
@@ -61,27 +58,29 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// exit(0);
 		return ;
 	}
+	expand_word_list_for_exit_status(ecmd->word_list, mgr->status);
 	argv = convert_list_to_array(ecmd);
-	if(!argv)
+	if (!argv)
 		return ;
 	// print_argv(argv);
 	// ビルトインコマンドのチェックと実行
-    if (is_builtin(ecmd)) {
-        exec_builtin(ecmd, mgr);
+	if (is_builtin(ecmd))
+	{
+		exec_builtin(ecmd, mgr);
 		// system("leaks -q minishell");
 		free_argv(argv);
-        return;
-    }
+		return ;
+	}
 	else
 	{
-        path = search_path(ecmd->word_list->token->word);
-        if (!path)
+		path = search_path(ecmd->word_list->token->word);
+		if (!path)
 		{
-            printf("Command not found: %s\n", ecmd->word_list->token->word);
+			printf("Command not found: %s\n", ecmd->word_list->token->word);
 			free_argv(argv);
-            return;
-        }
-    }
+			return ;
+		}
+	}
 	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり.
 	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
 	// // そのため、自力でfdをクローズする必要がある
@@ -162,4 +161,3 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	close(saved_stdin);
 	close(saved_stdout);
 }
-
