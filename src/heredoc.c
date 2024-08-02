@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/30 02:42:04 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/02 14:33:27 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+void	expand_heredoc_exit_status(char **line, int exit_status)
+{
+	char	*current_ptr;
+
+	if (line == NULL || *line == NULL)
+		return ;
+	current_ptr = *line;
+	while (current_ptr && *current_ptr)
+	{
+		expand_exit_status(line, &current_ptr, exit_status);
+	}
+}
+
 
 void	expand_heredoc(char **line, t_hash_table *env_table)
 {
@@ -34,7 +48,7 @@ void	expand_heredoc(char **line, t_hash_table *env_table)
 // TODO: 大きな入力に対応できるようにする -> 一時ファイル
 // 本家は、pipeと一時ファイルの両方を使っているらしい？（詳細は不明）
 //一時的なファイルを作って, そこに書き込んでcatで出力する.ファイルは後で消す. パイプは上限があるから, 膨大な量を入力されると詰むらしい.
-int	ft_heredoc(t_token *delimi_token, t_hash_table *env_table)
+int	ft_heredoc(t_token *delimi_token, t_mgr *mgr)
 {
 	char		*line;
 	int			pfd[2];
@@ -53,7 +67,10 @@ int	ft_heredoc(t_token *delimi_token, t_hash_table *env_table)
 			break ;
 		}
 		if (delimi_token->type == TK_WORD)
-			expand_heredoc(&line, env_table);
+		{
+			expand_heredoc(&line, mgr->env_table);
+			expand_heredoc_exit_status(&line, mgr->status);
+		}
 		write(pfd[1], line, strlen(line));
 		write(pfd[1], "\n", 1);
 		free(line);

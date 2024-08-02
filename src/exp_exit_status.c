@@ -5,7 +5,7 @@
  * ただし、パイプライン内の途中のstatusは取得できず、反映されない
  * Minishellでは`;`を実装しないため、実は`$?`もexpand段階で展開可能
  */
-static	void	expand_exit_status(char **word, char **cur_ptr, int exit_status)
+void	expand_exit_status(char **word, char **cur_ptr, int exit_status)
 {
 	char	*dollar_ptr;
 	char	*status_str;
