@@ -1,9 +1,6 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
-
 #include "executor.h"
 #include "minishell.h"
-
-
 
 char	*search_path(const char *word)
 {
@@ -61,28 +58,31 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// exit(0);
 		return ;
 	}
+	expand_word_list_for_exit_status(ecmd->word_list, mgr->status);
+	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
-	if(!argv)
+	if (!argv)
 		return ;
 	// print_argv(argv);
 	// ビルトインコマンドのチェックと実行
-    if (is_builtin(ecmd)) {
-        exec_builtin(ecmd, mgr);
+	if (is_builtin(ecmd))
+	{
+		exec_builtin(ecmd, mgr);
 		// system("leaks -q minishell");
 		free_argv(argv);
-        return;
-    } 
-	else 
+		return ;
+	}
+	else
 	{
-        path = search_path(ecmd->word_list->token->word);
-        if (!path) 
+		path = search_path(ecmd->word_list->token->word);
+		if (!path)
 		{
-            printf("Command not found: %s\n", ecmd->word_list->token->word);
+			printf("Command not found: %s\n", ecmd->word_list->token->word);
 			free_argv(argv);
-            return;
-        }
-    }
-	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり. 
+			return ;
+		}
+	}
+	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり.
 	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
 	// // そのため、自力でfdをクローズする必要がある
 	// assert_error("Error: execve failed\n", "exec_cmd failed\n");
@@ -162,17 +162,3 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	close(saved_stdin);
 	close(saved_stdout);
 }
-
-/*
-TODO:
-1. parse時に期待されるoflagの値
-	<（入力）: O_RDONLY
-	>（上書き）: O_WRONLY | O_CREAT | O_TRUNC
-	>>（追記）: O_WRONLY | O_CREAT | O_APPEND
-
-2. heredoc
-入力を一時ファイルに書き込んだ後、そのファイルを標準入力にリダイレクトするなどの追加の処理が必要になる
-
-3. ファイルディスクリプタの管理
-不要になったfdのクリーンアップは、いつどこで実行されるべきか？
- */

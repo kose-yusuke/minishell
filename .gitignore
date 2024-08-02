@@ -27,13 +27,11 @@ docs/
 .DS_Store
 ._.DS_Store
 
-# Specific source files
-sh.c
-
 # Miscellaneous and test files
 markdown/
 temporary/
 xv6-public/
 sandbox/
-xbox/
 test*
+file*
+tmp*

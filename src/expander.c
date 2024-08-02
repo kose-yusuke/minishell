@@ -3,9 +3,6 @@
 #include "expander.h"
 #include "minishell.h"
 
-//後で移動する（本当はexecにmerge_wordsを実装したいため）
-void					merge_words(t_word *word_list);
-
 char	*extract_env_key(char *env_head, char **env_tail)
 {
 	char	*env_key;
@@ -116,43 +113,13 @@ void	expand_word_list(t_word *word_list, t_hash_table *env_table)
 		split_word_token(word_to_expand);
 		word_to_expand = next_word;
 	}
-	merge_words(word_list); // TODO: 本来はexecに移動する
-}
-
-static bool	is_quoted_heredoc(t_word *word)
-{
-	t_word	*current_word;
-
-	current_word = word;
-	while (current_word)
-	{
-		if (current_word->token->type == TK_SQUOTE)
-			return (true);
-		if (current_word->token->type == TK_DQUOTE)
-			return (true);
-		current_word = current_word->next;
-	}
-	return (false);
 }
 
 void	expand_redir_list(t_redir *redir_list, t_hash_table *env_table)
 {
-	bool	has_quote;
-
 	while (redir_list)
 	{
-		if (redir_list->redir_type == TK_HEREDOC)
-		{
-			// heredocのdelimiterは変数展開されず、meregeだけ。
-			// merege時にquoteを有するまたいでいるかどうかを保持しておく
-			has_quote = is_quoted_heredoc(redir_list->word_list);
-			merge_words(redir_list->word_list);
-			if (has_quote)
-			{
-				redir_list->word_list->token->type = TK_SQUOTE;
-			}
-		}
-		else
+		if (redir_list->redir_type != TK_HEREDOC)
 		{
 			expand_word_list(redir_list->word_list, env_table);
 		}

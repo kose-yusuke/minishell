@@ -67,6 +67,42 @@ static int	open_filepath(t_redir *redir)
 	return (fd);
 }
 
+static bool	is_quoted_heredoc(t_word *word)
+{
+	t_word	*current_word;
+
+	current_word = word;
+	while (current_word)
+	{
+		if (current_word->token->type == TK_SQUOTE)
+			return (true);
+		if (current_word->token->type == TK_DQUOTE)
+			return (true);
+		current_word = current_word->next;
+	}
+	return (false);
+}
+
+static void	expand_redir_for_exit_status(t_redir *redir, int exit_status)
+{
+	bool	has_quote;
+
+	has_quote = false;
+	if (redir->redir_type == TK_HEREDOC)
+	{
+		// heredocのdelimiterは変数展開されず、meregeだけ。
+		// merege時にquoteを有するまたいでいるかどうかを保持しておく
+		has_quote = is_quoted_heredoc(redir->word_list);
+	}
+	else
+		expand_word_list_for_exit_status(redir->word_list, exit_status);
+	merge_words(redir->word_list);
+	if (has_quote)
+	{
+		redir->word_list->token->type = TK_SQUOTE;
+	}
+}
+
 void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 {
 	t_redir	*redir;
@@ -75,8 +111,9 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	redir = redir_list;
 	while (redir)
 	{
+		expand_redir_for_exit_status(redir, mgr->status);
 		if (redir->redir_type == TK_HEREDOC) // eofを引数に入れる
-			filefd = ft_heredoc(redir->word_list->token, mgr->env_table);
+			filefd = ft_heredoc(redir->word_list->token, mgr);
 		else
 			filefd = open_filepath(redir);
 		if (filefd == -1)
@@ -91,7 +128,7 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	}
 }
 
-//　この関数は使わないかも　仮置き
+//　この関数は使わないかも　仮置き。使うとしたらexec_redirの呼び出し側で
 // void	restore_redir(t_redir *redir)
 // {
 // 	if(!redir)
