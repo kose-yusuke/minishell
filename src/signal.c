@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/26 10:54:46 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/08/03 17:51:30 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void handle_signal(int sig)
     }
     else if (sig == SIGQUIT)
     {
-        printf("Quit (core dumped)\n");
+        printf("Quit\n");
     }
 }
 

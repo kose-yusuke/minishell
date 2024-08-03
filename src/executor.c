@@ -125,6 +125,7 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	int			saved_stdin;
 	int			saved_stdout;
 	t_execcmd	*ecmd;
+	int 		error_status;
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
@@ -140,6 +141,8 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		ecmd = (t_execcmd *)cmd;
 		exec_redir(ecmd->redir_list, mgr); // TODO: 呼び出し位置をあとで考える
+		if (error_status)
+			return ;
 		exec_cmd(cmd, mgr);                // ここか、この中でbuilt-inの呼び出し
 											// reset_fd(cmd); <- リソース管理
 											// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）

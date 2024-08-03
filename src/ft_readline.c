@@ -159,7 +159,8 @@ void	ft_readline(t_mgr *mgr)
 		if (!line)
 		{
 			free_mgr_resources(mgr);
-			error_exit("failed to read line", EXIT_FAILURE); // ?
+			exit(255);
+			// error_exit("failed to read line", EXIT_FAILURE); // ?
 			// break ;
 		}
 		if (*line)
@@ -169,6 +170,6 @@ void	ft_readline(t_mgr *mgr)
 		}
 		free(line);
 		reset_resources(mgr);
-		system("leaks -q minishell");
+		// system("leaks -q minishell");
 	}
 }

@@ -55,7 +55,7 @@ static int	open_filepath(t_redir *redir)
 	mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 	if (!path || oflag == -1)
 	{
-		assert_error("Error: get_open_flag failed\n", "open_file\n");
+		printf("Error: get_open_flag failed\n");
 		return (-1);
 	}
 	if (redir->redir_type == TK_REDIR_IN)
@@ -63,7 +63,7 @@ static int	open_filepath(t_redir *redir)
 	else
 		fd = open(path, oflag, mode);
 	if (fd == -1) // bash: filename: Permission denied <- error msg
-		assert_error("Error: open failed\n", "exec_redir failed\n");
+		printf("Error: open failed\n");
 	return (fd);
 }
 
@@ -103,7 +103,7 @@ static void	expand_redir_for_exit_status(t_redir *redir, int exit_status)
 	}
 }
 
-void	exec_redir(t_redir *redir_list, t_mgr *mgr)
+int	exec_redir(t_redir *redir_list, t_mgr *mgr)
 {
 	t_redir	*redir;
 	int		filefd;
@@ -117,7 +117,7 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 		else
 			filefd = open_filepath(redir);
 		if (filefd == -1)
-			return ; // error msgは先の関数内で出力, redir中止
+			return(-1) ; // error msgは先の関数内で出力, redir中止
 		if (is_valid_redir(redir))
 		{
 			redir->backup_fd = safe_dup(redir->fd);
@@ -126,6 +126,7 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 		close(filefd);
 		redir = redir->next;
 	}
+	return (0);
 }
 
 //　この関数は使わないかも　仮置き。使うとしたらexec_redirの呼び出し側で
