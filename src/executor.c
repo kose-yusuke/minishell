@@ -140,10 +140,10 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		exec_redir(ecmd->redir_list, mgr); // TODO: 呼び出し位置をあとで考える
-		if (error_status)
+		error_status = exec_redir(ecmd->redir_list, mgr); // TODO: 呼び出し位置をあとで考える
+		if (error_status == -1)
 			return ;
-		exec_cmd(cmd, mgr);                // ここか、この中でbuilt-inの呼び出し
+		exec_cmd(cmd, mgr);            // ここか、この中でbuilt-inの呼び出し
 											// reset_fd(cmd); <- リソース管理
 											// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）
 	}
