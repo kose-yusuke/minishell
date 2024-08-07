@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/02 14:33:27 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/07 16:12:13 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,15 @@
 #include <readline/readline.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-void	expand_heredoc_exit_status(char **line, int exit_status)
+#define FILE_TEMPLATE "/tmp/heredoc"
+
+// #define LOCK_FILE "/.tmp/heredoc.lock" （pipeとheredocが同時に使われるときのためにあとで実装する）
+
+static void	expand_heredoc_exit_status(char **line, int exit_status)
 {
 	char	*current_ptr;
 
@@ -31,8 +37,7 @@ void	expand_heredoc_exit_status(char **line, int exit_status)
 	}
 }
 
-
-void	expand_heredoc(char **line, t_hash_table *env_table)
+static void	expand_heredoc(char **line, t_hash_table *env_table)
 {
 	char	*current_ptr;
 
@@ -45,17 +50,76 @@ void	expand_heredoc(char **line, t_hash_table *env_table)
 	}
 }
 
-// TODO: 大きな入力に対応できるようにする -> 一時ファイル
-// 本家は、pipeと一時ファイルの両方を使っているらしい？（詳細は不明）
-//一時的なファイルを作って, そこに書き込んでcatで出力する.ファイルは後で消す. パイプは上限があるから, 膨大な量を入力されると詰むらしい.
-int	ft_heredoc(t_token *delimi_token, t_mgr *mgr)
+/**
+ * 一時ファイル名を生成するための関数。index を用いてファイル名を作成
+ *  */
+static char	*generate_tmp_file_name(int index)
+{
+	char	*index_str = ft_itoa(index);
+	char		*tmp_file_name;
+
+	if (!index_str)
+	{
+		assert_error("ft_itoa failed", "generate_tmp_file_name");
+		return (NULL);
+	}
+	tmp_file_name = malloc(ft_strlen(FILE_TEMPLATE) + ft_strlen(index_str) + 1);
+	if (!tmp_file_name)
+	{
+		free(index_str);
+		assert_error("malloc failed", "generate_tmp_file_name");
+		return (NULL);
+	}
+	strcpy(tmp_file_name, FILE_TEMPLATE);
+	strcat(tmp_file_name, index_str);
+	free(index_str);
+	return (tmp_file_name);
+}
+
+/**
+ * 存在しない一意な一時ファイル名を生成する関数
+ */
+static char	*create_unique_tmp_file_name(void)
+{
+	char	*tmp_file_name;
+	int		index;
+
+	index = 0;
+	while (true)
+	{
+		tmp_file_name = generate_tmp_file_name(index);
+		if (!tmp_file_name)
+			return (NULL);
+		if (access(tmp_file_name, F_OK) == -1) // まだ存在しないファイル名
+			return (tmp_file_name);
+		free(tmp_file_name);
+		index++;
+		if (index >= INT_MAX)
+		{
+			assert_error("too many tmp files", "create_unique_tmp_file_name");
+			return (NULL);
+		}
+	}
+}
+
+/**
+ * heredoc の入力を処理し、一時ファイルに書き込む関数
+ */
+int	ft_heredoc(t_redir *redir, t_mgr *mgr)
 {
 	char		*line;
-	int			pfd[2];
-	const char	*eof = delimi_token->word;
+	const char	*eof = redir->word_list->token->word;
+	int			fd;
+	char		*file_name;
 
-	if (pipe(pfd) < 0)
-		perror("pipe");
+	file_name = create_unique_tmp_file_name();
+	// permission 0644で大丈夫?
+	fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+	{
+		assert_error("open failed", "open_tmpfile for write");
+		return (-1);
+	}
 	while (1)
 	{
 		line = readline("heredoc> ");
@@ -66,18 +130,58 @@ int	ft_heredoc(t_token *delimi_token, t_mgr *mgr)
 			free(line);
 			break ;
 		}
-		if (delimi_token->type == TK_WORD)
+		if (redir->word_list->token->type == TK_WORD)
 		{
 			expand_heredoc(&line, mgr->env_table);
 			expand_heredoc_exit_status(&line, mgr->status);
 		}
-		write(pfd[1], line, strlen(line));
-		write(pfd[1], "\n", 1);
+		write(fd, line, strlen(line));
+		write(fd, "\n", 1);
 		free(line);
 	}
-	close(pfd[1]);
-	return (pfd[0]);
+	close(fd);
+	fd = open(generate_tmp_file_name(0), O_RDONLY);
+	if (fd < 0)
+	{
+		assert_error("open failed", "open_tmpfile for read");
+		return (-1);
+	}
+	free(redir->word_list->token->word);
+	redir->word_list->token->word = file_name; // あとでfileを削除するためにfile_nameを保存
+	return (fd);
 }
+
+
+// int	ft_heredoc(t_token *delimi_token, t_mgr *mgr)
+// {
+// 	char		*line;
+// 	int			pfd[2];
+// 	const char	*eof = delimi_token->word;
+
+// 	if (pipe(pfd) < 0)
+// 		perror("pipe");
+// 	while (1)
+// 	{
+// 		line = readline("heredoc> ");
+// 		if (line == NULL)
+// 			break ;
+// 		if (strcmp(line, eof) == 0)
+// 		{
+// 			free(line);
+// 			break ;
+// 		}
+// 		if (delimi_token->type == TK_WORD)
+// 		{
+// 			expand_heredoc(&line, mgr->env_table);
+// 			expand_heredoc_exit_status(&line, mgr->status);
+// 		}
+// 		write(pfd[1], line, strlen(line));
+// 		write(pfd[1], "\n", 1);
+// 		free(line);
+// 	}
+// 	close(pfd[1]);
+// 	return (pfd[0]);
+// }
 
 // void ft_heredoc_output(int fd)
 // {
