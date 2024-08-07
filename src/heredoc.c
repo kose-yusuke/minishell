@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/07 16:12:13 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/07 16:16:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,13 @@ static void	expand_heredoc(char **line, t_hash_table *env_table)
 
 /**
  * 一時ファイル名を生成するための関数。index を用いてファイル名を作成
- *  */
+ * */
 static char	*generate_tmp_file_name(int index)
 {
-	char	*index_str = ft_itoa(index);
-	char		*tmp_file_name;
+	char	*index_str;
+	char	*tmp_file_name;
 
+	index_str = ft_itoa(index);
 	if (!index_str)
 	{
 		assert_error("ft_itoa failed", "generate_tmp_file_name");
@@ -78,7 +79,7 @@ static char	*generate_tmp_file_name(int index)
 
 /**
  * 存在しない一意な一時ファイル名を生成する関数
- */
+ * */
 static char	*create_unique_tmp_file_name(void)
 {
 	char	*tmp_file_name;
@@ -104,7 +105,7 @@ static char	*create_unique_tmp_file_name(void)
 
 /**
  * heredoc の入力を処理し、一時ファイルに書き込む関数
- */
+ * */
 int	ft_heredoc(t_redir *redir, t_mgr *mgr)
 {
 	char		*line;
@@ -146,11 +147,33 @@ int	ft_heredoc(t_redir *redir, t_mgr *mgr)
 		assert_error("open failed", "open_tmpfile for read");
 		return (-1);
 	}
-	free(redir->word_list->token->word);
-	redir->word_list->token->word = file_name; // あとでfileを削除するためにfile_nameを保存
 	return (fd);
 }
 
+/**
+ *  一時ファイルの削除関数 <- 1行処理ごとに一括でcleanupする
+ * */
+void	delete_tmp_files(void)
+{
+	int		index;
+	char	*file_name;
+
+	index = 0;
+	while (true)
+	{
+		file_name = generate_tmp_file_name(index);
+		if (!file_name)
+			break ;
+		if (access(file_name, F_OK) == -1) // まだ存在しないファイル名
+		{
+			free(file_name);
+			break ;
+		}
+		unlink(file_name); // 一時ファイルを削除
+		free(file_name);
+		index++;
+	}
+}
 
 // int	ft_heredoc(t_token *delimi_token, t_mgr *mgr)
 // {

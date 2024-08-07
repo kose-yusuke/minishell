@@ -70,4 +70,7 @@ void				setup_signals(void);
 /* safe_*.c */
 int					safe_dup(int fildes);
 int					safe_dup2(int fildes, int fildes2);
+
+// XXX: 仮置き
+void	delete_tmp_files(void);
 #endif
