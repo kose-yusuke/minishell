@@ -143,6 +143,7 @@ void	interpret(char *line, t_mgr *mgr)
 	}
 	// print_cmd(mgr->cmd); // デバッグ用の出力
 	run_expansion(mgr->cmd, mgr->env_table);
+	run_heredoc(mgr->cmd, mgr);
 	run_cmd(mgr->cmd, mgr);
 }
 

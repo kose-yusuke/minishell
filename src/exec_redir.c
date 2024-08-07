@@ -113,7 +113,8 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	{
 		expand_redir_for_exit_status(redir, mgr->status);
 		if (redir->redir_type == TK_HEREDOC) // eofを引数に入れる
-			filefd = ft_heredoc(redir, mgr);
+		;
+			// filefd = ft_heredoc(redir, mgr); ここのルートはあとで修正
 		else
 			filefd = open_filepath(redir);
 		if (filefd == -1)

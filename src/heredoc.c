@@ -6,24 +6,15 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/07 16:16:49 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/07 23:02:58 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
-#include "minishell.h"
-#include <fcntl.h>
-#include <readline/readline.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "heredoc.h"
 
-#define FILE_TEMPLATE "/tmp/heredoc"
-
-// #define LOCK_FILE "/.tmp/heredoc.lock" （pipeとheredocが同時に使われるときのためにあとで実装する）
-
+/**
+ * heredoc 本文中の`$?` の展開を行う関数
+ */
 static void	expand_heredoc_exit_status(char **line, int exit_status)
 {
 	char	*current_ptr;
@@ -37,6 +28,9 @@ static void	expand_heredoc_exit_status(char **line, int exit_status)
 	}
 }
 
+/**
+ * heredoc 本文中の環境変数の展開を行う関数
+ */
 static void	expand_heredoc(char **line, t_hash_table *env_table)
 {
 	char	*current_ptr;
@@ -51,8 +45,8 @@ static void	expand_heredoc(char **line, t_hash_table *env_table)
 }
 
 /**
- * 一時ファイル名を生成するための関数。index を用いてファイル名を作成
- * */
+ * 一時ファイル名を生成する関数。index を用いてファイル名を作成
+ */
 static char	*generate_tmp_file_name(int index)
 {
 	char	*index_str;
@@ -79,14 +73,14 @@ static char	*generate_tmp_file_name(int index)
 
 /**
  * 存在しない一意な一時ファイル名を生成する関数
- * */
+ */
 static char	*create_unique_tmp_file_name(void)
 {
 	char	*tmp_file_name;
 	int		index;
 
 	index = 0;
-	while (true)
+	while (index < HEREDOC_MAX_FILES)
 	{
 		tmp_file_name = generate_tmp_file_name(index);
 		if (!tmp_file_name)
@@ -95,31 +89,32 @@ static char	*create_unique_tmp_file_name(void)
 			return (tmp_file_name);
 		free(tmp_file_name);
 		index++;
-		if (index >= INT_MAX)
-		{
-			assert_error("too many tmp files", "create_unique_tmp_file_name");
-			return (NULL);
-		}
 	}
+	assert_error("too many tmp files", "create_unique_tmp_file_name");
+	return (NULL);
 }
 
 /**
  * heredoc の入力を処理し、一時ファイルに書き込む関数
- * */
-int	ft_heredoc(t_redir *redir, t_mgr *mgr)
+ */
+static void	ft_heredoc(t_redir *redir, t_mgr *mgr)
 {
-	char		*line;
 	const char	*eof = redir->word_list->token->word;
-	int			fd;
 	char		*file_name;
+	int			fd;
+	char		*line;
 
+	if (!redir || !mgr)
+		return ;
 	file_name = create_unique_tmp_file_name();
-	// permission 0644で大丈夫?
+	if (!file_name)
+		return ;
 	fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 	{
 		assert_error("open failed", "open_tmpfile for write");
-		return (-1);
+		free(file_name);
+		return ;
 	}
 	while (1)
 	{
@@ -140,26 +135,68 @@ int	ft_heredoc(t_redir *redir, t_mgr *mgr)
 		write(fd, "\n", 1);
 		free(line);
 	}
-	close(fd);
-	fd = open(generate_tmp_file_name(0), O_RDONLY);
-	if (fd < 0)
+	if (close(fd) == -1)
 	{
-		assert_error("open failed", "open_tmpfile for read");
-		return (-1);
+		free(file_name);
+		assert_error("close failed", "ft_heredoc");
+		return ;
 	}
-	return (fd);
+	free(redir->word_list->token->word);
+	redir->word_list->token->word = file_name;
 }
 
 /**
- *  一時ファイルの削除関数 <- 1行処理ごとに一括でcleanupする
- * */
+ * heredoc のリダイレクトをすべて処理する関数
+ */
+static void	process_all_heredoc(t_redir *redir, t_mgr *mgr)
+{
+	t_redir	*current_redir;
+
+	current_redir = redir;
+	while (current_redir)
+	{
+		if (current_redir->redir_type == TK_HEREDOC)
+		{
+			ft_heredoc(current_redir, mgr);
+		}
+		current_redir = current_redir->next;
+	}
+}
+
+/**
+ * コマンド構造体内のすべての heredoc を処理する関数
+ */
+void	run_heredoc(t_cmd *cmd, t_mgr *mgr)
+{
+	t_execcmd	*ecmd;
+	t_pipecmd	*pcmd;
+
+	if (!cmd || cmd->type == NONE || !mgr)
+		return ;
+	else if (cmd->type == EXEC)
+	{
+		ecmd = (t_execcmd *)cmd;
+		process_all_heredoc(ecmd->redir_list, mgr);
+	}
+	else if (cmd->type == PIPE)
+	{
+		pcmd = (t_pipecmd *)cmd;
+		run_heredoc(pcmd->left, mgr);
+		run_heredoc(pcmd->right, mgr);
+	}
+}
+
+/**
+ *  一時ファイルの削除関数
+ *  clean up系の関数をまとめた場所に移動するかもしれない
+ */
 void	delete_tmp_files(void)
 {
 	int		index;
 	char	*file_name;
 
 	index = 0;
-	while (true)
+	while (1)
 	{
 		file_name = generate_tmp_file_name(index);
 		if (!file_name)
@@ -169,12 +206,18 @@ void	delete_tmp_files(void)
 			free(file_name);
 			break ;
 		}
-		unlink(file_name); // 一時ファイルを削除
+		if (unlink(file_name) == -1)
+		{
+			assert_error("unlink failed", "delete_tmp_files");
+			free(file_name);
+			break ;
+		}
 		free(file_name);
 		index++;
 	}
 }
 
+// 以前の実装
 // int	ft_heredoc(t_token *delimi_token, t_mgr *mgr)
 // {
 // 	char		*line;

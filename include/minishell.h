@@ -4,7 +4,7 @@
 
 # include "ast.h"
 # include "env.h"
-#include <stdio.h>  // これを追加
+# include <stdio.h>  // ?
 # include "ft_hash.h"
 # include "token.h"
 # include <ctype.h>
@@ -21,6 +21,13 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <fcntl.h>
+# include <readline/readline.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <stdio.h>
 
 typedef struct s_mgr
 {
@@ -71,6 +78,5 @@ void				setup_signals(void);
 int					safe_dup(int fildes);
 int					safe_dup2(int fildes, int fildes2);
 
-// XXX: 仮置き
-void	delete_tmp_files(void);
+
 #endif
