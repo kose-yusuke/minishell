@@ -45,6 +45,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	extern char	**environ;
 	pid_t		pid;
 	int			i;
+		int status;
 
 	if (cmd->type != EXEC)
 	{
@@ -103,8 +104,19 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	}
 	else
 	{
-		// 親プロセスで子プロセスの終了を待機
-		if (waitpid(pid, NULL, 0) == -1)
+		while (waitpid(pid, &status, 0) > 0)
+		{
+			if (WIFEXITED(status))
+			{
+				printf("exec_cmd Child %d exited with status %d\n", pid,
+					WEXITSTATUS(status));
+			}
+			else if (WIFSIGNALED(status))
+			{
+				printf("exec_cmd Child %d killed by signal %d\n", pid, WTERMSIG(status));
+			}
+		}
+		if (errno != ECHILD)
 		{
 			perror("waitpid");
 		}

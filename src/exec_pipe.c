@@ -68,16 +68,15 @@ void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	int			pfd[2];
 	pid_t		left_pid;
 	pid_t		right_pid;
+	int			left_status;
+	int			right_status;
 
 	if (cmd->type != PIPE)
 	{
 		assert_error("Error: unexpected cmd", "exec_pipe failed\n");
+		return ;
 	}
 	pcmd = (t_pipecmd *)cmd;
-	if (pipe(pfd) == -1)
-	{
-		assert_error("Error: pipe failed\n", "exec_pipe failed\n");
-	}
 	if (pipe(pfd) == -1)
 	{
 		perror("pipe");
@@ -87,21 +86,47 @@ void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
 	if (left_pid == 0)
 	{
 		exec_leftcmd(pcmd, pfd, mgr);
+		exit(EXIT_SUCCESS);
 	}
 	right_pid = fork_pid();
 	if (right_pid == 0)
 	{
 		exec_rightcmd(pcmd, pfd, mgr);
+		exit(EXIT_SUCCESS);
 	}
 	if (close(pfd[0]) == -1 || close(pfd[1]) == -1)
 	{
 		perror("close");
 		exit(EXIT_FAILURE);
 	}
-	// wait でわかる子プロセスの終了状態の管理ができていない
-	if (waitpid(left_pid, NULL, 0) == -1 || waitpid(right_pid, NULL, 0) == -1)
+	if (waitpid(left_pid, &left_status, 0) == -1)
 	{
 		perror("waitpid");
 		exit(EXIT_FAILURE);
+	}
+	if (waitpid(right_pid, &right_status, 0) == -1)
+	{
+		perror("waitpid");
+		exit(EXIT_FAILURE);
+	}
+	if (WIFEXITED(left_status))
+	{
+		printf("Left child (PID %d) exited with status %d\n", left_pid,
+			WEXITSTATUS(left_status));
+	}
+	else if (WIFSIGNALED(left_status))
+	{
+		printf("Left child (PID %d) killed by signal %d\n", left_pid,
+			WTERMSIG(left_status));
+	}
+	if (WIFEXITED(right_status))
+	{
+		printf("Right child (PID %d) exited with status %d\n", right_pid,
+			WEXITSTATUS(right_status));
+	}
+	else if (WIFSIGNALED(right_status))
+	{
+		printf("Right child (PID %d) killed by signal %d\n", right_pid,
+			WTERMSIG(right_status));
 	}
 }
