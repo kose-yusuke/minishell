@@ -26,19 +26,12 @@ static bool	is_valid_redir(t_redir *redir)
 
 static int	get_open_flag(t_token_type redir_type)
 {
-	if (redir_type == TK_REDIR_IN)
+	if (redir_type == TK_REDIR_IN || redir_type == TK_HEREDOC)
 		return (O_RDONLY | O_CLOEXEC);
 	else if (redir_type == TK_REDIR_OUT)
 		return (O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC);
 	else if (redir_type == TK_APPEND)
 		return (O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC);
-	else if (redir_type == TK_HEREDOC)
-	{
-		// このケースは到達しないはず
-		assert_error("Error: HEREDOC handling should not reach get_open_flag\n",
-			"get_open_flag failed");
-		return (-2);
-	}
 	assert_error("Unsupported redirection type", "get_open_flag failed");
 	return (-1);
 }
@@ -58,7 +51,7 @@ static int	open_filepath(t_redir *redir)
 		assert_error("Error: get_open_flag failed\n", "open_file\n");
 		return (-1);
 	}
-	if (redir->redir_type == TK_REDIR_IN)
+	if (redir->redir_type == TK_REDIR_IN || redir->redir_type == TK_HEREDOC)
 		fd = open(path, oflag);
 	else
 		fd = open(path, oflag, mode);
@@ -112,10 +105,7 @@ void	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	while (redir)
 	{
 		expand_redir_for_exit_status(redir, mgr->status);
-		if (redir->redir_type == TK_HEREDOC) // eofを引数に入れる
-			filefd = ft_heredoc(redir->word_list->token, mgr);
-		else
-			filefd = open_filepath(redir);
+		filefd = open_filepath(redir);
 		if (filefd == -1)
 			return ; // error msgは先の関数内で出力, redir中止
 		if (is_valid_redir(redir))

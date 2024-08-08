@@ -139,10 +139,9 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		exec_redir(ecmd->redir_list, mgr); // TODO: 呼び出し位置をあとで考える
-		exec_cmd(cmd, mgr);                // ここか、この中でbuilt-inの呼び出し
-											// reset_fd(cmd); <- リソース管理
-											// backup_fd(cmd); <- fdの復旧？（本来は親プロセス用）
+		exec_redir(ecmd->redir_list, mgr);
+		exec_cmd(cmd, mgr);
+		// restore_fd(cmd); <- saved_stdin, saved_stdoutを使っているのでいらない
 	}
 	else if (cmd->type == PIPE)
 	{

@@ -2,13 +2,11 @@
 #ifndef READLINE_H
 # define READLINE_H
 
+# include "expander.h"
+# include "heredoc.h"
 # include "lexer.h"
 # include "parser.h"
 # include "token.h"
-# include "expander.h"
-# include <stdio.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 
 void	ft_readline(t_mgr *mgr);
 void	interpret(char *line, t_mgr *mgr);
