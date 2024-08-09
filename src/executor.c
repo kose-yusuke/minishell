@@ -145,9 +145,7 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		//ここで, mgr->status更新されてしまうから, echo $?で異なる値が出力されてしまう
         error_status = exec_redir(ecmd->redir_list, mgr);
-        // ここも変える必要あり
 		if (error_status != 0)
 		{
 			mgr->status = error_status;
