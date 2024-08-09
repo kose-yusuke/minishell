@@ -5,7 +5,7 @@
 # include "minishell.h"
 # include "token.h"
 
-void				exec_redir(t_redir *redir_list, t_mgr *mgr);
+int				exec_redir(t_redir *redir_list, t_mgr *mgr);
 
 /*
 XXX: 使われていない。削除でいい？

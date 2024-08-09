@@ -37,7 +37,7 @@ char	*search_path(const char *word)
 	return (NULL);
 }
 
-void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
+int		exec_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
@@ -48,7 +48,8 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 
 	if (cmd->type != EXEC)
 	{
-		assert_error("Error: unexpected cmd", "exec_cmd failed\n");
+		return (1);
+		// assert_error("Error: unexpected cmd", "exec_cmd failed\n");
 	}
 	ecmd = (t_execcmd *)cmd;
 	if (!ecmd->word_list || !ecmd->word_list->token)
@@ -56,21 +57,20 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// TODO: execveを使わない時には自力でfdをクローズする
 		// close_fd();
 		// exit(0);
-		return ;
+		return (1);
 	}
+	// printf("%d\n",mgr->status);
 	expand_word_list_for_exit_status(ecmd->word_list, mgr->status);
 	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
 	if (!argv)
-		return ;
-	// print_argv(argv);
-	// ビルトインコマンドのチェックと実行
+		return (1);
 	if (is_builtin(ecmd))
 	{
 		exec_builtin(ecmd, mgr);
 		// system("leaks -q minishell");
 		free_argv(argv);
-		return ;
+		return (0);
 	}
 	else
 	{
@@ -79,7 +79,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		{
 			printf("Command not found: %s\n", ecmd->word_list->token->word);
 			free_argv(argv);
-			return ;
+			return (127);
 		}
 	}
 	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり.
@@ -90,7 +90,8 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	if (pid < 0)
 	{
 		perror("fork");
-		exit(EXIT_FAILURE);
+		return (1);
+		// exit(EXIT_FAILURE);
 	}
 	if (pid == 0)
 	{
@@ -98,7 +99,8 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		if (execve(path, argv, environ) < 0)
 		{
 			perror("execve");
-			exit(EXIT_FAILURE);
+			return (1);
+			// exit(EXIT_FAILURE);
 		}
 	}
 	else
@@ -107,6 +109,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		if (waitpid(pid, NULL, 0) == -1)
 		{
 			perror("waitpid");
+			return (1);
 		}
 	}
 	free(path);
@@ -118,6 +121,7 @@ void	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		i++;
 	}
 	free(argv);
+	return (0);
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
@@ -125,7 +129,9 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	int			saved_stdin;
 	int			saved_stdout;
 	t_execcmd	*ecmd;
+	int error_status;
 
+	error_status = 0;
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (!mgr || !mgr->env_table)
@@ -139,8 +145,13 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		exec_redir(ecmd->redir_list, mgr);
-		exec_cmd(cmd, mgr);
+        error_status = exec_redir(ecmd->redir_list, mgr);
+		if (error_status != 0)
+		{
+			mgr->status = error_status;
+			return ;
+		}
+        mgr->status = exec_cmd(cmd, mgr);
 		// restore_fd(cmd); <- saved_stdin, saved_stdoutを使っているのでいらない
 	}
 	else if (cmd->type == PIPE)

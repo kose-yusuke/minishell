@@ -8,7 +8,7 @@
 # include "token.h"
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr);
-void	exec_cmd(t_cmd *cmd, t_mgr *mgr);
+int 	exec_cmd(t_cmd *cmd, t_mgr *mgr);
 void	exec_pipe(t_cmd *cmd, t_mgr *mgr);
 
 #endif
