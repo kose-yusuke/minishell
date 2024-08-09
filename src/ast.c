@@ -54,8 +54,6 @@ void	free_right_cmd(t_cmd *cmd)
 		free_right_cmd(((t_pipecmd *)cmd)->left);
 		free_right_cmd(((t_pipecmd *)cmd)->right);
 	}
-	if (ecmd->eof_word)
-		free(ecmd->eof_word);
 	free(cmd);
 }
 
@@ -81,7 +79,5 @@ void	free_cmd(t_cmd *cmd)
 		// free_cmd(((t_pipecmd *)cmd)->right);
 		free_right_cmd(((t_pipecmd *)cmd)->right);
 	}
-	if (ecmd->eof_word)
-		free(ecmd->eof_word);
 	free(cmd);
 }
