@@ -129,7 +129,9 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	int			saved_stdin;
 	int			saved_stdout;
 	t_execcmd	*ecmd;
+	int error_status;
 
+	error_status = 0;
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (!mgr || !mgr->env_table)
@@ -144,10 +146,11 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		ecmd = (t_execcmd *)cmd;
 		//ここで, mgr->status更新されてしまうから, echo $?で異なる値が出力されてしまう
-        mgr->status = exec_redir(ecmd->redir_list, mgr);
+        error_status = exec_redir(ecmd->redir_list, mgr);
         // ここも変える必要あり
-		if (mgr->status != 0)
+		if (error_status != 0)
 		{
+			mgr->status = error_status;
 			return ;
 		}
         mgr->status = exec_cmd(cmd, mgr);
