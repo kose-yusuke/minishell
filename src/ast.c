@@ -47,15 +47,13 @@ void	free_right_cmd(t_cmd *cmd)
 			ecmd->word_list = next;
 		}
 		// free(ecmd->word_list->token);
-		// free_redir(((t_execcmd *)cmd)->redir_list);
+		free_redir(((t_execcmd *)cmd)->redir_list);
 	}
 	else if (cmd->type == PIPE)
 	{
 		free_right_cmd(((t_pipecmd *)cmd)->left);
 		free_right_cmd(((t_pipecmd *)cmd)->right);
 	}
-	if (ecmd->eof_word)
-		free(ecmd->eof_word);
 	free(cmd);
 }
 
@@ -80,7 +78,5 @@ void	free_cmd(t_cmd *cmd)
 		// free_cmd(((t_pipecmd *)cmd)->right);
 		free_right_cmd(((t_pipecmd *)cmd)->right);
 	}
-	if (ecmd->eof_word)
-		free(ecmd->eof_word);
 	free(cmd);
 }

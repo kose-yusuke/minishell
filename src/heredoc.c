@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/07 23:02:58 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/09 15:40:24 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ static void	ft_heredoc(t_redir *redir, t_mgr *mgr)
 	}
 	free(redir->word_list->token->word);
 	redir->word_list->token->word = file_name;
+	// system("leaks -q minishell"); //leakしてる
 }
 
 /**
