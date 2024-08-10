@@ -38,6 +38,8 @@ typedef struct s_mgr
 	t_hash_table	*env_table;
 }					t_mgr;
 
+extern volatile sig_atomic_t g_status;
+
 # include "builtins.h"
 # include "executor.h"
 # include "expander.h"
