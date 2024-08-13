@@ -21,7 +21,6 @@ static const char *token_to_str(t_token_type type)
 		case TK_HEREDOC: return ("TK_HEREDOC");
 		case TK_APPEND: return ("TK_APPEND");
 		case TK_BLANK: return ("TK_BLANK");
-		case TK_NL: return ("TK_NL");
 		default: return ("UNKNOWN_TYPE");
 	}
 }
