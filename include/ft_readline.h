@@ -7,6 +7,7 @@
 # include "lexer.h"
 # include "parser.h"
 # include "token.h"
+# include "debug_helpers.h"
 
 void	ft_readline(t_mgr *mgr);
 void	interpret(char *line, t_mgr *mgr);
