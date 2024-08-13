@@ -157,14 +157,15 @@ void	ft_readline(t_mgr *mgr)
 
 	rl_outstream = stderr;
 	mgr->status = 0; // ?
-	setup_signals();
+	idle_setup_signals();
 	while (1)
 	{
 		line = readline("minishell$ ");
 		if (!line)
 		{
 			free_mgr_resources(mgr);
-			exit(0);
+			//exit statusは何で返すのか？
+			exit(255);
 			// error_exit("failed to read line", EXIT_FAILURE); // ?
 			// break ;
 		}

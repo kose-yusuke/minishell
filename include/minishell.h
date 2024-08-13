@@ -49,6 +49,7 @@ extern volatile sig_atomic_t g_status;
 # include "parser.h"
 # include "redirect.h"
 # include "utils.h"
+# include "signals.h"
 
 // TODO: おそらくdebug用の関数
 void				assert_error(const char *msg, char *location);
