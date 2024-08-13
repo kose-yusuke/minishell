@@ -14,7 +14,7 @@ SRCS     = src/main.c src/ast.c src/builtin.c src/builtin_cd.c src/builtin_echo.
            src/free.c src/ft_hash.c src/ft_itoa.c src/ft_readline.c src/ft_split.c \
            src/ft_strtol.c src/ft_strtol_utils.c src/heredoc.c src/lexer.c src/merge_words.c \
            src/parser.c src/parser_utils.c src/safe_dup.c src/safe_dup2.c src/signal.c \
-           src/token_utils.c src/utils.c
+           src/token_utils.c src/utils.c src/setup_signal.c
 
 OBJS     = $(SRCS:%.c=%.o)
 
