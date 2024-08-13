@@ -16,9 +16,10 @@ void	reset_resources(t_mgr *mgr)
 
 void	interpret(char *line, t_mgr *mgr)
 {
-	if (g_status == 130 || g_status == 131)
+	if (g_status == 1)
 		mgr->status = g_status;
 	g_status = 0;
+	exec_parent_setup_signals();
 	mgr->token = lexer(line);
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
@@ -49,14 +50,15 @@ void	ft_readline(t_mgr *mgr)
 
 	rl_outstream = stderr;
 	mgr->status = 0; // ?
-	setup_signals();
+	idle_setup_signals();
 	while (1)
 	{
 		line = readline("minishell$ ");
 		if (!line)
 		{
 			free_mgr_resources(mgr);
-			exit(0);
+			//exit statusは何で返すのか？
+			exit(255);
 			// error_exit("failed to read line", EXIT_FAILURE); // ?
 			// break ;
 		}
