@@ -6,7 +6,7 @@
 /*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/13 12:43:21 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/08/13 12:59:08 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void exec_handle_signal(int sig)
         //sigは2
         g_status = sig;
         write(1, "\n", 1);
-        // rl_on_new_line(); // 新しい行を表示
-        // rl_replace_line("", 0); // 入力行を空に置き換える
+        rl_on_new_line(); // 新しい行を表示
+        rl_replace_line("", 0); // 入力行を空に置き換える
         // rl_redisplay(); // 入力プロンプトを再表示
     }
     else if (sig == SIGQUIT)
@@ -51,6 +51,9 @@ void exec_handle_signal(int sig)
         // sigは3
         g_status = sig;
         write(1, "Quit: 3\n", 8);
+        rl_on_new_line(); // 新しい行を表示
+        rl_replace_line("", 0); // 入力行を空に置き換える
+        // rl_redisplay(); // 入力プロンプトを再表示
     }
 }
 

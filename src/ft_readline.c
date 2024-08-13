@@ -124,9 +124,10 @@ void	reset_resources(t_mgr *mgr)
 
 void	interpret(char *line, t_mgr *mgr)
 {
-	if (g_status == 130 || g_status == 131)
+	if (g_status == 1)
 		mgr->status = g_status;
 	g_status = 0;
+	exec_parent_setup_signals();
 	mgr->token = lexer(line);
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
