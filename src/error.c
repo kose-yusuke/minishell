@@ -1,48 +1,57 @@
-/* error.c -- Functions for handling errors. */
+/* error.c - エラー処理に関する関数の定義。 */
 #include "minishell.h"
 
-// TODO: おそらくdebug用の関数
+// TODO: デバッグ用の関数
 void	assert_error(const char *msg, char *location)
 {
-	dprintf(STDERR_FILENO, "Assert Error: %s near %s\n", msg, location);
-	exit(255);
-}
-
-// TODO: おそらくdebug用の関数
-void	todo(const char *msg)
-{
-	dprintf(STDERR_FILENO, "TODO: %s\n", msg);
+	write(STDERR_FILENO, "Assert Error: ", 14);
+	if (msg)
+		write(STDERR_FILENO, msg, ft_strlen(msg));
+	if (location)
+	{
+		write(STDERR_FILENO, " near ", 6);
+		write(STDERR_FILENO, location, ft_strlen(location));
+	}
+	write(STDERR_FILENO, "\n", 1);
 	exit(255);
 }
 
 void	error_exit(const char *msg, int exit_status)
 {
-	dprintf(STDERR_FILENO, "minishell: %s\n", msg);
+	write(STDERR_FILENO, "minishell: ", 11);
+	if (msg)
+		write(STDERR_FILENO, msg, ft_strlen(msg));
+	write(STDERR_FILENO, "\n", 1);
 	exit(exit_status);
 }
 
-void	lexer_error(const char *location, char **rest, char *line)
+void	parser_error(const char *unexpected_token)
 {
-	dprintf(STDERR_FILENO, "minishell: syntax error near %s\n", location);
-	while (*line)
-		line++;
-	*rest = line;
+	write(STDERR_FILENO, "minishell: syntax error near unexpected token '", 44);
+	if (unexpected_token)
+		write(STDERR_FILENO, unexpected_token, ft_strlen(unexpected_token));
+	write(STDERR_FILENO, "'\n", 2);
 }
 
 void	report_error(char *cmd, char *file, char *info)
 {
-	fprintf(stderr, "minishell:");
+	write(STDERR_FILENO, "minishell:", 10);
 	if (cmd)
 	{
-		fprintf(stderr, " %s:", cmd);
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, cmd, ft_strlen(cmd));
+		write(STDERR_FILENO, ":", 1);
 	}
 	if (file)
 	{
-		fprintf(stderr, " %s:", file);
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, file, ft_strlen(file));
+		write(STDERR_FILENO, ":", 1);
 	}
 	if (info)
 	{
-		fprintf(stderr, " %s", info);
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, info, ft_strlen(info));
 	}
-	fprintf(stderr, "\n");
+	write(STDERR_FILENO, "\n", 1);
 }
