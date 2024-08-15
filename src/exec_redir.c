@@ -105,7 +105,7 @@ int	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	redir = redir_list;
 	while (redir)
 	{
-		expand_redir_for_exit_status(redir, mgr->status);
+		expand_redir_for_exit_status(redir, mgr->exit_status);
 		filefd = open_filepath(redir);
 		if (filefd == -1)
 			return (1); // error msgは先の関数内で出力, redir中止

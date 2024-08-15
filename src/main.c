@@ -40,5 +40,5 @@ int	main(int argc, char **argv)
 	init_mgr(&mgr);
 	ft_readline(&mgr);
 	free_mgr_resources(&mgr);
-	return (mgr.status); // ?
+	return (0);
 }

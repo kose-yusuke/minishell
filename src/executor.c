@@ -59,8 +59,8 @@ int		exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// exit(0);
 		return (1);
 	}
-	// printf("%d\n",mgr->status);
-	expand_word_list_for_exit_status(ecmd->word_list, mgr->status);
+	// printf("%d\n",mgr->exit_status);
+	expand_word_list_for_exit_status(ecmd->word_list, mgr->exit_status);
 	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
 	if (!argv)
@@ -148,10 +148,10 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
         error_status = exec_redir(ecmd->redir_list, mgr);
 		if (error_status != 0)
 		{
-			mgr->status = error_status;
+			mgr->exit_status = error_status;
 			return ;
 		}
-        mgr->status = exec_cmd(cmd, mgr);
+        mgr->exit_status = exec_cmd(cmd, mgr);
 		// restore_fd(cmd); <- saved_stdin, saved_stdoutを使っているのでいらない
 	}
 	else if (cmd->type == PIPE)

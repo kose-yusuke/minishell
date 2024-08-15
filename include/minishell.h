@@ -31,8 +31,7 @@
 
 typedef struct s_mgr
 {
-	int				status;
-	bool			syntax_error;
+	int				exit_status;
 	t_token			*token;
 	t_cmd			*cmd;
 	t_hash_table	*env_table;
