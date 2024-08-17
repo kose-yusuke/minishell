@@ -1,6 +1,6 @@
 /* parser.c - パーサー関連の関数 */
-#include "parser.h"
 #include "free.h"
+#include "parser.h"
 
 static t_cmd	*init_execcmd(void)
 {
@@ -55,24 +55,6 @@ static t_redir	*init_redir(t_token_type type, int fd)
 	return (new_redir);
 }
 
-static void	free_word_list(t_word *word_list)
-{
-	t_word	*current;
-	t_word	*next;
-
-	current = word_list;
-	while (current)
-	{
-		next = current->next;
-		if (current->token)
-		{
-			free_tokens(current->token);
-		}
-		free(current);
-		current = next;
-	}
-}
-
 static void	append_word(t_word **word_list, t_token *token)
 {
 	t_word	*new_word;
@@ -107,7 +89,7 @@ static void	process_redir_words(t_word **word_list, t_token **token)
 		// bash: syntax error near unexpected token 'newline' <- 本来のError message
 		report_error("parse_redir", NULL, "syntax error(1)");
 		// XXX: この構文エラーは、ここでparseをやめて処理を終了する（未対応）
-		return;
+		return ;
 	}
 	while (is_word_or_quoted_token(*token))
 	{
@@ -214,7 +196,7 @@ static t_cmd	*parse_pipe(t_token **token)
 t_cmd	*parser(t_token *token)
 {
 	t_cmd	*cmd;
-	t_token *token_ps;
+	t_token	*token_ps;
 
 	token_ps = token;
 	cmd = parse_pipe(&token_ps);
