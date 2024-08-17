@@ -1,5 +1,6 @@
 /* main.c - メイン関数  */
 #include "minishell.h"
+#include "free.h"
 #include <libc.h>
 
 __attribute__((destructor))

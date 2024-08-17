@@ -51,9 +51,7 @@ void							print_redir_list(t_redir *redir_list);
 void							print_tokens(t_token *token);
 void							print_word_list(t_word *word_list);
 
-/* free.c */
-void							free_mgr_resources(t_mgr *mgr);
-void							free_argv(char **argv);
+
 
 // calloc
 void							*ft_calloc(size_t count, size_t size);

@@ -1,6 +1,7 @@
 /* readline.c - 入力関連の関数 */
 #include "ft_readline.h"
 #include "minishell.h"
+#include "free.h"
 
 
 void	reset_resources(t_mgr *mgr)

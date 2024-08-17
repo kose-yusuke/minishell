@@ -42,6 +42,5 @@ bool					is_redir_token(t_token *token);
 
 t_token					*new_token(t_token_type type, char **q, char **eq);
 
-void					free_tokens(t_token *token);
 
 #endif

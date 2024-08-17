@@ -2,10 +2,9 @@
 #ifndef PARSER_H
 # define PARSER_H
 
-# include "ast.h"
 # include "minishell.h"
-# include <errno.h>
 
+/* parser.c - パーサー関連の関数 */
 t_cmd	*parser(t_token *token);
 
 /* parser_utils.c - パーサー関連のユーティリティ関数 */

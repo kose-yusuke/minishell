@@ -1,5 +1,6 @@
 /* lexer.c - 入力をトークンに分割する字句解析器の実装。 */
 #include "lexer.h"
+#include "free.h"
 
 int	ft_isdigit(int c)
 {

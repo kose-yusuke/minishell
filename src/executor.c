@@ -1,6 +1,7 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
 #include "executor.h"
 #include "minishell.h"
+#include "free.h"
 
 char	*search_path(const char *word)
 {

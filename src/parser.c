@@ -1,5 +1,6 @@
 /* parser.c - パーサー関連の関数 */
 #include "parser.h"
+#include "free.h"
 
 static t_cmd	*init_execcmd(void)
 {
@@ -81,7 +82,7 @@ static void	append_word(t_word **word_list, t_token *token)
 	if (!new_word)
 	{
 		report_error("append_word", NULL, "memory allocation failed");
-		free_word_list(*word_list);
+		free_word(*word_list);
 		return ;
 	}
 	new_word->token = token;

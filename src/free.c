@@ -1,7 +1,22 @@
-#include "ast.h"
-#include "ft_hash.h"
+#include "free.h"
 #include "minishell.h"
-#include "token.h"
+
+void	free_tokens(t_token *token)
+{
+	t_token	*next;
+
+	while (token)
+	{
+		next = token->next;
+		if (is_word_or_quoted_token(token) || is_io_num_token(token))
+		{
+			free(token->word);
+			token->word = NULL;
+		}
+		free(token);
+		token = next;
+	}
+}
 
 void	free_argv(char **argv)
 {
