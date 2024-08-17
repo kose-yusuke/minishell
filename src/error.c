@@ -1,5 +1,6 @@
 /* error.c - エラー処理に関する関数の定義。 */
 #include "minishell.h"
+#include "error.h"
 
 // TODO: デバッグ用の関数
 void	assert_error(const char *msg, char *location)
@@ -25,11 +26,38 @@ void	error_exit(const char *msg, int exit_status)
 	exit(exit_status);
 }
 
-void	parser_error(const char *unexpected_token)
+static const char	*get_token_string(t_token *token)
 {
-	write(STDERR_FILENO, "minishell: syntax error near unexpected token '", 44);
+	if (token->type == TK_EOF)
+		return ("newline");
+	if ((token->type == TK_WORD || token->type == TK_SQUOTE
+			|| token->type == TK_DQUOTE) && token->word)
+		return ((const char *)(token->word));
+	if (token->type == TK_IO_NUM)
+		return ("IO number");
+	if (token->type == TK_PIPE)
+		return ("|");
+	if (token->type == TK_REDIR_IN)
+		return ("<");
+	if (token->type == TK_REDIR_OUT)
+		return (">");
+	if (token->type == TK_HEREDOC)
+		return ("<<");
+	if (token->type == TK_APPEND)
+		return (">>");
+	if (token->type == TK_BLANK)
+		return ("blank");
+	return ("unknown or undefined token");
+}
+
+void	parser_error(t_token *unexpected_token)
+{
+	write(STDERR_FILENO, "minishell: syntax error near unexpected token `", 47);
 	if (unexpected_token)
-		write(STDERR_FILENO, unexpected_token, ft_strlen(unexpected_token));
+	{
+		const char *token_str = get_token_string(unexpected_token);
+		write(STDERR_FILENO, token_str, ft_strlen(token_str));
+	}
 	write(STDERR_FILENO, "'\n", 2);
 }
 

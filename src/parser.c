@@ -86,9 +86,7 @@ static void	process_redir_words(t_word **word_list, t_token **token)
 {
 	if (!is_word_or_quoted_token(*token))
 	{
-		// bash: syntax error near unexpected token 'newline' <- 本来のError message
-		report_error("parse_redir", NULL, "syntax error(1)");
-		// XXX: この構文エラーは、ここでparseをやめて処理を終了する（未対応）
+		parser_error(*token);
 		return ;
 	}
 	while (is_word_or_quoted_token(*token))
