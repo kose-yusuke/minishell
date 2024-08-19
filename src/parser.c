@@ -128,10 +128,21 @@ static t_cmd	*parse_pipe(t_token **token)
 {
 	t_cmd	*cmd;
 
+	if (peek(token, TK_PIPE))
+	{
+		parser_error(*token);
+		return (NULL);
+	}
 	cmd = parse_exec(token);
 	if (cmd && peek(token, TK_PIPE))
 	{
 		consume(token, TK_PIPE);
+		if (peek(token, TK_EOF))
+		{
+			parser_error(*token);
+			free_cmd(cmd);
+			return (NULL);
+		}
 		cmd = init_pipecmd(cmd, parse_pipe(token));
 	}
 	return (cmd);

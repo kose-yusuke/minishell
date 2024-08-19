@@ -1,4 +1,5 @@
 /* parser_init.c - パーサーの初期化関数の定義 */
+#include "free.h"
 #include "parser.h"
 #include "utils.h"
 #include "xlibc.h"
@@ -44,6 +45,12 @@ t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right)
 {
 	t_pipecmd	*cmd;
 
+	if (!left || !right)
+	{
+		free_cmd(left);
+		free_cmd(right);
+		return (NULL);
+	}
 	cmd = xmalloc(sizeof(*cmd));
 	ft_bzero(cmd, sizeof(*cmd));
 	cmd->type = PIPE;
