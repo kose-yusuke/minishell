@@ -1,5 +1,5 @@
-/* parser_utils.c - パーサー関連のユーティリティ関数 */
-#include "parser.h"
+/* token_operations.c */
+#include "token.h"
 
 /**
  * トークンストリームを次に進める

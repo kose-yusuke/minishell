@@ -1,4 +1,4 @@
-/* token_utils.c - トークン関連のユーティリティ関数 */
+/* token_checks.c */
 #include "token.h"
 
 bool	is_word_token(t_token *token)
@@ -31,4 +31,3 @@ bool	is_redir_token(t_token *token)
 		return (true);
 	return (false);
 }
-
