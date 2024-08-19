@@ -51,8 +51,6 @@ void							print_redir_list(t_redir *redir_list);
 void							print_tokens(t_token *token);
 void							print_word_list(t_word *word_list);
 
-
-
 // calloc
 void							*ft_calloc(size_t count, size_t size);
 // itoa
@@ -60,9 +58,5 @@ char							*ft_itoa(int n);
 
 /* signal.c */
 void							setup_signals(void);
-
-/* safe_*.c */
-int								safe_dup(int fildes);
-int								safe_dup2(int fildes, int fildes2);
 
 #endif
