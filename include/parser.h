@@ -2,7 +2,7 @@
 #ifndef PARSER_H
 # define PARSER_H
 
-# include "minishell.h"
+# include "ast.h"
 
 /* parser.c - パーサー関連の関数 */
 t_cmd	*parser(t_token *token);

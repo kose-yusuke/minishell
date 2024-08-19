@@ -1,13 +1,11 @@
 /* readline.c - 入力関連の関数 */
-#include "ft_readline.h"
-#include "minishell.h"
+#include "error.h"
 #include "free.h"
+#include "ft_readline.h"
+#include "heredoc.h" // delete_tmp_files, run_heredoc
 
-
-void	reset_resources(t_mgr *mgr)
+static void	reset_resources(t_mgr *mgr)
 {
-	if (mgr->exit_status == 0 ) // これなんだっけ？
-		mgr->exit_status = 1;
 	delete_tmp_files();
 	free_tokens(mgr->token);
 	free_cmd(mgr->cmd);
@@ -15,7 +13,7 @@ void	reset_resources(t_mgr *mgr)
 	mgr->cmd = NULL;
 }
 
-void	interpret(char *line, t_mgr *mgr)
+static void	interpret(char *line, t_mgr *mgr)
 {
 	if (g_status == 1)
 		mgr->exit_status = g_status;
@@ -24,21 +22,17 @@ void	interpret(char *line, t_mgr *mgr)
 	mgr->token = lexer(line);
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
-		report_error("lexer error", 0, 0); // ?
+		report_error("lexer", "failed to tokenize", 0);
 		return ;
 	}
-	if (mgr->token->type == TK_EOF)
-	{
+	if (peek(&(mgr->token), TK_EOF))
 		return ;
-	}
-	// print_tokens(mgr->token); // debug
 	mgr->cmd = parser(mgr->token);
-	if (!mgr->cmd || mgr->cmd->type == NONE)
+	if (!mgr->cmd)
 	{
-		report_error("parser error", 0, 0); // ?
+		mgr->exit_status = 258;
 		return ;
 	}
-	// print_cmd(mgr->cmd); // デバッグ用の出力
 	run_expansion(mgr->cmd, mgr->env_table);
 	run_heredoc(mgr->cmd, mgr);
 	run_cmd(mgr->cmd, mgr);
@@ -50,7 +44,6 @@ void	ft_readline(t_mgr *mgr)
 	char	*line;
 
 	rl_outstream = stderr;
-	mgr->exit_status = 0; // ?
 	idle_setup_signals();
 	while (1)
 	{
@@ -58,10 +51,8 @@ void	ft_readline(t_mgr *mgr)
 		if (!line)
 		{
 			free_mgr_resources(mgr);
-			//exit statusは何で返すのか？
+			// exit statusは何で返すのか？
 			exit(255);
-			// error_exit("failed to read line", EXIT_FAILURE); // ?
-			// break ;
 		}
 		if (*line)
 		{
