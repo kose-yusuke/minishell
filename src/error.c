@@ -1,6 +1,14 @@
 /* error.c - エラー処理に関する関数の定義。 */
-#include "minishell.h"
 #include "error.h"
+#include "utils.h"
+#include <unistd.h>
+
+void	memory_error_and_exit(char *func_name)
+{
+	write(2, func_name, ft_strlen(func_name));
+	write(2, ": out of virtual memory\n", 24);
+	exit(EXIT_FAILURE);
+}
 
 // TODO: デバッグ用の関数
 void	assert_error(const char *msg, char *location)
@@ -52,10 +60,11 @@ static const char	*get_token_string(t_token *token)
 
 void	parser_error(t_token *unexpected_token)
 {
+	const char	*token_str = get_token_string(unexpected_token);
+
 	write(STDERR_FILENO, "minishell: syntax error near unexpected token `", 47);
 	if (unexpected_token)
 	{
-		const char *token_str = get_token_string(unexpected_token);
 		write(STDERR_FILENO, token_str, ft_strlen(token_str));
 	}
 	write(STDERR_FILENO, "'\n", 2);

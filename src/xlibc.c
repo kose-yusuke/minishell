@@ -1,15 +1,8 @@
 /* xlibc.c - 標準Cライブラリのラッパー関数 */
-#include "utils.h"
+#include "error.h"
 #include "xlibc.h"
 #include <stdio.h>
 #include <unistd.h>
-
-static void	memory_error_and_exit(char *func_name)
-{
-	write(2, func_name, ft_strlen(func_name));
-	write(2, ": out of virtual memory\n", 24);
-	exit(EXIT_FAILURE);
-}
 
 void	*xmalloc(size_t bytes)
 {
