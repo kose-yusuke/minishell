@@ -1,6 +1,7 @@
 /* ft_hash.c - ハッシュテーブルの実装 */
 #include "ft_hash.h"
 #include "minishell.h"
+#include "utils.h"
 
 static unsigned long	hash_djb2(unsigned char *str)
 {
@@ -62,7 +63,7 @@ char	*search(t_hash_table *table, const char *key)
 	return (NULL);
 }
 
-int delete(t_hash_table *table, const char *key)
+int delete (t_hash_table *table, const char *key)
 {
 	unsigned int	index;
 	t_hash_node		*var;
@@ -120,7 +121,7 @@ t_hash_table	*create_hash_table(void)
 	table = malloc(sizeof(t_hash_table));
 	if (!table)
 		return (NULL);
-	memset(table, 0, sizeof(t_hash_table));
+	ft_bzero(table, sizeof(t_hash_table));
 	table->insert = insert;
 	table->search = search;
 	table->delete = delete;
