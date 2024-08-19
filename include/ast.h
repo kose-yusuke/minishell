@@ -21,7 +21,6 @@ typedef struct s_redir
 
 typedef enum e_cmd_type
 {
-	NONE,
 	EXEC,
 	PIPE
 }						t_cmd_type;
@@ -44,6 +43,5 @@ typedef struct s_pipecmd
 	struct s_cmd		*left;
 	struct s_cmd		*right;
 }						t_pipecmd;
-
 
 #endif
