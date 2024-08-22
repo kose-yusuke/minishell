@@ -1,5 +1,5 @@
-/* ast.c - AST（抽象構文木）に関する関数の実装 */
-#include "ast.h"
+/* free_ast.c - AST（抽象構文木）の解放関数 */
+#include "free.h"
 #include "minishell.h"
 
 /* free_word - リンクリスト形式のt_word構造体を解放する関数 */
@@ -30,7 +30,7 @@ void	free_redir(t_redir *redir)
 }
 
 // ダブルフリー防止用
-void	free_right_cmd(t_cmd *cmd)
+static void	free_right_cmd(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
 	t_word		*next;

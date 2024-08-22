@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/09 23:57:37 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/08/20 03:02:15 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ static void	ft_heredoc(t_redir *redir, t_mgr *mgr)
 		if (redir->word_list->token->type == TK_WORD)
 		{
 			expand_heredoc(&line, mgr->env_table);
-			expand_heredoc_exit_status(&line, mgr->status);
+			expand_heredoc_exit_status(&line, mgr->exit_status);
 		}
 		write(fd, line, strlen(line));
 		write(fd, "\n", 1);
@@ -171,7 +171,7 @@ void	run_heredoc(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || cmd->type == NONE || !mgr)
+	if (!cmd || !mgr)
 		return ;
 	else if (cmd->type == EXEC)
 	{
@@ -239,7 +239,7 @@ void	delete_tmp_files(void)
 // 		if (delimi_token->type == TK_WORD)
 // 		{
 // 			expand_heredoc(&line, mgr->env_table);
-// 			expand_heredoc_exit_status(&line, mgr->status);
+// 			expand_heredoc_exit_status(&line, mgr->exit_status);
 // 		}
 // 		write(pfd[1], line, strlen(line));
 // 		write(pfd[1], "\n", 1);

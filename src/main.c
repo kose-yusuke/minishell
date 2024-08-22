@@ -1,5 +1,6 @@
 /* main.c - メイン関数  */
 #include "minishell.h"
+#include "free.h"
 #include <libc.h>
 
 __attribute__((destructor))
@@ -40,5 +41,5 @@ int	main(int argc, char **argv)
 	init_mgr(&mgr);
 	ft_readline(&mgr);
 	free_mgr_resources(&mgr);
-	return (mgr.status); // ?
+	return (0);
 }

@@ -24,7 +24,6 @@ typedef enum e_token_type
 	TK_HEREDOC,   // ヒアドキュメント '<<'
 	TK_APPEND,    // リダイレクト追加 '>>'
 	TK_BLANK,     // 空白 ' ' または '\t'
-	TK_NL         // 改行 '\n'
 }						t_token_type;
 
 typedef struct s_token
@@ -34,15 +33,20 @@ typedef struct s_token
 	struct s_token		*next;
 }						t_token;
 
-/* token_utils.c */
+/* token_checks.c */
 bool					is_word_token(t_token *token);
 bool					is_quoted_token(t_token *token);
 bool					is_word_or_quoted_token(t_token *token);
 bool					is_io_num_token(t_token *token);
 bool					is_redir_token(t_token *token);
 
-t_token					*new_token(t_token_type type, char **q, char **eq);
+/* token_operations.c  */
+void					advance(t_token **token);
+void					skip_blanks(t_token **token);
+bool					peek(t_token **token, t_token_type type);
+bool					consume(t_token **token, t_token_type type);
+t_token					*next_token(t_token **token);
 
-void					free_tokens(t_token *token);
+t_token					*new_token(t_token_type type, char **q, char **eq);
 
 #endif

@@ -1,4 +1,6 @@
+/* exec_redir.c */
 #include "redirect.h"
+#include "xlibc.h"
 
 static bool	is_valid_redir(t_redir *redir)
 {
@@ -105,14 +107,14 @@ int	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	redir = redir_list;
 	while (redir)
 	{
-		expand_redir_for_exit_status(redir, mgr->status);
+		expand_redir_for_exit_status(redir, mgr->exit_status);
 		filefd = open_filepath(redir);
 		if (filefd == -1)
 			return (1); // error msgは先の関数内で出力, redir中止
 		if (is_valid_redir(redir))
 		{
-			redir->backup_fd = safe_dup(redir->fd);
-			safe_dup2(filefd, redir->fd);
+			redir->backup_fd = xdup(redir->fd);
+			xdup2(filefd, redir->fd);
 		}
 		close(filefd);
 		redir = redir->next;
@@ -128,7 +130,7 @@ int	exec_redir(t_redir *redir_list, t_mgr *mgr)
 // 	restore_redir(redir->next);
 // 	if(redir->backup_fd != -1)
 // 	{
-// 		safe_dup2(redir->backup_fd, redir->fd);
+// 		xdup2(redir->backup_fd, redir->fd);
 // 		close(redir->backup_fd);
 // 	}
 // }

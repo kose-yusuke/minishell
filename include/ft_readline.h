@@ -2,14 +2,8 @@
 #ifndef READLINE_H
 # define READLINE_H
 
-# include "expander.h"
-# include "heredoc.h"
-# include "lexer.h"
-# include "parser.h"
-# include "token.h"
+# include "minishell.h"
 
 void	ft_readline(t_mgr *mgr);
-void	interpret(char *line, t_mgr *mgr);
-void	reset_resources(t_mgr *mgr);
 
 #endif

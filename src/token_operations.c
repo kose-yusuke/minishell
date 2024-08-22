@@ -1,5 +1,5 @@
-/* parser_utils.c - パーサー関連のユーティリティ関数 */
-#include "parser.h"
+/* token_operations.c */
+#include "token.h"
 
 /**
  * トークンストリームを次に進める
@@ -11,12 +11,12 @@ void	advance(t_token **token)
 }
 
 /**
- * 空白（スペース、タブ）と改行をスキップする。
+ * 空白（スペース、タブ）をスキップする。
  * これにより、トークン解析時に無視すべき文字を効率的に処理する。
  */
 void	skip_blanks(t_token **token)
 {
-	while (*token && ((*token)->type == TK_BLANK || (*token)->type == TK_NL))
+	while (*token && (*token)->type == TK_BLANK)
 		advance(token);
 }
 

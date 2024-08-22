@@ -132,7 +132,7 @@ void	run_expansion(t_cmd *cmd, t_hash_table *env_table)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || cmd->type == NONE || !env_table)
+	if (!cmd || !env_table)
 		return ;
 	else if (cmd->type == EXEC)
 	{

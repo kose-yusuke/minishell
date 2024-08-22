@@ -1,5 +1,6 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
 #include "executor.h"
+#include "free.h"
 #include "minishell.h"
 
 char	*search_path(const char *word)
@@ -37,7 +38,7 @@ char	*search_path(const char *word)
 	return (NULL);
 }
 
-int		exec_cmd(t_cmd *cmd, t_mgr *mgr)
+int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
@@ -59,8 +60,8 @@ int		exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		// exit(0);
 		return (1);
 	}
-	// printf("%d\n",mgr->status);
-	expand_word_list_for_exit_status(ecmd->word_list, mgr->status);
+	// printf("%d\n",mgr->exit_status);
+	expand_word_list_for_exit_status(ecmd->word_list, mgr->exit_status);
 	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
 	if (!argv)
@@ -129,7 +130,7 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	int			saved_stdin;
 	int			saved_stdout;
 	t_execcmd	*ecmd;
-	int error_status;
+	int			error_status;
 
 	error_status = 0;
 	saved_stdin = dup(STDIN_FILENO);
@@ -138,20 +139,20 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		assert_error("Error: ", "run_cmd failed\n");
 	}
-	else if (!cmd || cmd->type == NONE)
+	else if (!cmd)
 	{
 		return ; // or exit(0); ?
 	}
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-        error_status = exec_redir(ecmd->redir_list, mgr);
+		error_status = exec_redir(ecmd->redir_list, mgr);
 		if (error_status != 0)
 		{
-			mgr->status = error_status;
+			mgr->exit_status = error_status;
 			return ;
 		}
-        mgr->status = exec_cmd(cmd, mgr);
+		mgr->exit_status = exec_cmd(cmd, mgr);
 		// restore_fd(cmd); <- saved_stdin, saved_stdoutを使っているのでいらない
 	}
 	else if (cmd->type == PIPE)

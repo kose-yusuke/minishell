@@ -1,48 +1,94 @@
-/* error.c -- Functions for handling errors. */
-#include "minishell.h"
+/* error.c - エラー処理に関する関数の定義。 */
+#include "error.h"
+#include "utils.h"
+#include <unistd.h>
 
-// TODO: おそらくdebug用の関数
-void	assert_error(const char *msg, char *location)
+void	memory_error_and_exit(char *func_name)
 {
-	dprintf(STDERR_FILENO, "Assert Error: %s near %s\n", msg, location);
-	exit(255);
+	write(2, func_name, ft_strlen(func_name));
+	write(2, ": out of virtual memory\n", 24);
+	exit(EXIT_FAILURE);
 }
 
-// TODO: おそらくdebug用の関数
-void	todo(const char *msg)
+// TODO: デバッグ用の関数
+void	assert_error(const char *msg, char *location)
 {
-	dprintf(STDERR_FILENO, "TODO: %s\n", msg);
+	write(STDERR_FILENO, "Assert Error: ", 14);
+	if (msg)
+		write(STDERR_FILENO, msg, ft_strlen(msg));
+	if (location)
+	{
+		write(STDERR_FILENO, " near ", 6);
+		write(STDERR_FILENO, location, ft_strlen(location));
+	}
+	write(STDERR_FILENO, "\n", 1);
 	exit(255);
 }
 
 void	error_exit(const char *msg, int exit_status)
 {
-	dprintf(STDERR_FILENO, "minishell: %s\n", msg);
+	write(STDERR_FILENO, "minishell: ", 11);
+	if (msg)
+		write(STDERR_FILENO, msg, ft_strlen(msg));
+	write(STDERR_FILENO, "\n", 1);
 	exit(exit_status);
 }
 
-void	lexer_error(const char *location, char **rest, char *line)
+static const char	*get_token_string(t_token *token)
 {
-	dprintf(STDERR_FILENO, "minishell: syntax error near %s\n", location);
-	while (*line)
-		line++;
-	*rest = line;
+	if (token->type == TK_EOF)
+		return ("newline");
+	if ((token->type == TK_WORD || token->type == TK_SQUOTE
+			|| token->type == TK_DQUOTE) && token->word)
+		return ((const char *)(token->word));
+	if (token->type == TK_IO_NUM)
+		return ("IO number");
+	if (token->type == TK_PIPE)
+		return ("|");
+	if (token->type == TK_REDIR_IN)
+		return ("<");
+	if (token->type == TK_REDIR_OUT)
+		return (">");
+	if (token->type == TK_HEREDOC)
+		return ("<<");
+	if (token->type == TK_APPEND)
+		return (">>");
+	if (token->type == TK_BLANK)
+		return ("blank");
+	return ("unknown or undefined token");
+}
+
+void	parser_error(t_token *unexpected_token)
+{
+	const char	*token_str = get_token_string(unexpected_token);
+
+	write(STDERR_FILENO, "minishell: syntax error near unexpected token `", 47);
+	if (unexpected_token)
+	{
+		write(STDERR_FILENO, token_str, ft_strlen(token_str));
+	}
+	write(STDERR_FILENO, "'\n", 2);
 }
 
 void	report_error(char *cmd, char *file, char *info)
 {
-	fprintf(stderr, "minishell:");
+	write(STDERR_FILENO, "minishell:", 10);
 	if (cmd)
 	{
-		fprintf(stderr, " %s:", cmd);
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, cmd, ft_strlen(cmd));
+		write(STDERR_FILENO, ":", 1);
 	}
 	if (file)
 	{
-		fprintf(stderr, " %s:", file);
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, file, ft_strlen(file));
+		write(STDERR_FILENO, ":", 1);
 	}
 	if (info)
 	{
-		fprintf(stderr, " %s", info);
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, info, ft_strlen(info));
 	}
-	fprintf(stderr, "\n");
+	write(STDERR_FILENO, "\n", 1);
 }
