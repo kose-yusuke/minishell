@@ -22,6 +22,6 @@ typedef struct s_mgr
 	t_hash_table				*env_table;
 }								t_mgr;
 
-extern volatile sig_atomic_t	g_status;
+extern volatile sig_atomic_t	g_signal_status;
 
 #endif

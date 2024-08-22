@@ -22,9 +22,9 @@ static void	reset_resources(t_mgr *mgr)
 
 static void	interpret(char *line, t_mgr *mgr)
 {
-	if (g_status == 1)
-		mgr->exit_status = g_status;
-	g_status = 0;
+	if (g_signal_status == 1)
+		mgr->exit_status = g_signal_status;
+	g_signal_status = 0;
 	exec_parent_setup_signals();
 	mgr->token = lexer(line);
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
