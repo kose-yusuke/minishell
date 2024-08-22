@@ -1,3 +1,5 @@
+#include "error.h"
+#include "expander.h"
 #include "minishell.h"
 
 /**
@@ -39,7 +41,7 @@ void	expand_exit_status(char **word, char **cur_ptr, int exit_status)
 	if (!new_word)
 	{
 		// TODO: error handling
-		report_error("expand_exit_status", NULL, strerror(errno));
+		report_error("expand_exit_status", NULL, "calloc failed");
 		*cur_ptr = NULL;
 		return ;
 	}
@@ -69,7 +71,7 @@ static void	expand_word_token_for_exit_status(t_token *word_token,
 
 void	expand_word_list_for_exit_status(t_word *word_list, int exit_status)
 {
-	t_word *word_to_expand;
+	t_word	*word_to_expand;
 
 	word_to_expand = word_list;
 	while (word_to_expand)

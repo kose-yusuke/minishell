@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   setup_signal.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/13 12:26:08 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/13 13:06:34 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/08/22 13:22:42 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "signals.h"
 
 // idle状態の時のシグナルのセットアップ
 void idle_setup_signals(void)

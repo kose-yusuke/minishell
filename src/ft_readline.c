@@ -1,8 +1,15 @@
 /* readline.c - 入力関連の関数 */
 #include "error.h"
+#include "executor.h"
+#include "expander.h"
 #include "free.h"
 #include "ft_readline.h"
-#include "heredoc.h" // delete_tmp_files, run_heredoc
+#include "heredoc.h"
+#include "lexer.h"
+#include "parser.h"
+#include "signals.h"
+#include <readline/history.h>
+#include <readline/readline.h>
 
 static void	reset_resources(t_mgr *mgr)
 {

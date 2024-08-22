@@ -2,6 +2,9 @@
 #include "executor.h"
 #include "free.h"
 #include "minishell.h"
+#include "builtin_cmd.h" // convert_list_to_array
+#include "error.h"
+#include "expander.h"
 
 char	*search_path(const char *word)
 {

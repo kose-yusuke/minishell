@@ -6,11 +6,15 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/20 03:02:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/22 13:21:24 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "error.h"
+#include "expander.h"
 #include "heredoc.h"
+#include <readline/history.h>
+#include <readline/readline.h>
 
 /**
  * heredoc 本文中の`$?` の展開を行う関数

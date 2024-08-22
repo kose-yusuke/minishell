@@ -1,5 +1,7 @@
 /* exec_redir.c */
-#include "redirect.h"
+#include "error.h"
+#include "executor.h"
+#include "expander.h"
 #include "xlibc.h"
 
 static bool	is_valid_redir(t_redir *redir)

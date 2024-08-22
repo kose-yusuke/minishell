@@ -6,13 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/17 14:27:40 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/22 02:06:06 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "free.h"
-
+#include "builtin_cmd.h"
+#include "error.h"
 
 void print_argv(char **argv) {
     int i = 0;

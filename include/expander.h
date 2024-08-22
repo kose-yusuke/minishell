@@ -3,9 +3,7 @@
 # define EXPANDER_H
 
 # include "ast.h"
-# include "env.h"
-# include "minishell.h"
-# include <errno.h>
+# include "ft_hash.h"
 
 # define IFS " \t\n" // TODO: move to header file
 void	expand_exit_status(char **word, char **cur_ptr, int exit_status);

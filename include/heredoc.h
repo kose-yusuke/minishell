@@ -1,7 +1,7 @@
 #ifndef HEREDOC_H
 # define HEREDOC_H
 
-# include "expander.h"
+
 # include "minishell.h"
 
 # define FILE_TEMPLATE "/tmp/heredoc"

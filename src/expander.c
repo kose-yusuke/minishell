@@ -1,5 +1,5 @@
 /* expand.c - 展開処理 */
-
+#include "error.h"
 #include "expander.h"
 #include "minishell.h"
 

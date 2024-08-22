@@ -2,8 +2,9 @@
 #ifndef DEBUG_HELPERS_H
 # define DEBUG_HELPERS_H
 
-# include "minishell.h"
+# include "ast.h"
 
+/* debug_helpers.c */
 void	print_tokens(t_token *token);
 void	print_word_list(t_word *word_list);
 void	print_redir_list(t_redir *redir_list);

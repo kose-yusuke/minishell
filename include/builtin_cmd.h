@@ -3,7 +3,8 @@
 # define BUILTINS_H
 
 # include "minishell.h"
-# include <string.h>
+# include <limits.h>
+
 /* builtin.c */
 bool	is_builtin(t_execcmd *ecmd);
 int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr);

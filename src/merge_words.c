@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "env.h"
 #include "minishell.h"
+#include "error.h"
 
 static bool	should_merge(t_word *word)
 {

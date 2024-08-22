@@ -1,14 +1,16 @@
 /* main.c - メイン関数  */
-#include "minishell.h"
+#include "error.h"
 #include "free.h"
+#include "ft_readline.h"
+#include "minishell.h"
 #include <libc.h>
 
-__attribute__((destructor))
-static void destructor() {
-    system("leaks -q minishell");
+__attribute__((destructor)) static void destructor()
+{
+	system("leaks -q minishell");
 }
 
-volatile sig_atomic_t g_status = 0;
+volatile sig_atomic_t	g_status = 0;
 
 static void	init_mgr(t_mgr *mgr)
 {
