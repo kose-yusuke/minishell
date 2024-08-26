@@ -17,6 +17,7 @@
 - [minishellに関する記事](https://velog-io.translate.goog/@chez_bono/Minishell?_x_tr_sl=auto&_x_tr_tl=ja&_x_tr_hl=en-US&_x_tr_pto=wapp)
 - [man bash/和訳](https://ja.manpages.org/bash)
 - [bash git](https://git.savannah.gnu.org/cgit/bash.git/)
+- [GNU Readline Library](https://tiswww.cwru.edu/php/chet/readline/readline.html)
 
 ## 使用可能な関数一覧と説明
 

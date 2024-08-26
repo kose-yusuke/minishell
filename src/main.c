@@ -10,7 +10,7 @@ __attribute__((destructor)) static void destructor()
 	system("leaks -q minishell");
 }
 
-volatile sig_atomic_t	g_signal_status = 0;
+volatile sig_atomic_t	g_status = 0;
 
 static void	init_mgr(t_mgr *mgr)
 {

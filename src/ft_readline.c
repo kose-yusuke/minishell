@@ -1,4 +1,5 @@
 /* readline.c - 入力関連の関数 */
+#include "debug_helpers.h" // TODO: remove
 #include "error.h"
 #include "executor.h"
 #include "expander.h"
@@ -11,12 +12,28 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+void	print_status(int status, char *location)
+{
+	char	*status_str;
+
+	if (status != 0 && false)
+	{
+		write(1, "==========================================", 42);
+		write(1, "\n", 1);
+		write(1, location, ft_strlen(location));
+		status_str = ft_itoa(status);
+		write(1, " : ", 3);
+		write(1, status_str, ft_strlen(status_str));
+		write(1, "\n", 1);
+	}
+}
+
 static void	reset_status(t_mgr *mgr)
 {
-	if (g_signal_status == 1)
+	if (g_status == 1)
 	{
-		mgr->exit_status = g_signal_status;
-		g_signal_status = 0;
+		mgr->exit_status = g_status;
+		g_status = 0;
 	}
 }
 
@@ -31,11 +48,9 @@ static void	reset_resources(t_mgr *mgr)
 
 static void	interpret(char *line, t_mgr *mgr)
 {
-	// if (g_signal_status == 1)
-	// 	mgr->exit_status = g_signal_status;
-	// g_signal_status = 0;
-	// exec_parent_setup_signals();
+	print_status(g_status, "interpret"); // TODO: remove
 	mgr->token = lexer(line);
+	print_status(g_status, "lexer done"); // TODO: remove
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
 		report_error("lexer", "failed to tokenize", 0);
@@ -44,67 +59,18 @@ static void	interpret(char *line, t_mgr *mgr)
 	if (peek(&(mgr->token), TK_EOF))
 		return ;
 	mgr->cmd = parser(mgr->token);
+	print_status(g_status, "parser done"); // TODO: remove
 	if (!mgr->cmd)
 	{
 		mgr->exit_status = 258;
 		return ;
 	}
 	run_expansion(mgr->cmd, mgr->env_table);
+	print_status(g_status, "expansion done"); // TODO: remove
 	run_heredoc(mgr->cmd, mgr);
+	print_status(g_status, "heredoc done"); // TODO: remove
 	run_cmd(mgr->cmd, mgr);
-}
-
-void	handle_sigint(int sig)
-{
-	if (sig == SIGINT)
-	{
-		g_signal_status = 1;
-	}
-}
-
-void	setup_signals(void)
-{
-	struct sigaction	sa;
-
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handle_sigint;
-	// SIGINTのハンドラを設定 Ctrl+C を受け取る
-	if (sigaction(SIGINT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(EXIT_FAILURE);
-	}
-	sa.sa_handler = SIG_IGN;
-	// SIGQUITのハンドラを設定 Ctrl + \ を無視
-	if (sigaction(SIGQUIT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(EXIT_FAILURE);
-	}
-}
-
-static int	basic_sigint_hook(void)
-{
-	if (g_signal_status == 1)
-	{
-		rl_replace_line("", 0);
-		rl_done = 1;
-		g_signal_status = 0;
-		return (0);
-	}
-	return (1);
-}
-
-void	init_signal(void)
-{
-	extern int	_rl_echo_control_chars;
-
-	_rl_echo_control_chars = 0; // 制御文字^Cを表示しない
-	rl_catch_signals = 0;       // Ctrl + C で終了しない
-	if (isatty(STDIN_FILENO))
-		rl_event_hook = basic_sigint_hook;
-	setup_signals();
+	print_status(g_status, "run_cmd done"); // TODO: remove
 }
 
 void	ft_readline(t_mgr *mgr)
@@ -115,16 +81,17 @@ void	ft_readline(t_mgr *mgr)
 	init_signal();
 	while (1)
 	{
+		print_status(g_status, "current global status");        // TODO: remove
+		print_status(mgr->exit_status, "previous exit status"); // TODO: remove
 		line = readline("minishell$ ");
 		if (!line)
 		{
+			write(1, "exit\n", 5);
 			free_mgr_resources(mgr);
-			exit(255); // exit statusは何で返すのか？
+			exit(255); // ？
 		}
 		if (*line)
 		{
-			if (mgr->exit_status == 0)
-				write(1, "healthy\n", 8);
 			add_history(line);
 			interpret(line, mgr);
 		}

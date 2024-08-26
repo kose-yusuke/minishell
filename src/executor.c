@@ -141,8 +141,9 @@ void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	if (!mgr || !mgr->env_table)
 	{
 		assert_error("Error: ", "run_cmd failed\n");
+		return ;
 	}
-	else if (!cmd)
+	else if (!cmd || g_status == 1)
 	{
 		return ; // or exit(0); ?
 	}
