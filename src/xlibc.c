@@ -33,6 +33,8 @@ int	xdup2(int oldfd, int newfd)
 	return (newfd);
 }
 
+
+
 /*
 note:
 minishellの使用許可内かつ`xlibc.c` に収めても違和感のない関数

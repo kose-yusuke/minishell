@@ -16,7 +16,7 @@ void	print_status(int status, char *location)
 {
 	char	*status_str;
 
-	if (status != 0 && false)
+	if (status != 0)
 	{
 		write(1, "==========================================", 42);
 		write(1, "\n", 1);
@@ -70,7 +70,7 @@ static void	interpret(char *line, t_mgr *mgr)
 	run_heredoc(mgr->cmd, mgr);
 	print_status(g_status, "heredoc done"); // TODO: remove
 	run_cmd(mgr->cmd, mgr);
-	print_status(g_status, "run_cmd done"); // TODO: remove
+	print_status(g_status, "run_cmd done"); // TODO: remove　
 }
 
 void	ft_readline(t_mgr *mgr)

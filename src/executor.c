@@ -1,10 +1,11 @@
 /* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
-#include "executor.h"
-#include "free.h"
-#include "minishell.h"
 #include "builtin_cmd.h" // convert_list_to_array
 #include "error.h"
+#include "executor.h"
 #include "expander.h"
+#include "free.h"
+#include "minishell.h"
+#include "xlibc.h"
 
 char	*search_path(const char *word)
 {
@@ -41,7 +42,7 @@ char	*search_path(const char *word)
 	return (NULL);
 }
 
-int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
+int	launch_command(t_cmd *cmd, t_mgr *mgr)
 {
 	t_execcmd	*ecmd;
 	char		**argv;
@@ -53,17 +54,12 @@ int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	if (cmd->type != EXEC)
 	{
 		return (1);
-		// assert_error("Error: unexpected cmd", "exec_cmd failed\n");
 	}
 	ecmd = (t_execcmd *)cmd;
 	if (!ecmd->word_list || !ecmd->word_list->token)
 	{
-		// TODO: execveを使わない時には自力でfdをクローズする
-		// close_fd();
-		// exit(0);
-		return (1);
+		return (0);
 	}
-	// printf("%d\n",mgr->exit_status);
 	expand_word_list_for_exit_status(ecmd->word_list, mgr->exit_status);
 	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
@@ -86,10 +82,6 @@ int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 			return (127);
 		}
 	}
-	// TODO: パイプやリダイレクト以下の文字列も引数として含めてしまっているため, 少し処理を変える必要あり.
-	// // TODO: execveが失敗すると、open on O_CLOSEXEC が機能しない
-	// // そのため、自力でfdをクローズする必要がある
-	// assert_error("Error: execve failed\n", "exec_cmd failed\n");
 	pid = fork();
 	if (pid < 0)
 	{
@@ -117,63 +109,50 @@ int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 		}
 	}
 	free(path);
-	// free argv
-	i = 0;
-	while (argv && argv[i])
-	{
-		free(argv[i]);
-		i++;
-	}
-	free(argv);
+	free_argv(argv);
 	return (0);
+}
+
+int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
+{
+	t_execcmd	*ecmd;
+	int			saved_stdin;
+	int			saved_stdout;
+	int			saved_stderr;
+	int			status;
+
+	ecmd = (t_execcmd *)cmd;
+	saved_stdin = xdup(STDIN_FILENO);
+	saved_stdout = xdup(STDOUT_FILENO);
+	saved_stderr = xdup(STDERR_FILENO);
+	status = exec_redir(ecmd->redir_list, mgr);
+	if (status == 0)
+	{
+		status = launch_command(cmd, mgr);
+	}
+	xdup2(saved_stdin, STDIN_FILENO);
+	xdup2(saved_stdout, STDOUT_FILENO);
+	xdup2(saved_stderr, STDERR_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
+	close(saved_stderr);
+	return (status);
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)
 {
-	int			saved_stdin;
-	int			saved_stdout;
-	t_execcmd	*ecmd;
-	int			error_status;
-
-	error_status = 0;
-	saved_stdin = dup(STDIN_FILENO);
-	saved_stdout = dup(STDOUT_FILENO);
-	if (!mgr || !mgr->env_table)
+	if (!cmd || !mgr || !mgr->env_table || g_status != 0)
 	{
-		assert_error("Error: ", "run_cmd failed\n");
 		return ;
 	}
-	else if (!cmd || g_status == 1)
+	if (cmd->type == EXEC)
 	{
-		return ; // or exit(0); ?
-	}
-	else if (cmd->type == EXEC)
-	{
-		ecmd = (t_execcmd *)cmd;
-		error_status = exec_redir(ecmd->redir_list, mgr);
-		if (error_status != 0)
-		{
-			mgr->exit_status = error_status;
-			return ;
-		}
 		mgr->exit_status = exec_cmd(cmd, mgr);
-		// restore_fd(cmd); <- saved_stdin, saved_stdoutを使っているのでいらない
 	}
 	else if (cmd->type == PIPE)
 	{
+		// pipeのexit status　対応はあとで
+		// mgr->exit_status = exec_pipe(cmd, mgr);
 		exec_pipe(cmd, mgr);
 	}
-	else
-	{
-		assert_error("Error: ", "run_cmd failed\n");
-	}
-	// 標準入力と標準出力を元に戻す
-	if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout,
-			STDOUT_FILENO) == -1)
-	{
-		perror("dup2");
-		exit(EXIT_FAILURE);
-	}
-	close(saved_stdin);
-	close(saved_stdout);
 }
