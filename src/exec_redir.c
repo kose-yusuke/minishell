@@ -70,7 +70,7 @@ static int	open_filepath(t_redir *redir, char *cmd_name)
 	return (fd);
 }
 
-int	exec_redir(t_execcmd *ecmd)
+t_status_code	exec_redir(t_execcmd *ecmd)
 {
 	t_redir	*redir;
 	char	*cmd_name;
@@ -83,7 +83,7 @@ int	exec_redir(t_execcmd *ecmd)
 		filefd = open_filepath(redir, cmd_name);
 		if (filefd == -1)
 		{
-			return (-1);
+			return (SC_GENERAL_ERROR);
 		}
 		if (is_valid_redir(redir))
 		{
@@ -92,5 +92,5 @@ int	exec_redir(t_execcmd *ecmd)
 		close(filefd);
 		redir = redir->next;
 	}
-	return (0);
+	return (SC_SUCCESS);
 }
