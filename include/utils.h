@@ -20,4 +20,10 @@ char	*ft_strdup(char *src);
 void	*ft_calloc(size_t count, size_t size);
 // itoa
 char	*ft_itoa(int n);
+
+char	*ft_strncpy(char *dest, const char *src, size_t n);
+char	*ft_strcpy(char *dest, const char *src);
+
+char	**ft_split(char const *s, char c);
+
 #endif

@@ -70,7 +70,7 @@ static int	open_filepath(t_redir *redir, char *cmd_name)
 	return (fd);
 }
 
-t_status_code	exec_redir(t_execcmd *ecmd)
+t_status	exec_redir(t_execcmd *ecmd)
 {
 	t_redir	*redir;
 	char	*cmd_name;

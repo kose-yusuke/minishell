@@ -2,9 +2,7 @@
 #include "builtin_cmd.h" // convert_list_to_array
 #include "error.h"
 #include "executor.h"
-#include "expander.h"
 #include "free.h"
-#include "minishell.h"
 #include "xlibc.h"
 
 char	*search_path(const char *word)
@@ -60,15 +58,12 @@ int	launch_command(t_cmd *cmd, t_mgr *mgr)
 	{
 		return (0);
 	}
-	expand_word_list_for_exit_status(ecmd->word_list, mgr->exit_status);
-	merge_words(ecmd->word_list);
 	argv = convert_list_to_array(ecmd);
 	if (!argv)
 		return (1);
 	if (is_builtin(ecmd))
 	{
 		exec_builtin(ecmd, mgr);
-		// system("leaks -q minishell");
 		free_argv(argv);
 		return (0);
 	}
@@ -119,24 +114,21 @@ int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
 	int			saved_stdin;
 	int			saved_stdout;
 	int			saved_stderr;
-	int			status;
 
 	ecmd = (t_execcmd *)cmd;
 	saved_stdin = xdup(STDIN_FILENO);
 	saved_stdout = xdup(STDOUT_FILENO);
 	saved_stderr = xdup(STDERR_FILENO);
-	status = exec_redir(ecmd->redir_list, mgr);
-	if (status == 0)
-	{
-		status = launch_command(cmd, mgr);
-	}
+	mgr->exit_status = exec_redir(ecmd);
+	if (mgr->exit_status == SC_SUCCESS)
+		mgr->exit_status = launch_command(cmd, mgr);
 	xdup2(saved_stdin, STDIN_FILENO);
 	xdup2(saved_stdout, STDOUT_FILENO);
 	xdup2(saved_stderr, STDERR_FILENO);
 	close(saved_stdin);
 	close(saved_stdout);
 	close(saved_stderr);
-	return (status);
+	return (mgr->exit_status);
 }
 
 void	run_cmd(t_cmd *cmd, t_mgr *mgr)

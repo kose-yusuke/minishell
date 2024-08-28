@@ -2,16 +2,20 @@
 #ifndef EXPANDER_H
 # define EXPANDER_H
 
-# include "ast.h"
-# include "ft_hash.h"
+# include "minishell.h"
 
 # define IFS " \t\n" // TODO: move to header file
-void	expand_exit_status(char **word, char **cur_ptr, int exit_status);
-void	expand_env(char **word, char **cur_ptr, t_hash_table *env_table);
-void	run_expansion(t_cmd *cmd, t_hash_table *env_table);
-// Util
-char	**ft_split(char const *s, char c);
+
+/* exp_get_value.c */
+char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr);
+
+/* exp_var.c */
+void	expand_variable(char **word, char **cur_ptr, t_mgr *mgr);
+
+/* expander.c */
+void	run_expansion(t_cmd *cmd, t_mgr *mgr);
+
 void	split_word_token(t_word *word);
 void	merge_words(t_word *word_list);
-void	expand_word_list_for_exit_status(t_word *word_list, int exit_status);
+
 #endif

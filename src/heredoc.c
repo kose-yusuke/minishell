@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/26 20:58:21 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/28 15:32:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,13 @@ static void	expand_heredoc_exit_status(char **line, int exit_status)
 
 	if (line == NULL || *line == NULL)
 		return ;
+	else
+		return ;
 	current_ptr = *line;
 	while (current_ptr && *current_ptr)
 	{
-		expand_exit_status(line, &current_ptr, exit_status);
+		// TODO: あとで修正
+		// expand_exit_status(line, &current_ptr, exit_status);
 	}
 }
 
@@ -42,10 +45,13 @@ static void	expand_heredoc(char **line, t_hash_table *env_table)
 
 	if (line == NULL || *line == NULL)
 		return ;
+	else
+		return ;
 	current_ptr = *line;
 	while (current_ptr && *current_ptr)
 	{
-		expand_env(line, &current_ptr, env_table);
+		// TODO: あとで修正
+		// expand_env(line, &current_ptr, env_table);
 	}
 }
 

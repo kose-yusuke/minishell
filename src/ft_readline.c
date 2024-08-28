@@ -65,7 +65,7 @@ static void	interpret(char *line, t_mgr *mgr)
 		mgr->exit_status = 258;
 		return ;
 	}
-	run_expansion(mgr->cmd, mgr->env_table);
+	run_expansion(mgr->cmd, mgr);
 	print_status(g_status, "expansion done"); // TODO: remove
 	run_heredoc(mgr->cmd, mgr);
 	print_status(g_status, "heredoc done"); // TODO: remove
