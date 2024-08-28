@@ -2,41 +2,42 @@
 #include "error.h"
 #include "expander.h"
 
-static void	expand_word_token(t_token *word_token, t_mgr *mgr)
+static bool	is_quoted_heredoc(t_word *word_list)
 {
-	char	*current_ptr;
+	t_word	*current_word;
 
-	if (word_token->type != TK_WORD && word_token->type != TK_DQUOTE)
-		return ;
-	current_ptr = word_token->word;
-	while (current_ptr && *current_ptr)
+	current_word = word_list;
+	while (current_word)
 	{
-		expand_variable(&(word_token->word), &current_ptr, mgr);
+		if (current_word->token->type == TK_SQUOTE
+			|| current_word->token->type == TK_DQUOTE)
+			return (true);
+		current_word = current_word->next;
 	}
+	return (false);
 }
 
-static void	expand_word_list(t_word *word_list, t_mgr *mgr)
+static void	merge_heredoc_delimi(t_word *word_list)
 {
-	t_word	*word_to_expand;
-	t_word	*next_word;
+	bool	has_quote;
 
-	word_to_expand = word_list;
-	while (word_to_expand)
-	{
-		next_word = word_to_expand->next;
-		expand_word_token(word_to_expand->token, mgr);
-		split_word_token(word_to_expand);
-		word_to_expand = next_word;
-	}
+	has_quote = is_quoted_heredoc(word_list);
 	merge_words(word_list);
+	if (has_quote)
+	{
+		word_list->token->type = TK_SQUOTE;
+	}
 }
 
-void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
+static void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
 {
 	while (redir_list)
 	{
-		// heredocのデリミタは展開しないが、mergeだけは必要になる
-		if (redir_list->redir_type != TK_HEREDOC)
+		if (redir_list->redir_type == TK_HEREDOC)
+		{
+			merge_heredoc_delimi(redir_list->word_list);
+		}
+		else
 		{
 			expand_word_list(redir_list->word_list, mgr);
 		}

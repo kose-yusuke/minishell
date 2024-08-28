@@ -9,8 +9,8 @@
 /* exp_get_value.c */
 char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr);
 
-/* exp_var.c */
-void	expand_variable(char **word, char **cur_ptr, t_mgr *mgr);
+/* exp_word_list.c */
+void	expand_word_list(t_word *word_list, t_mgr *mgr);
 
 /* expander.c */
 void	run_expansion(t_cmd *cmd, t_mgr *mgr);
