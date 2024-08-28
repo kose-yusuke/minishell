@@ -1,29 +1,27 @@
 /* exec_redir.c */
 #include "error.h"
 #include "executor.h"
-#include "expander.h"
 #include "xlibc.h"
+#include <errno.h>
 
 static bool	is_valid_redir(t_redir *redir)
 {
-	if (redir->fd < 0 || redir->fd > 2)
+	t_token_type	redir_type;
+	int				fd;
+
+	redir_type = redir->redir_type;
+	fd = redir->fd;
+	if (fd < 0 || fd > 2)
 	{
 		return (false);
 	}
-	if (redir->fd == STDIN_FILENO && (redir->redir_type == TK_REDIR_IN
-			|| redir->redir_type == TK_HEREDOC))
+	if (redir_type == TK_REDIR_IN || redir_type == TK_HEREDOC)
 	{
-		return (true);
+		return (fd == STDIN_FILENO);
 	}
-	if (redir->fd == STDOUT_FILENO && (redir->redir_type == TK_REDIR_OUT
-			|| redir->redir_type == TK_APPEND))
+	else if (redir_type == TK_REDIR_OUT || redir_type == TK_APPEND)
 	{
-		return (true);
-	}
-	if (redir->fd == STDERR_FILENO && (redir->redir_type == TK_REDIR_OUT
-			|| redir->redir_type == TK_APPEND))
-	{
-		return (true);
+		return (fd == STDOUT_FILENO || fd == STDERR_FILENO);
 	}
 	return (false);
 }
@@ -31,93 +29,64 @@ static bool	is_valid_redir(t_redir *redir)
 static int	get_open_flag(t_token_type redir_type)
 {
 	if (redir_type == TK_REDIR_IN || redir_type == TK_HEREDOC)
+	{
 		return (O_RDONLY | O_CLOEXEC);
+	}
 	else if (redir_type == TK_REDIR_OUT)
+	{
 		return (O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC);
+	}
 	else if (redir_type == TK_APPEND)
+	{
 		return (O_WRONLY | O_CREAT | O_APPEND | O_CLOEXEC);
-	assert_error("Unsupported redirection type", "get_open_flag failed");
+	}
 	return (-1);
 }
 
-static int	open_filepath(t_redir *redir)
+static int	open_filepath(t_redir *redir, char *cmd_name)
 {
-	int		fd;
 	char	*path;
 	int		oflag;
-	mode_t	mode;
+	int		fd;
 
 	path = redir->word_list->token->word;
 	oflag = get_open_flag(redir->redir_type);
-	mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 	if (!path || oflag == -1)
 	{
-		// assert_error("Error: get_open_flag failed\n", "open_file\n");
 		return (-1);
 	}
 	if (redir->redir_type == TK_REDIR_IN || redir->redir_type == TK_HEREDOC)
+	{
 		fd = open(path, oflag);
+	}
 	else
-		fd = open(path, oflag, mode);
-	if (fd == -1) // bash: filename: Permission denied <- error msg
-		// assert_error("Error: open failed\n", "exec_redir failed\n");
-		return (-1);
+	{
+		fd = open(path, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	}
+	if (fd == -1)
+	{
+		report_error(cmd_name, path, strerror(errno));
+	}
 	return (fd);
 }
 
-static bool	is_quoted_heredoc(t_word *word)
-{
-	t_word	*current_word;
-
-	current_word = word;
-	while (current_word)
-	{
-		if (current_word->token->type == TK_SQUOTE)
-			return (true);
-		if (current_word->token->type == TK_DQUOTE)
-			return (true);
-		current_word = current_word->next;
-	}
-	return (false);
-}
-
-static void	expand_redir_for_exit_status(t_redir *redir, int exit_status)
-{
-	bool	has_quote;
-
-	has_quote = false;
-	if (redir->redir_type == TK_HEREDOC)
-	{
-		// XXX: ここでTK_HEREDOCを展開&mergeするのはおかしいのであとで修正する
-		// heredocのdelimiterは変数展開されず、meregeだけ。
-		// merege時にquoteを有するまたいでいるかどうかを保持しておく
-		has_quote = is_quoted_heredoc(redir->word_list);
-	}
-	else
-		expand_word_list_for_exit_status(redir->word_list, exit_status);
-	merge_words(redir->word_list);
-	if (has_quote)
-	{
-		// XXX: ここでquoteを付与するのはおかしいのであとで修正する
-		redir->word_list->token->type = TK_SQUOTE;
-	}
-}
-
-int	exec_redir(t_redir *redir_list, t_mgr *mgr)
+int	exec_redir(t_execcmd *ecmd)
 {
 	t_redir	*redir;
+	char	*cmd_name;
 	int		filefd;
 
-	redir = redir_list;
+	redir = ecmd->redir_list;
+	cmd_name = ecmd->word_list->token->word;
 	while (redir)
 	{
-		expand_redir_for_exit_status(redir, mgr->exit_status);
-		filefd = open_filepath(redir);
+		filefd = open_filepath(redir, cmd_name);
 		if (filefd == -1)
-			return (1); // error msgは先の関数内で出力, redir中止
+		{
+			return (-1);
+		}
 		if (is_valid_redir(redir))
 		{
-			redir->backup_fd = xdup(redir->fd);
 			xdup2(filefd, redir->fd);
 		}
 		close(filefd);
