@@ -1,4 +1,3 @@
-/* exp_var.c */
 #include "error.h"
 #include "expander.h"
 #include "xlibc.h"

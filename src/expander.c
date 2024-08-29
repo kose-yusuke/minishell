@@ -1,6 +1,7 @@
 /* expand.c - 展開処理 */
 #include "error.h"
 #include "expander.h"
+#include "heredoc.h"
 
 static void	expand_word_list(t_word *word_list, t_mgr *mgr)
 {
@@ -23,15 +24,14 @@ static void	expand_word_list(t_word *word_list, t_mgr *mgr)
 
 static bool	is_quoted_heredoc(t_word *word_list)
 {
-	t_word	*current_word;
+	t_word	*word;
 
-	current_word = word_list;
-	while (current_word)
+	word = word_list;
+	while (word)
 	{
-		if (current_word->token->type == TK_SQUOTE
-			|| current_word->token->type == TK_DQUOTE)
+		if (word->token->type == TK_SQUOTE || word->token->type == TK_DQUOTE)
 			return (true);
-		current_word = current_word->next;
+		word = word->next;
 	}
 	return (false);
 }
@@ -50,17 +50,21 @@ static void	merge_heredoc_delimi(t_word *word_list)
 
 static void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
 {
-	while (redir_list)
+	t_redir	*redir;
+
+	redir = redir_list;
+	while (redir && g_status == 0)
 	{
-		if (redir_list->redir_type == TK_HEREDOC)
+		if (redir->redir_type == TK_HEREDOC)
 		{
 			merge_heredoc_delimi(redir_list->word_list);
+			ft_heredoc(redir, mgr);
 		}
 		else
 		{
 			expand_word_list(redir_list->word_list, mgr);
 		}
-		redir_list = redir_list->next;
+		redir = redir->next;
 	}
 }
 
@@ -69,7 +73,7 @@ void	run_expansion(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || !mgr || !mgr->env_table)
+	if (!cmd || !mgr || !mgr->env_table || g_status == 1)
 		return ;
 	else if (cmd->type == EXEC)
 	{

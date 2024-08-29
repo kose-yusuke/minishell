@@ -3,8 +3,6 @@
 #include "free.h"
 #include "lexer.h"
 
-
-
 static t_token_type	get_blank_type(char **ps)
 {
 	char	*s;

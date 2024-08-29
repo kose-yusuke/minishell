@@ -67,8 +67,6 @@ static void	interpret(char *line, t_mgr *mgr)
 	}
 	run_expansion(mgr->cmd, mgr);
 	print_status(g_status, "expansion done"); // TODO: remove
-	run_heredoc(mgr->cmd, mgr);
-	print_status(g_status, "heredoc done"); // TODO: remove
 	run_cmd(mgr->cmd, mgr);
 	print_status(g_status, "run_cmd done"); // TODO: remove　
 }

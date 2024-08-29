@@ -11,8 +11,7 @@ static char	*extract_env_key(char *env_head, char **suffix)
 
 	*suffix = env_head;
 	// suffixにはenv_keyの終了位置（IFSまたは文字列の終端）が入る
-	// TODO: strchr をft_strchrに変更
-	while (**suffix && !strchr(IFS, **suffix) && **suffix != '$')
+	while (**suffix && !ft_strchr(IFS_EXTENDED, **suffix))
 		(*suffix)++;
 	len = *suffix - env_head;
 	env_key = xmalloc(len + 1);

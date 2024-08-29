@@ -4,7 +4,8 @@
 
 # include "minishell.h"
 
-# define IFS " \t\n" // TODO: move to header file
+# define IFS " \t\n\""
+# define IFS_EXTENDED " \t\n\"\'|&;()<>$"
 
 /* exp_get_value.c */
 char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr);
