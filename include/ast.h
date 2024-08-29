@@ -14,7 +14,6 @@ typedef struct s_redir
 {
 	enum e_token_type	redir_type;
 	int					fd;
-	int backup_fd;            // リダイレクト前のfdを保持
 	struct s_word *word_list; // TODO: このexpand処理->統合を確認
 	struct s_redir		*next;
 }						t_redir;

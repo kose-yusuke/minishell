@@ -18,7 +18,7 @@
 - [man bash/和訳](https://ja.manpages.org/bash)
 - [bash git](https://git.savannah.gnu.org/cgit/bash.git/)
 - [GNU Readline Library](https://tiswww.cwru.edu/php/chet/readline/readline.html)
-
+- [Appendix E. Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html#EXITCODESREF)
 ## 使用可能な関数一覧と説明
 
 ### 入力と履歴管理の関数

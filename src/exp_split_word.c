@@ -1,7 +1,8 @@
+#include "error.h"
 #include "expander.h"
 #include "minishell.h"
-#include "error.h"
 
+// TODO: refactor
 /**
  * word トークンを分割するかどうかを判定する関数
  *  */

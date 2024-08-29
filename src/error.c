@@ -1,5 +1,6 @@
 /* error.c - エラー処理に関する関数の定義。 */
 #include "error.h"
+#include "minishell.h"
 #include "utils.h"
 #include <unistd.h>
 
@@ -7,7 +8,7 @@ void	memory_error_and_exit(char *func_name)
 {
 	write(2, func_name, ft_strlen(func_name));
 	write(2, ": out of virtual memory\n", 24);
-	exit(EXIT_FAILURE);
+	exit(SC_FATAL_ERROR);
 }
 
 // TODO: デバッグ用の関数
@@ -72,14 +73,12 @@ void	parser_error(t_token *unexpected_token)
 
 void	report_error(char *cmd, char *file, char *info)
 {
-	write(STDERR_FILENO, "minishell:", 10);
-	if (cmd)
-	{
-		write(STDERR_FILENO, " ", 1);
+	if (cmd && *cmd)
 		write(STDERR_FILENO, cmd, ft_strlen(cmd));
-		write(STDERR_FILENO, ":", 1);
-	}
-	if (file)
+	else
+		write(STDERR_FILENO, "minishell", 9);
+	write(STDERR_FILENO, ":", 1);
+	if (file && *file)
 	{
 		write(STDERR_FILENO, " ", 1);
 		write(STDERR_FILENO, file, ft_strlen(file));

@@ -4,10 +4,9 @@
 
 # include "minishell.h"
 
-int		exec_cmd(t_cmd *cmd, t_mgr *mgr);
-void	exec_pipe(t_cmd *cmd, t_mgr *mgr);
-void	run_cmd(t_cmd *cmd, t_mgr *mgr);
+int				exec_cmd(t_cmd *cmd, t_mgr *mgr);
+void			exec_pipe(t_cmd *cmd, t_mgr *mgr);
+void			run_cmd(t_cmd *cmd, t_mgr *mgr);
 
-int		exec_redir(t_redir *redir_list, t_mgr *mgr);
-
+t_status	exec_redir(t_execcmd *ecmd);
 #endif

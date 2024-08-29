@@ -6,79 +6,64 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/22 02:02:57 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/28 21:01:36 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_cmd.h"
 
-char	*ft_strchr(const char *s, int c)
+int	set_key_value(char *string, char **key, char **value, t_mgr *mgr)
 {
-	while (*s != '\0')
+	char	*key_end;
+
+	key_end = ft_strchr(string, '=');
+	if (key_end == NULL)
 	{
-		if (*s == (char)c)
-		{
-			return ((char *)s);
-		}
-		s++;
+		*key = ft_strdup(string);
+		*value = NULL;
 	}
-	if (c == '\0')
-		return ((char *)s);
-	return (NULL);
-}
-
-int set_key_value(char *string, char **key, char **value, t_mgr *mgr)
-{
-    char *key_end;
-
-    key_end = ft_strchr(string, '=');
-    if (key_end == NULL)
-    {
-        *key = ft_strdup(string);
-        *value = NULL;
-    }
-    else
-    {
-        *key = ft_strndup(string, key_end - string);
-        *value = ft_strdup(key_end + 1);
-    }
-    if (*key != NULL)
-    {
-        insert(mgr->env_table, *key, *value);
-        free(*key);
-        if (*value)
-            free(*value);
-        return (1);
-    }
-    if (*key)
-        free(*key);
-    return (-1);
+	else
+	{
+		*key = ft_strndup(string, key_end - string);
+		*value = ft_strdup(key_end + 1);
+	}
+	if (*key != NULL)
+	{
+		insert(mgr->env_table, *key, *value);
+		free(*key);
+		if (*value)
+			free(*value);
+		return (1);
+	}
+	if (*key)
+		free(*key);
+	return (-1);
 }
 
 // 返り値 : 正常が0, エラーは1
 int	builtin_export(char **argv, t_mgr *mgr)
 {
-    int i;
-    int status;
-    char *key;
-    char *value;
+	int		i;
+	int		status;
+	char	*key;
+	char	*value;
 
-    if (argv[1] == NULL)
-    {
-        builtin_env(argv,mgr,0);
-        return (0);
-    }
-    i = 1;
-    status = 0;
-    while(argv[i])
-    {
-        if(set_key_value(argv[i], &key, &value, mgr) < 0)
-        {
-            // エラーの場合
-            perror("export");
-            status = 1;
-        }
-        i++; //代入される変数の分だけ繰り返す
-    }
-    return (status);
+	if (argv[1] == NULL)
+	{
+		builtin_env(argv, mgr, 0);
+		return (0);
+	}
+	i = 1;
+	status = 0;
+	while (argv[i])
+	{
+		if (set_key_value(argv[i], &key, &value, mgr) < 0)
+		{
+			// エラーの場合
+			perror("export");
+			status = 1;
+		}
+		i++; //代入される変数の分だけ繰り返す
+	}
+	return (status);
 }

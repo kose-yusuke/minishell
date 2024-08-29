@@ -4,6 +4,16 @@
 #include <stdio.h>
 #include <unistd.h>
 
+/*
+error.h にあるmemory_error_and_exit関数の内容
+void	memory_error_and_exit(char *func_name)
+{
+	write(2, func_name, ft_strlen(func_name));
+	write(2, ": out of virtual memory\n", 24);
+	exit(SC_FATAL_ERROR);
+}
+*/
+
 void	*xmalloc(size_t bytes)
 {
 	void	*temp;
@@ -32,8 +42,6 @@ int	xdup2(int oldfd, int newfd)
 		perror("dup2");
 	return (newfd);
 }
-
-
 
 /*
 note:

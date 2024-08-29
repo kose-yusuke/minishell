@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/22 02:06:06 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/29 01:01:57 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,29 +31,7 @@ void print_argv(char **argv) {
     }
 }
 
-size_t	ft_strlen(const char *str)
-{
-	int	a;
 
-	a = 0;
-	while (*(str + a) != '\0')
-		a++;
-	return (a);
-}
-
-char	*ft_strcpy(char *dest, const char *src)
-{
-	int	i;
-
-	i = 0;
-	while (src[i] != '\0')
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
 
 char	*ft_strdup(char *src)
 {
@@ -68,24 +46,6 @@ char	*ft_strdup(char *src)
 		return (0);
 	ft_strcpy(p, src);
 	return (p);
-}
-
-char *ft_strncpy(char *dest, const char *src, size_t n)
-{
-    size_t i;
-
-    i = 0;
-    while (i < n && src[i] != '\0')
-    {
-        dest[i] = src[i];
-        i++;
-    }
-    while (i < n)
-    {
-        dest[i] = '\0';
-        i++;
-    }
-    return dest;
 }
 
 
