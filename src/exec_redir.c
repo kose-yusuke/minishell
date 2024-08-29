@@ -1,5 +1,7 @@
 /* exec_redir.c */
-#include "redirect.h"
+#include "error.h"
+#include "executor.h"
+#include "expander.h"
 #include "xlibc.h"
 
 static bool	is_valid_redir(t_redir *redir)
@@ -86,6 +88,7 @@ static void	expand_redir_for_exit_status(t_redir *redir, int exit_status)
 	has_quote = false;
 	if (redir->redir_type == TK_HEREDOC)
 	{
+		// XXX: ここでTK_HEREDOCを展開&mergeするのはおかしいのであとで修正する
 		// heredocのdelimiterは変数展開されず、meregeだけ。
 		// merege時にquoteを有するまたいでいるかどうかを保持しておく
 		has_quote = is_quoted_heredoc(redir->word_list);
@@ -95,6 +98,7 @@ static void	expand_redir_for_exit_status(t_redir *redir, int exit_status)
 	merge_words(redir->word_list);
 	if (has_quote)
 	{
+		// XXX: ここでquoteを付与するのはおかしいのであとで修正する
 		redir->word_list->token->type = TK_SQUOTE;
 	}
 }
@@ -121,16 +125,3 @@ int	exec_redir(t_redir *redir_list, t_mgr *mgr)
 	}
 	return (0);
 }
-
-//　この関数は使わないかも　仮置き。使うとしたらexec_redirの呼び出し側で
-// void	restore_redir(t_redir *redir)
-// {
-// 	if(!redir)
-// 		return ;
-// 	restore_redir(redir->next);
-// 	if(redir->backup_fd != -1)
-// 	{
-// 		xdup2(redir->backup_fd, redir->fd);
-// 		close(redir->backup_fd);
-// 	}
-// }

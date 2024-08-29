@@ -1,5 +1,6 @@
 #include "expander.h"
 #include "minishell.h"
+#include "error.h"
 
 /**
  * word トークンを分割するかどうかを判定する関数

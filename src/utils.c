@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 12:07:35 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/16 12:10:20 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/08/22 02:27:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,13 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 	}
 	dest[i + destnum] = '\0';
 	return (destnum + ft_strlen(src));
+}
+
+int	ft_isdigit(int c)
+{
+	while (c > 47 && c < 58)
+	{
+		return (1);
+	}
+	return (0);
 }

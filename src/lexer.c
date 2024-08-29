@@ -1,15 +1,9 @@
 /* lexer.c - 入力をトークンに分割する字句解析器の実装。 */
-#include "lexer.h"
+#include "error.h"
 #include "free.h"
+#include "lexer.h"
 
-int	ft_isdigit(int c)
-{
-	while (c > 47 && c < 58)
-	{
-		return (1);
-	}
-	return (0);
-}
+
 
 static t_token_type	get_blank_type(char **ps)
 {

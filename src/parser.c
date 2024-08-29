@@ -1,6 +1,8 @@
 /* parser.c - パーサー関連の関数 */
 #include "free.h"
 #include "parser.h"
+#include "error.h"
+#include <errno.h>
 
 static void	append_word(t_word **word_list, t_word *new_word)
 {

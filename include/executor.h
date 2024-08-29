@@ -2,13 +2,12 @@
 #ifndef EXECUTOR_H
 # define EXECUTOR_H
 
-# include "ast.h"
-# include "expander.h"
 # include "minishell.h"
-# include "token.h"
 
-void	run_cmd(t_cmd *cmd, t_mgr *mgr);
-int 	exec_cmd(t_cmd *cmd, t_mgr *mgr);
+int		exec_cmd(t_cmd *cmd, t_mgr *mgr);
 void	exec_pipe(t_cmd *cmd, t_mgr *mgr);
+void	run_cmd(t_cmd *cmd, t_mgr *mgr);
+
+int		exec_redir(t_redir *redir_list, t_mgr *mgr);
 
 #endif

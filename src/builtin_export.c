@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/28 00:19:10 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/08/22 02:02:57 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "builtin_cmd.h"
 
 char	*ft_strchr(const char *s, int c)
 {
@@ -62,7 +62,7 @@ int	builtin_export(char **argv, t_mgr *mgr)
     int status;
     char *key;
     char *value;
-    
+
     if (argv[1] == NULL)
     {
         builtin_env(argv,mgr,0);

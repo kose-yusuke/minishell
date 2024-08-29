@@ -6,11 +6,16 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/20 03:02:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/26 20:58:21 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "error.h"
+#include "expander.h"
 #include "heredoc.h"
+#include "signals.h"
+#include <readline/history.h>
+#include <readline/readline.h>
 
 /**
  * heredoc 本文中の`$?` の展開を行う関数
@@ -116,12 +121,18 @@ static void	ft_heredoc(t_redir *redir, t_mgr *mgr)
 		free(file_name);
 		return ;
 	}
+	rl_event_hook = heredoc_sigint_hook; // フックをheredoc用に設定
 	while (1)
 	{
 		line = readline("heredoc> ");
 		if (line == NULL)
+		{
+			// これでも改善しなかったのでコメントアウト
+			// rl_replace_line("", 0);
+			// rl_on_new_line();
 			break ;
-		if (strcmp(line, eof) == 0)
+		}
+		if (strcmp(line, eof) == 0 || g_status == 1)
 		{
 			free(line);
 			break ;
@@ -143,6 +154,7 @@ static void	ft_heredoc(t_redir *redir, t_mgr *mgr)
 	}
 	free(redir->word_list->token->word);
 	redir->word_list->token->word = file_name;
+	rl_event_hook = basic_sigint_hook;
 }
 
 /**
@@ -155,6 +167,8 @@ static void	process_all_heredoc(t_redir *redir, t_mgr *mgr)
 	current_redir = redir;
 	while (current_redir)
 	{
+		if (g_status == 1)
+			break ;
 		if (current_redir->redir_type == TK_HEREDOC)
 		{
 			ft_heredoc(current_redir, mgr);
@@ -171,7 +185,7 @@ void	run_heredoc(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || !mgr)
+	if (!cmd || !mgr || g_status == 1)
 		return ;
 	else if (cmd->type == EXEC)
 	{

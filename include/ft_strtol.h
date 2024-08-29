@@ -1,7 +1,6 @@
 #ifndef FT_STRTOL_H
 # define FT_STRTOL_H
 
-// # include "ft_ctype.h"
 # include <errno.h>
 # include <limits.h>
 # include <stdbool.h>

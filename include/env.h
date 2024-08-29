@@ -3,7 +3,6 @@
 # define ENV_H
 
 # include "ft_hash.h"
-# include "minishell.h"
 
 t_hash_table	*create_env_table(void);
 
