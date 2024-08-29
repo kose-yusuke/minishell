@@ -1,7 +1,6 @@
-#include "ast.h"
-#include "env.h"
-#include "minishell.h"
 #include "error.h"
+#include "expander.h"
+#include "xlibc.h"
 
 static bool	should_merge(t_word *word)
 {
@@ -20,13 +19,8 @@ static void	merge_adjacent_words(t_word *word)
 	size_t	len;
 
 	next_word = word->next;
-	len = strlen(word->token->word) + strlen(next_word->token->word) + 1;
-	new_word = malloc(len * sizeof(char));
-	if (!new_word)
-	{
-		assert_error("malloc failed", "merge_adjacent_words");
-		return ;
-	}
+	len = ft_strlen(word->token->word) + ft_strlen(next_word->token->word);
+	new_word = xmalloc(len + 1);
 	strcpy(new_word, word->token->word);
 	strcat(new_word, next_word->token->word);
 	// 1stが2ndのtokenを指す

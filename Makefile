@@ -14,7 +14,7 @@ SRCS     = src/main.c src/builtin.c src/builtin_cd.c src/builtin_echo.c \
            src/exp_split_word.c src/expander.c src/free.c src/free_ast.c \
            src/ft_hash.c src/ft_itoa.c src/ft_readline.c src/ft_split.c \
            src/ft_strtol.c src/ft_strtol_utils.c src/heredoc.c src/lexer.c \
-           src/exp_merge_words.c src/exp_word_list.c src/exp_get_var.c src/parser.c \
+           src/exp_merge_words.c src/exp_word_str.c src/exp_get_var.c src/parser.c \
            src/parser_init.c src/signal.c src/signal_hooks.c src/token_checks.c \
            src/token_operations.c src/utils.c src/xlibc.c
 

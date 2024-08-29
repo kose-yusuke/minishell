@@ -58,31 +58,15 @@ static void	expand_variable(char **word, char **cur_ptr, t_mgr *mgr)
 	*cur_ptr = *word + updated_len;
 }
 
-static void	expand_word_token(t_token *word_token, t_mgr *mgr)
+void	expand_word_str(char **word, t_mgr *mgr)
 {
 	char	*current_ptr;
 
-	if (word_token->type != TK_WORD && word_token->type != TK_DQUOTE)
+	if (!word || !*word)
 		return ;
-	current_ptr = word_token->word;
+	current_ptr = *word;
 	while (current_ptr && *current_ptr)
 	{
-		expand_variable(&(word_token->word), &current_ptr, mgr);
+		expand_variable(word, &current_ptr, mgr);
 	}
-}
-
-void	expand_word_list(t_word *word_list, t_mgr *mgr)
-{
-	t_word	*word_to_expand;
-	t_word	*next_word;
-
-	word_to_expand = word_list;
-	while (word_to_expand)
-	{
-		next_word = word_to_expand->next;
-		expand_word_token(word_to_expand->token, mgr);
-		split_word_token(word_to_expand);
-		word_to_expand = next_word;
-	}
-	merge_words(word_list);
 }
