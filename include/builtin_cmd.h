@@ -6,9 +6,9 @@
 # include <limits.h>
 
 /* builtin.c */
-bool	is_builtin(t_execcmd *ecmd);
-int		exec_builtin(t_execcmd *ecmd, t_mgr *mgr);
-char	**convert_list_to_array(t_execcmd *ecmd);
+bool	is_builtin(char *cmd_name);
+int		exec_builtin(char **argv, t_mgr *mgr);
+char	**convert_list_to_array(t_word *word_list);
 void	print_argv(char **argv);
 
 /* builtin_exit.c */

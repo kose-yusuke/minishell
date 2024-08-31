@@ -2,7 +2,6 @@
 #include "error.h"
 #include "executor.h"
 #include "xlibc.h"
-#include <errno.h>
 
 static bool	is_valid_redir(t_redir *redir)
 {
@@ -65,25 +64,27 @@ static int	open_filepath(t_redir *redir, char *cmd_name)
 	}
 	if (fd == -1)
 	{
-		report_error(cmd_name, path, strerror(errno));
+		sys_error(cmd_name, path);
 	}
 	return (fd);
 }
 
-t_status	exec_redir(t_execcmd *ecmd)
+t_status	exec_redir(t_redir *redir_list, char **argv)
 {
 	t_redir	*redir;
-	char	*cmd_name;
 	int		filefd;
+	char	*cmd_name;
 
-	redir = ecmd->redir_list;
-	cmd_name = ecmd->word_list->token->word;
+	cmd_name = NULL;
+	if (argv && argv[0])
+		cmd_name = argv[0];
+	redir = redir_list;
 	while (redir)
 	{
 		filefd = open_filepath(redir, cmd_name);
 		if (filefd == -1)
 		{
-			return (SC_GENERAL_ERROR);
+			return (SC_FAILURE);
 		}
 		if (is_valid_redir(redir))
 		{

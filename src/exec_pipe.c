@@ -1,14 +1,15 @@
+/* exec_pipe.c */
 #include "error.h"
 #include "executor.h"
 
-static pid_t	fork_pid(void)
+static pid_t	xfork(void)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid == -1)
 	{
-		assert_error("Error: fork failed\n", "fork_pid failed\n");
+		sys_error(NULL, "fork error");
 	}
 	return (pid);
 }
@@ -63,46 +64,58 @@ static void	exec_rightcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 	exit(EXIT_SUCCESS);
 }
 
-void	exec_pipe(t_cmd *cmd, t_mgr *mgr)
+t_status	exec_pipe(t_pipecmd *pcmd, t_mgr *mgr)
 {
-	t_pipecmd	*pcmd;
-	int			pfd[2];
-	pid_t		left_pid;
-	pid_t		right_pid;
+	int		pfd[2];
+	pid_t	left_pid;
+	pid_t	right_pid;
+	int		left_status;
+	int		right_status;
 
-	if (cmd->type != PIPE)
-	{
-		assert_error("Error: unexpected cmd", "exec_pipe failed\n");
-	}
-	pcmd = (t_pipecmd *)cmd;
 	if (pipe(pfd) == -1)
 	{
-		assert_error("Error: pipe failed\n", "exec_pipe failed\n");
+		sys_error(NULL, "pipe error");
+		return (SC_FAILURE);
 	}
-	if (pipe(pfd) == -1)
+	left_pid = xfork();
+	if (left_pid < 0)
 	{
-		perror("pipe");
-		exit(EXIT_FAILURE);
+		return (SC_NOEXEC); // `fork` の失敗時に `SC_NOEXEC` を返す
 	}
-	left_pid = fork_pid();
 	if (left_pid == 0)
 	{
 		exec_leftcmd(pcmd, pfd, mgr);
 	}
-	right_pid = fork_pid();
+	right_pid = xfork();
+	if (right_pid < 0)
+	{
+		return (SC_NOEXEC); // `fork` の失敗時に `SC_NOEXEC` を返す
+	}
 	if (right_pid == 0)
 	{
 		exec_rightcmd(pcmd, pfd, mgr);
 	}
 	if (close(pfd[0]) == -1 || close(pfd[1]) == -1)
 	{
-		perror("close");
-		exit(EXIT_FAILURE);
+		sys_error(NULL, "close error");
 	}
-	// wait でわかる子プロセスの終了状態の管理ができていない
-	if (waitpid(left_pid, NULL, 0) == -1 || waitpid(right_pid, NULL, 0) == -1)
+	if (waitpid(left_pid, &left_status, 0) == -1 || waitpid(right_pid,
+			&right_status, 0) == -1)
 	{
-		perror("waitpid");
-		exit(EXIT_FAILURE);
+		sys_error(NULL, "waitpid error");
+		return (SC_FAILURE);
 	}
+	// 右側のプロセスがシグナルによって終了した場合、そのステータスを返す
+	if (WIFSIGNALED(right_status))
+		return (WTERMSIG(right_status) + 128);
+	// 右側のプロセスの終了ステータスを優先して返す
+	if (WIFEXITED(right_status))
+		return (WEXITSTATUS(right_status));
+	// 左側のプロセスがシグナルによって終了した場合、そのステータスを返す
+	if (WIFSIGNALED(left_status))
+		return (WTERMSIG(left_status) + 128);
+	// それ以外の場合は左側のプロセスの終了ステータスを返す
+	if (WIFEXITED(left_status))
+		return (WEXITSTATUS(left_status));
+	return (SC_FAILURE);
 }

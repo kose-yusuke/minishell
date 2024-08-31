@@ -73,7 +73,7 @@ void	run_expansion(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || !mgr || !mgr->env_table || g_status == 1)
+	if (!cmd || !mgr || !mgr->env_table || g_status != 0)
 		return ;
 	else if (cmd->type == EXEC)
 	{

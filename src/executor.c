@@ -1,150 +1,93 @@
-/* executor.c - コマンドの実行とプロセス管理に関する関数の実装。 */
-#include "builtin_cmd.h" // convert_list_to_array
-#include "error.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/31 22:11:11 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/01 03:33:44 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "builtin_cmd.h"
 #include "executor.h"
 #include "free.h"
 #include "xlibc.h"
 
-char	*search_path(const char *word)
+static bool	save_std_fds(int *saved_stdin, int *saved_stdout, int *saved_stderr)
 {
-	char	path[PATH_MAX];
-	char	*value;
-	char	*end;
-	char	*tmp_path;
-
-	value = getenv("PATH");
-	while (*value)
+	*saved_stdin = xdup(STDIN_FILENO);
+	if (*saved_stdin == -1)
 	{
-		// /bin:/usr/bin
-		//     ^
-		//     end
-		ft_bzero(path, PATH_MAX);
-		end = ft_strchr(value, ':');
-		if (end)
-			ft_strlcpy(path, value, end - value + 1);
-		else
-			ft_strlcpy(path, value, PATH_MAX);
-		ft_strlcat(path, "/", PATH_MAX);
-		ft_strlcat(path, word, PATH_MAX);
-		if (access(path, X_OK) == 0)
-		{
-			tmp_path = ft_strdup(path);
-			if (tmp_path == NULL)
-				perror("strdup");
-			return (tmp_path);
-		}
-		if (end == NULL)
-			return (NULL);
-		value = end + 1;
+		return (false);
 	}
-	return (NULL);
+	*saved_stdout = xdup(STDOUT_FILENO);
+	if (*saved_stdout == -1)
+	{
+		close(*saved_stdin);
+		return (false);
+	}
+	*saved_stderr = xdup(STDERR_FILENO);
+	if (*saved_stderr == -1)
+	{
+		close(*saved_stdin);
+		close(*saved_stdout);
+		return (false);
+	}
+	return (true);
 }
 
-int	launch_command(t_cmd *cmd, t_mgr *mgr)
+static void	restore_std_fds(int saved_stdin, int saved_stdout, int saved_stderr)
 {
-	t_execcmd	*ecmd;
-	char		**argv;
-	char		*path;
-	extern char	**environ;
-	pid_t		pid;
-	int			i;
-
-	if (cmd->type != EXEC)
-	{
-		return (1);
-	}
-	ecmd = (t_execcmd *)cmd;
-	if (!ecmd->word_list || !ecmd->word_list->token)
-	{
-		return (0);
-	}
-	argv = convert_list_to_array(ecmd);
-	if (!argv)
-		return (1);
-	if (is_builtin(ecmd))
-	{
-		exec_builtin(ecmd, mgr);
-		free_argv(argv);
-		return (0);
-	}
-	else
-	{
-		path = search_path(ecmd->word_list->token->word);
-		if (!path)
-		{
-			printf("Command not found: %s\n", ecmd->word_list->token->word);
-			free_argv(argv);
-			return (127);
-		}
-	}
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork");
-		return (1);
-		// exit(EXIT_FAILURE);
-	}
-	if (pid == 0)
-	{
-		// 子プロセスで実行
-		if (execve(path, argv, environ) < 0)
-		{
-			perror("execve");
-			return (1);
-			// exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		// 親プロセスで子プロセスの終了を待機
-		if (waitpid(pid, NULL, 0) == -1)
-		{
-			perror("waitpid");
-			return (1);
-		}
-	}
-	free(path);
-	free_argv(argv);
-	return (0);
-}
-
-int	exec_cmd(t_cmd *cmd, t_mgr *mgr)
-{
-	t_execcmd	*ecmd;
-	int			saved_stdin;
-	int			saved_stdout;
-	int			saved_stderr;
-
-	ecmd = (t_execcmd *)cmd;
-	saved_stdin = xdup(STDIN_FILENO);
-	saved_stdout = xdup(STDOUT_FILENO);
-	saved_stderr = xdup(STDERR_FILENO);
-	mgr->exit_status = exec_redir(ecmd);
-	if (mgr->exit_status == SC_SUCCESS)
-		mgr->exit_status = launch_command(cmd, mgr);
 	xdup2(saved_stdin, STDIN_FILENO);
 	xdup2(saved_stdout, STDOUT_FILENO);
 	xdup2(saved_stderr, STDERR_FILENO);
 	close(saved_stdin);
 	close(saved_stdout);
 	close(saved_stderr);
-	return (mgr->exit_status);
 }
 
-void	run_cmd(t_cmd *cmd, t_mgr *mgr)
+static t_status	process_exec(t_execcmd *ecmd, t_mgr *mgr)
 {
-	if (!cmd || !mgr || !mgr->env_table || g_status != 0)
+	int		status;
+	int		saved_stdin;
+	int		saved_stdout;
+	int		saved_stderr;
+	char	**argv;
+
+	if (!save_std_fds(&saved_stdin, &saved_stdout, &saved_stderr))
 	{
-		return ;
+		return (SC_FAILURE);
+	}
+	argv = convert_list_to_array(ecmd->word_list);
+	status = exec_redir(ecmd->redir_list, argv);
+	if (status == SC_SUCCESS && argv)
+		status = exec_cmd(argv, mgr);
+	free_argv(argv);
+	restore_std_fds(saved_stdin, saved_stdout, saved_stderr);
+	mgr->exit_status = status;
+	return (status);
+}
+
+t_status	run_cmd(t_cmd *cmd, t_mgr *mgr)
+{
+	if (!cmd || !mgr || !mgr->env_table)
+	{
+		return (SC_FAILURE);
+	}
+	if (g_status != 0)
+	{
+		mgr->exit_status = g_status;
+		return (g_status);
 	}
 	if (cmd->type == EXEC)
 	{
-		mgr->exit_status = exec_cmd(cmd, mgr);
+		return (process_exec((t_execcmd *)cmd, mgr));
 	}
 	else if (cmd->type == PIPE)
 	{
-		// pipeのexit status　対応はあとで
-		// mgr->exit_status = exec_pipe(cmd, mgr);
-		exec_pipe(cmd, mgr);
+		return (exec_pipe((t_pipecmd *)cmd, mgr));
 	}
+	return (SC_FAILURE);
 }

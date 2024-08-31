@@ -12,7 +12,7 @@ bash-3.2$ echo $?
 ```
 - 引数なしのcatでCtrl + \ : 131
 ```
-bash-3.2$ cat 
+bash-3.2$ cat
 aaa
 ^\Quit: 3 ←Ctrl + \
 bash-3.2$ echo $?
@@ -66,3 +66,9 @@ bash: /: is a directory
 bash-3.2$ echo $?
 126
 ```
+
+=========================================
+previous exit status : 1
+minishell$
+=========================================
+previous exit st

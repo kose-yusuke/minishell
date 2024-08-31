@@ -18,13 +18,13 @@ void	print_status(int status, char *location)
 
 	if (status != 0)
 	{
-		write(1, "==========================================", 42);
-		write(1, "\n", 1);
+		write(1, "=========================================\n", 42);
 		write(1, location, ft_strlen(location));
 		status_str = ft_itoa(status);
 		write(1, " : ", 3);
 		write(1, status_str, ft_strlen(status_str));
 		write(1, "\n", 1);
+		free(status_str);
 	}
 }
 
@@ -67,7 +67,7 @@ static void	interpret(char *line, t_mgr *mgr)
 	}
 	run_expansion(mgr->cmd, mgr);
 	print_status(g_status, "expansion done"); // TODO: remove
-	run_cmd(mgr->cmd, mgr);
+	mgr->exit_status = run_cmd(mgr->cmd, mgr);
 	print_status(g_status, "run_cmd done"); // TODO: remove　
 }
 

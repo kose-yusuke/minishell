@@ -24,14 +24,13 @@ void	*xmalloc(size_t bytes)
 	return (temp);
 }
 
-// TODO: error msgが必要か、またerrnoごとに対応を変えるか確認
 int	xdup(int oldfd)
 {
 	int	fd;
 
 	fd = dup(oldfd);
 	if (fd == -1)
-		perror("dup");
+		sys_error("minishell", "dup");
 	return (fd);
 }
 
@@ -39,7 +38,7 @@ int	xdup2(int oldfd, int newfd)
 {
 	newfd = dup2(oldfd, newfd);
 	if (newfd == -1)
-		perror("dup2");
+		sys_error("minishell", "dup2");
 	return (newfd);
 }
 

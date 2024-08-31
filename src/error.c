@@ -2,6 +2,7 @@
 #include "error.h"
 #include "minishell.h"
 #include "utils.h"
+#include <errno.h>
 #include <unistd.h>
 
 void	memory_error_and_exit(char *func_name)
@@ -90,4 +91,24 @@ void	report_error(char *cmd, char *file, char *info)
 		write(STDERR_FILENO, info, ft_strlen(info));
 	}
 	write(STDERR_FILENO, "\n", 1);
+}
+
+void	sys_error(char *cmd, char *msg)
+{
+	int	e;
+
+	e = errno;
+	if (cmd && *cmd)
+		write(STDERR_FILENO, cmd, ft_strlen(cmd));
+	else
+		write(STDERR_FILENO, "minishell", 9);
+	write(STDERR_FILENO, ":", 1);
+	if (msg && *msg)
+	{
+		write(STDERR_FILENO, " ", 1);
+		write(STDERR_FILENO, msg, ft_strlen(msg));
+		write(STDERR_FILENO, ":", 1);
+	}
+	write(STDERR_FILENO, " ", 1);
+	write(STDERR_FILENO, strerror(e), ft_strlen(strerror(e)));
 }

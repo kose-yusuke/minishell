@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 19:24:36 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/29 19:05:57 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/08/31 04:37:46 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	ft_heredoc(t_redir *redir, t_mgr *mgr)
 	if (close(fd) == -1)
 	{
 		free(file_name);
-		report_error("heredoc", "close", strerror(errno));
+		sys_error("heredoc", "close");
 		return ;
 	}
 	free(redir->word_list->token->word);
