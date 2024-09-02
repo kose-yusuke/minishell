@@ -6,11 +6,19 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/13 12:26:08 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/26 20:07:44 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/01 12:49:41 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "signals.h"
+
+void	handle_sigint(int sig)
+{
+	if (sig == SIGINT)
+	{
+		g_status = 1;
+	}
+}
 
 int	heredoc_sigint_hook(void)
 {

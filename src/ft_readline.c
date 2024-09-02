@@ -67,6 +67,7 @@ static void	interpret(char *line, t_mgr *mgr)
 	}
 	run_expansion(mgr->cmd, mgr);
 	print_status(g_status, "expansion done"); // TODO: remove
+	// restore_signal(SIGQUIT);
 	mgr->exit_status = run_cmd(mgr->cmd, mgr);
 	print_status(g_status, "run_cmd done"); // TODO: remove　
 }
@@ -96,6 +97,7 @@ void	ft_readline(t_mgr *mgr)
 		free(line);
 		reset_status(mgr);
 		reset_resources(mgr);
+		// ignore_signal(SIGQUIT);
 	}
-	reset_signals();
+	restore_signals();
 }

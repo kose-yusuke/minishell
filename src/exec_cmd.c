@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/01 03:56:29 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/02 17:06:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "xlibc.h"
 #include <sys/stat.h>
 #include <sys/types.h>
+#include "signals.h"
 
 static char	*search_path(const char *word)
 {
@@ -74,6 +75,7 @@ static void	handle_child_process(char **argv, char *path)
 {
 	extern char	**environ;
 
+	restore_signals(); // シグナルハンドラーをデフォルトに戻す
 	if (execve(path, argv, environ) < 0)
 	{
 		sys_error("minishell", argv[0]);
@@ -91,7 +93,14 @@ static t_status	handle_parent_process(pid_t pid)
 		return (SC_FAILURE);
 	}
 	if (WIFSIGNALED(child_exit_status))
+	{
+		if (WTERMSIG(child_exit_status) == SIGQUIT)
+		{
+			// 子プロセスがSIGQUITで終了した場合の処理
+			write(1, "Quit: 3\n", 8);
+		}
 		return (WTERMSIG(child_exit_status) + 128);
+	}
 	if (WIFEXITED(child_exit_status))
 		return (WEXITSTATUS(child_exit_status));
 	return (SC_FAILURE);
