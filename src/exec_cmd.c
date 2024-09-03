@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/02 17:06:11 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/03 23:59:06 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,11 @@ static t_status	handle_parent_process(pid_t pid)
 	{
 		if (WTERMSIG(child_exit_status) == SIGQUIT)
 		{
-			// 子プロセスがSIGQUITで終了した場合の処理
 			write(1, "Quit: 3\n", 8);
+		}
+		if (WTERMSIG(child_exit_status) == SIGINT)
+		{
+			write(1, "\n", 1);
 		}
 		return (WTERMSIG(child_exit_status) + 128);
 	}
