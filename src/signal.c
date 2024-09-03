@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/02 17:03:02 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/02 19:03:53 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	ignore_signal(int signum)
 {
 	struct sigaction	sa;
 
-	sa.sa_handler = SIG_IGN; // signum を無視する
+	sa.sa_handler = SIG_IGN;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	if (sigaction(signum, &sa, NULL) == -1)
@@ -60,7 +60,6 @@ static void	setup_signals(void)
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	sa.sa_handler = SIG_IGN;
 	// SIGQUITのハンドラを設定 Ctrl + \ を無視
 	ignore_signal(SIGQUIT);
 }
