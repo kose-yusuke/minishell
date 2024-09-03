@@ -24,6 +24,16 @@ void	*xmalloc(size_t bytes)
 	return (temp);
 }
 
+int	xclose(int fd)
+{
+	if (close(fd) == -1)
+	{
+		sys_error("minishell", "close");
+		return (-1);
+	}
+	return (0);
+}
+
 int	xdup(int oldfd)
 {
 	int	fd;
