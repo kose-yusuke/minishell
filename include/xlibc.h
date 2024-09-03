@@ -7,5 +7,6 @@
 void	*xmalloc(size_t bytes);
 int		xdup(int oldfd);
 int		xdup2(int oldfd, int newfd);
+pid_t	xfork(void);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/03 23:59:06 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/04 00:07:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 #include "error.h"
 #include "executor.h"
 #include "free.h"
+#include "signals.h"
 #include "xlibc.h"
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "signals.h"
 
 static char	*search_path(const char *word)
 {
@@ -121,10 +121,9 @@ t_status	exec_cmd(char **argv, t_mgr *mgr)
 	status = validate_cmd_path(argv, &path);
 	if (status != SC_SUCCESS)
 		return (status);
-	pid = fork();
-	if (pid < 0)
+	pid = xfork();
+	if (pid == -1)
 	{
-		sys_error("minishell", "fork");
 		free(path);
 		return (SC_FAILURE);
 	}

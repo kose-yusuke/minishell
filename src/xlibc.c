@@ -42,6 +42,16 @@ int	xdup2(int oldfd, int newfd)
 	return (newfd);
 }
 
+pid_t	xfork(void)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+		sys_error("minishell", "fork");
+	return (pid);
+}
+
 /*
 note:
 minishellの使用許可内かつ`xlibc.c` に収めても違和感のない関数
@@ -55,7 +65,7 @@ minishellの使用許可内かつ`xlibc.c` に収めても違和感のない関�
 - [ ] write
 - [x] dup (xdup)
 - [x] dup2 (xdup2)
-- [ ] fork
+- [x] fork
 - [ ] pipe
 - [ ] wait
 - [ ] waitpid

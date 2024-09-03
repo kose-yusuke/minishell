@@ -1,18 +1,7 @@
 /* exec_pipe.c */
 #include "error.h"
 #include "executor.h"
-
-static pid_t	xfork(void)
-{
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		sys_error(NULL, "fork error");
-	}
-	return (pid);
-}
+#include "xlibc.h"
 
 static void	exec_leftcmd(t_pipecmd *pcmd, int pfd[2], t_mgr *mgr)
 {
@@ -99,8 +88,13 @@ t_status	exec_pipe(t_pipecmd *pcmd, t_mgr *mgr)
 	{
 		sys_error(NULL, "close error");
 	}
-	if (waitpid(left_pid, &left_status, 0) == -1 || waitpid(right_pid,
-			&right_status, 0) == -1)
+	if (waitpid(left_pid, 0, 0) == -1)
+	{
+		sys_error(NULL, "waitpid error");
+		return (SC_FAILURE);
+	}
+	// 右側のプロセスの終了ステータスを取得
+	if (waitpid(right_pid, &right_status, 0) == -1)
 	{
 		sys_error(NULL, "waitpid error");
 		return (SC_FAILURE);
