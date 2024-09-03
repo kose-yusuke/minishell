@@ -78,8 +78,8 @@ void	run_expansion(t_cmd *cmd, t_mgr *mgr)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		expand_word_list(ecmd->word_list, mgr);
 		expand_redir_list(ecmd->redir_list, mgr);
+		expand_word_list(ecmd->word_list, mgr);
 		mgr->exit_status = SC_SUCCESS;
 	}
 	else if (cmd->type == PIPE)
