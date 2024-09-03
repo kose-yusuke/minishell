@@ -14,27 +14,35 @@
 
 void	print_status(int status, char *location)
 {
-	char	*status_str;
+	char	*g_status_str;
+	char	*mgr_status_str;
 
-	if (status != 0)
+	write(1, "-------\n", 8);
+	write(1, location, ft_strlen(location));
+	write(1, "\n", 1);
+	if (g_status != 0 || status != 0)
 	{
-		write(1, "=========================================\n", 42);
-		write(1, location, ft_strlen(location));
-		status_str = ft_itoa(status);
-		write(1, " : ", 3);
-		write(1, status_str, ft_strlen(status_str));
+		g_status_str = ft_itoa(g_status);
+		mgr_status_str = ft_itoa(status);
+		write(1, "\tcurrent g_status   : ", 22);
+		write(1, g_status_str, ft_strlen(g_status_str));
 		write(1, "\n", 1);
-		free(status_str);
+		write(1, "\tcurrent mgr_status : ", 22);
+		write(1, " : ", 3);
+		write(1, mgr_status_str, ft_strlen(mgr_status_str));
+		write(1, "\n", 1);
+		free(mgr_status_str);
+		free(g_status_str);
 	}
 }
 
 static void	reset_status(t_mgr *mgr)
 {
-	if (g_status == 1)
+	if (mgr->exit_status == 0)
 	{
 		mgr->exit_status = g_status;
-		g_status = 0;
 	}
+	g_status = 0;
 }
 
 static void	reset_resources(t_mgr *mgr)
@@ -53,6 +61,7 @@ static void	interpret(char *line, t_mgr *mgr)
 	print_status(g_status, "lexer done"); // TODO: remove
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
+		// exit status は ?
 		report_error("lexer", "failed to tokenize", 0);
 		return ;
 	}
@@ -65,9 +74,9 @@ static void	interpret(char *line, t_mgr *mgr)
 		mgr->exit_status = 258;
 		return ;
 	}
+	mgr->exit_status = 0;
 	run_expansion(mgr->cmd, mgr);
 	print_status(g_status, "expansion done"); // TODO: remove
-	// restore_signal(SIGQUIT);
 	mgr->exit_status = run_cmd(mgr->cmd, mgr);
 	print_status(g_status, "run_cmd done"); // TODO: remove　
 }
@@ -80,8 +89,8 @@ void	ft_readline(t_mgr *mgr)
 	init_signal();
 	while (1)
 	{
-		print_status(g_status, "current global status");        // TODO: remove
-		print_status(mgr->exit_status, "previous exit status"); // TODO: remove
+		print_status(mgr->exit_status, "ready to read new line");
+			// TODO: remove
 		line = readline("minishell$ ");
 		if (!line)
 		{
@@ -97,7 +106,6 @@ void	ft_readline(t_mgr *mgr)
 		free(line);
 		reset_status(mgr);
 		reset_resources(mgr);
-		// ignore_signal(SIGQUIT);
 	}
 	restore_signals();
 }

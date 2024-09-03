@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:11:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/01 03:33:44 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/02 19:05:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ t_status	run_cmd(t_cmd *cmd, t_mgr *mgr)
 	{
 		return (SC_FAILURE);
 	}
-	if (g_status != 0)
+	if (g_status != 0 && mgr->exit_status == 0)
 	{
 		mgr->exit_status = g_status;
 		return (g_status);
