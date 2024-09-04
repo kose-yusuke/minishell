@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/04 00:07:25 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/04 15:17:13 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ static t_status	validate_cmd_path(char **argv, char **path)
 
 	if (!*path)
 	{
+		write(2, "here?\n", 6);
 		report_error("minishell", argv[0], "command not found");
 		return (SC_NOTFOUND);
 	}
@@ -66,7 +67,7 @@ static t_status	validate_cmd_path(char **argv, char **path)
 	{
 		report_error("minishell", argv[0], "is a directory");
 		free(*path);
-		return (SC_FAILURE);
+		return (SC_NOEXEC);
 	}
 	return (SC_SUCCESS);
 }
@@ -117,7 +118,10 @@ t_status	exec_cmd(char **argv, t_mgr *mgr)
 
 	if (is_builtin(argv[0]))
 		return (exec_builtin(argv, mgr));
-	path = search_path(argv[0]);
+	if (ft_strchr(argv[0], '/') != NULL)
+		path = ft_strdup(argv[0]); // 絶対パスが指定されている場合
+	else
+		path = search_path(argv[0]);
 	status = validate_cmd_path(argv, &path);
 	if (status != SC_SUCCESS)
 		return (status);
