@@ -102,13 +102,12 @@ void	sys_error(char *cmd, char *msg)
 		write(STDERR_FILENO, cmd, ft_strlen(cmd));
 	else
 		write(STDERR_FILENO, "minishell", 9);
-	write(STDERR_FILENO, ":", 1);
+	write(STDERR_FILENO, ": ", 2);
 	if (msg && *msg)
 	{
-		write(STDERR_FILENO, " ", 1);
 		write(STDERR_FILENO, msg, ft_strlen(msg));
-		write(STDERR_FILENO, ":", 1);
-	}
-	write(STDERR_FILENO, " ", 1);
+
+	}write(STDERR_FILENO, ": ", 2);
 	write(STDERR_FILENO, strerror(e), ft_strlen(strerror(e)));
+	write(STDERR_FILENO, "\n", 1);
 }
