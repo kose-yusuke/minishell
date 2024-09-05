@@ -47,6 +47,9 @@ bool					peek(t_token **token, t_token_type type);
 bool					consume(t_token **token, t_token_type type);
 t_token					*next_token(t_token **token);
 
+/* lexer.c */
 t_token					*new_token(t_token_type type, char **q, char **eq);
 
+/* token_utils.c */
+bool					has_delimiter(t_token *token, const char *delimiters);
 #endif

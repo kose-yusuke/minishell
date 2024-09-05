@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 18:21:45 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/07/13 18:34:34 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/04 18:12:41 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "xlibc.h"
 
 void	*ft_calloc(size_t count, size_t size)
 {
@@ -22,7 +23,7 @@ void	*ft_calloc(size_t count, size_t size)
 	mem = count * size;
 	if (size != 0 && count >= SIZE_MAX / size)
 		return (NULL);
-	ans = (char *)malloc(sizeof(char) * (mem));
+	ans = (char *)xmalloc(sizeof(char) * (mem));
 	if (!ans)
 		return (NULL);
 	while (mem > 0)
@@ -75,7 +76,7 @@ static char	*each_phrase(char *str, char charset)
 		return (NULL);
 	i = 0;
 	size2 = ft_strlen_alpha(str, charset);
-	ans = (char *)malloc(sizeof(char) * (size2 + 1));
+	ans = (char *)xmalloc(sizeof(char) * (size2 + 1));
 	if (!ans)
 		return (NULL);
 	while (str[i] != charset && str[i] != '\0')
