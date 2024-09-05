@@ -51,7 +51,7 @@ int	prepare_tmp_file(char **file_name)
 	if (fd == -1)
 	{
 		free(*file_name);
-		report_error("heredoc", "open", strerror(errno));
+		sys_error("heredoc", "open");
 		return (-1);
 	}
 	return (fd);
@@ -73,7 +73,7 @@ void	delete_tmp_files(void)
 		}
 		if (unlink(file_name) == -1)
 		{
-			report_error("heredoc", "unlink", strerror(errno));
+			sys_error("heredoc", "unlink");
 			free(file_name);
 			break ;
 		}

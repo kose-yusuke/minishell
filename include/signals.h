@@ -5,11 +5,14 @@
 # include <readline/readline.h>
 
 /* signal_hooks.c */
+void	handle_sigint(int sig);
 int		heredoc_sigint_hook(void);
 int		basic_sigint_hook(void);
 
 /* signal.c */
-void	reset_signals(void);
+void	ignore_signal(int signum);
+void	restore_signal(int signum);
+void	restore_signals(void);
 void	init_signal(void);
 
 // void	idle_setup_signals(void);

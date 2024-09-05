@@ -3,7 +3,6 @@
 
 # include "error.h"
 # include "minishell.h"
-# include <errno.h>
 
 # define FILE_TEMPLATE "/tmp/heredoc"
 # define HEREDOC_MAX_FILES 10000

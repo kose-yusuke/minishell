@@ -14,27 +14,36 @@
 
 void	print_status(int status, char *location)
 {
-	char	*status_str;
+	char	*g_status_str;
+	char	*mgr_status_str;
 
-	if (status != 0)
+	if (1)
+		return ;
+	if (g_status != 0 || status != 0)
 	{
-		write(1, "==========================================", 42);
-		write(1, "\n", 1);
+		write(1, "\n\n", 2);
+		write(1, "<<", 2);
 		write(1, location, ft_strlen(location));
-		status_str = ft_itoa(status);
-		write(1, " : ", 3);
-		write(1, status_str, ft_strlen(status_str));
-		write(1, "\n", 1);
+		write(1, ">>", 2);
+		g_status_str = ft_itoa(g_status);
+		mgr_status_str = ft_itoa(status);
+		write(1, " g_status : ", 12);
+		write(1, g_status_str, ft_strlen(g_status_str));
+		write(1, ", mgr_status : ", 15);
+		write(1, mgr_status_str, ft_strlen(mgr_status_str));
+		write(1, "\n\n", 2);
+		free(mgr_status_str);
+		free(g_status_str);
 	}
 }
 
 static void	reset_status(t_mgr *mgr)
 {
-	if (g_status == 1)
+	if (mgr->exit_status == 0)
 	{
 		mgr->exit_status = g_status;
-		g_status = 0;
 	}
+	g_status = 0;
 }
 
 static void	reset_resources(t_mgr *mgr)
@@ -46,29 +55,47 @@ static void	reset_resources(t_mgr *mgr)
 	mgr->cmd = NULL;
 }
 
+static bool	has_content(char *line)
+{
+	while (*line && ft_strchr(" \t", *line))
+		line++;
+	return (*line != '\0');
+}
+
 static void	interpret(char *line, t_mgr *mgr)
 {
-	print_status(g_status, "interpret"); // TODO: remove
+	print_status(mgr->exit_status, "interpret start"); // TODO: remove
 	mgr->token = lexer(line);
-	print_status(g_status, "lexer done"); // TODO: remove
+	print_status(mgr->exit_status, "lexer done"); // TODO: remove
 	if (!mgr->token || mgr->token->type == TK_PARSE_ERROR)
 	{
+		// exit status は ?
 		report_error("lexer", "failed to tokenize", 0);
 		return ;
 	}
-	if (peek(&(mgr->token), TK_EOF))
-		return ;
 	mgr->cmd = parser(mgr->token);
-	print_status(g_status, "parser done"); // TODO: remove
+	print_status(mgr->exit_status, "parser done"); // TODO: remove
 	if (!mgr->cmd)
 	{
 		mgr->exit_status = 258;
 		return ;
 	}
 	run_expansion(mgr->cmd, mgr);
-	print_status(g_status, "expansion done"); // TODO: remove
-	run_cmd(mgr->cmd, mgr);
-	print_status(g_status, "run_cmd done"); // TODO: remove　
+	print_status(mgr->exit_status, "expansion done"); // TODO: remove
+	mgr->exit_status = run_cmd(mgr->cmd, mgr);
+	print_status(mgr->exit_status, "run command done"); // TODO: remove
+}
+
+#include <unistd.h> // for getpid
+
+void	check_for_leaks(void)
+{
+	pid_t	pid;
+	char	command[256];
+
+	pid = getpid();
+	snprintf(command, sizeof(command), "leaks -q %d", pid);
+	system(command);
 }
 
 void	ft_readline(t_mgr *mgr)
@@ -79,8 +106,8 @@ void	ft_readline(t_mgr *mgr)
 	init_signal();
 	while (1)
 	{
-		print_status(g_status, "current global status");        // TODO: remove
-		print_status(mgr->exit_status, "previous exit status"); // TODO: remove
+		print_status(mgr->exit_status, "ready to read");
+		// TODO: remove
 		line = readline("minishell$ ");
 		if (!line)
 		{
@@ -88,7 +115,7 @@ void	ft_readline(t_mgr *mgr)
 			free_mgr_resources(mgr);
 			exit(255); // ？
 		}
-		if (*line)
+		if (*line && has_content(line))
 		{
 			add_history(line);
 			interpret(line, mgr);
@@ -96,6 +123,8 @@ void	ft_readline(t_mgr *mgr)
 		free(line);
 		reset_status(mgr);
 		reset_resources(mgr);
+		// check_for_leaks();
+		// system("leaks -q minishell"); // TODO: remove
 	}
-	reset_signals();
+	restore_signals();
 }

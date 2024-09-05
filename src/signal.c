@@ -6,13 +6,27 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/26 20:07:44 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/02 19:03:53 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "signals.h"
 
-static void	reset_signal(int signum)
+void	ignore_signal(int signum)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = SIG_IGN;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	if (sigaction(signum, &sa, NULL) == -1)
+	{
+		perror("sigaction");
+		exit(EXIT_FAILURE);
+	}
+}
+
+void	restore_signal(int signum)
 {
 	struct sigaction	sa;
 
@@ -26,19 +40,11 @@ static void	reset_signal(int signum)
 	}
 }
 
-void	reset_signals(void)
+void	restore_signals(void)
 {
 	rl_event_hook = NULL;
-	reset_signal(SIGINT);
-	reset_signal(SIGQUIT);
-}
-
-static void	handle_sigint(int sig)
-{
-	if (sig == SIGINT)
-	{
-		g_status = 1;
-	}
+	restore_signal(SIGINT);
+	restore_signal(SIGQUIT);
 }
 
 static void	setup_signals(void)
@@ -54,13 +60,8 @@ static void	setup_signals(void)
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	sa.sa_handler = SIG_IGN;
 	// SIGQUITのハンドラを設定 Ctrl + \ を無視
-	if (sigaction(SIGQUIT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(EXIT_FAILURE);
-	}
+	ignore_signal(SIGQUIT);
 }
 
 void	init_signal(void)
@@ -85,7 +86,6 @@ void	init_signal(void)
 // 	if (sig == SIGINT)
 // 	{
 // 		g_status = 1;
-// 		write(1, "idle SIGINT\n", 12);
 // 		write(1, "\n", 1);
 // 		rl_on_new_line();       // 新しい行を表示
 // 		rl_replace_line("", 0); // 入力行を空に置き換える
@@ -101,7 +101,6 @@ void	init_signal(void)
 // 	{
 // 		// sigは2
 // 		g_status = sig;
-// 		write(1, "exec SIGINT\n", 12);
 // 		write(1, "\n", 1);
 // 		rl_on_new_line();       // 新しい行を表示
 // 		rl_replace_line("", 0); // 入力行を空に置き換える
@@ -116,21 +115,6 @@ void	init_signal(void)
 // 		rl_on_new_line();       // 新しい行を表示
 // 		rl_replace_line("", 0); // 入力行を空に置き換える
 // 								// rl_redisplay(); // 入力プロンプトを再表示
-// 	}
-// }
-
-// // heredoc実行時のminishellのカスタムシグナルハンドラ
-// void	heredoc_handle_signal(int sig)
-// {
-// 	// Ctrl + C
-// 	if (sig == SIGINT)
-// 	{
-// 		g_status = 1;
-// 		write(1, "heredoc SIGINT\n", 15);
-// 		write(1, "\n", 1);
-// 		rl_on_new_line();       // 新しい行を表示
-// 		rl_replace_line("", 0); // 入力行を空に置き換える
-// 		rl_redisplay();         // 入力プロンプトを再表示
 // 	}
 // }
 

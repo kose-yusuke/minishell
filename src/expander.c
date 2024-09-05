@@ -73,13 +73,13 @@ void	run_expansion(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || !mgr || !mgr->env_table || g_status == 1)
+	if (!cmd || !mgr || !mgr->env_table || g_status != 0)
 		return ;
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		expand_word_list(ecmd->word_list, mgr);
 		expand_redir_list(ecmd->redir_list, mgr);
+		expand_word_list(ecmd->word_list, mgr);
 		mgr->exit_status = SC_SUCCESS;
 	}
 	else if (cmd->type == PIPE)

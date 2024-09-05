@@ -5,10 +5,10 @@
 #include "minishell.h"
 #include <libc.h>
 
-__attribute__((destructor)) static void destructor()
-{
-	system("leaks -q minishell");
-}
+// __attribute__((destructor)) static void destructor()
+// {
+// 	system("leaks -q minishell");
+// }
 
 volatile sig_atomic_t	g_status = 0;
 
