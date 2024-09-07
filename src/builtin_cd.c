@@ -3,48 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:49:27 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/22 02:24:32 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/07 23:23:09 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_cmd.h"
-
-int	consume_path(char **rest, char *path, char *s)
-{
-	size_t	s_len;
-
-	s_len = ft_strlen(s);
-	if (strncmp(path, s, s_len) == 0)
-	{
-		if (*(path + s_len) == '/' || *(path + s_len) == '\0')
-		{
-			*rest = path + s_len;
-			return (1);
-		}
-	}
-	return (0);
-}
-
-// /home/userだったら, 二つ目のスラッシュをlast_slash_ptrにして, /userをNULLに変換する.
-void	delete_last_path(char *newpwd)
-{
-	char	*origin;
-	char	*last_slash_ptr;
-
-	origin = newpwd;
-	last_slash_ptr = NULL;
-	while (*newpwd)
-	{
-		if (*newpwd == '/')
-			last_slash_ptr = newpwd;
-		newpwd++;
-	}
-	if (origin != last_slash_ptr)
-		*last_slash_ptr = '\0';
-}
 
 void	append_path(char *dst, char **rest, char *src)
 {
@@ -73,10 +39,8 @@ static char	*update_pwd(char *oldpwd, char *path)
 		perror("malloc");
 		return (NULL);
 	}
-	// pathが絶対パスかoldpwdがない場合
 	if (*path == '/' || oldpwd == NULL)
 		ft_strlcpy(newpwd, "/", PATH_MAX);
-	//相対パスの場合はoldpwdを活用する
 	else
 		ft_strlcpy(newpwd, oldpwd, PATH_MAX);
 	while (*path)
@@ -113,6 +77,13 @@ int	set_newpath(char **path, char *arg)
 	return (0);
 }
 
+static int	handle_cd_error(char *path, const char *error_msg)
+{
+	free(path);
+	perror(error_msg);
+	return (1);
+}
+
 int	builtin_cd(char **argv, t_mgr *mgr)
 {
 	char	*pwd;
@@ -122,33 +93,21 @@ int	builtin_cd(char **argv, t_mgr *mgr)
 	path = (char *)malloc((sizeof(char)) * PATH_MAX);
 	if (!path)
 		return (1);
-	//今のPWDをOLDPWDに変える
 	pwd = getenv("PWD");
 	insert(mgr->env_table, "OLDPWD", pwd);
-	// pathに新しい作業ディレクトリの値を格納(argv[1]の値で)
 	if (set_newpath(&path, argv[1]) == 1)
-	{
-		free(path);
-		perror("no new path");
-		return (1);
-	}
-	// chdirで作業ディレクトリを変更
-	// cd ..やcd .は処理可能
+		return (handle_cd_error(path, "no new path"));
 	if (chdir(path) < 0)
-	{
-		free(path);
-		perror("path error");
-		return (0);
-	}
-	// PWDを絶対パスで更新
+		return (handle_cd_error(path, "path error"));
 	newpwd = update_pwd(pwd, path);
 	if (newpwd)
-	{
-		// envmapにnewpwdをセット
 		insert(mgr->env_table, "PWD", newpwd);
-		free(newpwd);
+	else
+	{
+		free(path);
+		return (1);
 	}
+	free(newpwd);
 	free(path);
-	// statusの値何で返すべきか後で確
-	return (1);
+	return (0);
 }

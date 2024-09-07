@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/28 21:01:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/07 21:55:45 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	set_key_value(char *string, char **key, char **value, t_mgr *mgr)
 	return (-1);
 }
 
-// 返り値 : 正常が0, エラーは1
 int	builtin_export(char **argv, t_mgr *mgr)
 {
 	int		i;
@@ -59,11 +58,10 @@ int	builtin_export(char **argv, t_mgr *mgr)
 	{
 		if (set_key_value(argv[i], &key, &value, mgr) < 0)
 		{
-			// エラーの場合
 			perror("export");
 			status = 1;
 		}
-		i++; //代入される変数の分だけ繰り返す
+		i++;
 	}
 	return (status);
 }
