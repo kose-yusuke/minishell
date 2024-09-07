@@ -56,7 +56,6 @@ int delete (t_hash_table *table, const char *key)
 			free(var->key);
 			free(var->value);
 			free(var);
-			printf("delete key: %s\n", key);
 			return (1);
 		}
 		prev = var;
