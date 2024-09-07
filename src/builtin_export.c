@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/05 19:11:37 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/08 00:17:54 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int	set_key_value(char *string, t_mgr *mgr)
 	return (SC_SUCCESS);
 }
 
-// 返り値 : 正常が0, エラーは1
 int	builtin_export(char **argv, t_mgr *mgr)
 {
 	size_t	i;
@@ -55,10 +54,10 @@ int	builtin_export(char **argv, t_mgr *mgr)
 	{
 		if (set_key_value(argv[i], mgr) < 0)
 		{
-			perror("export"); // エラーの場合
+			perror("export");
 			status = 1;
 		}
-		i++; //代入される変数の分だけ繰り返す
+		i++;
 	}
 	return (status);
 }

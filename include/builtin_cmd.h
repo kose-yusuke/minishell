@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_cmd.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/07 23:27:42 by koseki.yusu       #+#    #+#             */
+/*   Updated: 2024/09/07 23:29:22 by koseki.yusu      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 /* builtins.h - シェルのビルトインコマンド (cd, echo, exit など) のプロトタイプと関連データの定義。 */
-#ifndef BUILTINS_H
-# define BUILTINS_H
+#ifndef BUILTIN_CMD_H
+# define BUILTIN_CMD_H
 
 # include "minishell.h"
 # include <limits.h>
@@ -10,6 +22,8 @@ bool	is_builtin(char *cmd_name);
 int		exec_builtin(char **argv, t_mgr *mgr);
 char	**convert_list_to_array(t_word *word_list);
 void	print_argv(char **argv);
+int		consume_path(char **rest, char *path, char *s);
+void	delete_last_path(char *newpwd);
 
 /* builtin_exit.c */
 int		builtin_exit(char **argv);
