@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:41:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/05 00:46:59 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/05 03:14:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static bool	set_first_word(t_word *word, char *str_to_replace)
 {
 	char	*first_str;
 
+	write(1, "set_first_word\n", 15);
 	first_str = ft_strdup(str_to_replace);
 	if (!first_str)
 	{
@@ -65,6 +66,7 @@ static t_word	*insert_remaining_words(t_word *word, char **splits)
 	t_word	*current_word;
 	size_t	i;
 
+	write(1, "insert_remaining_words\n", 24);
 	current_word = word;
 	i = 1;
 	while (splits[i])
@@ -87,6 +89,7 @@ void	split_word_token(t_word *word)
 
 	if (!word || !word->token || !has_delimiter(word->token, IFS))
 		return ;
+	write(1, "split_word_token after if\n", 27);
 	next_word = word->next;
 	next_token = word->token->next;
 	splits = ft_split(word->token->word, ' ');

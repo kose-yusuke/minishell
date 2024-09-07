@@ -3,7 +3,7 @@
 # define MINISHELL_H
 
 # include "ast.h"
-# include "ft_hash.h"
+# include "env.h"
 # include "utils.h"
 # include <dirent.h>
 # include <fcntl.h>

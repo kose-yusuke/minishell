@@ -6,47 +6,43 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/28 21:01:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/05 19:11:37 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_cmd.h"
 
-int	set_key_value(char *string, char **key, char **value, t_mgr *mgr)
+int	set_key_value(char *string, t_mgr *mgr)
 {
+	char	*key;
+	char	*value;
 	char	*key_end;
+	char	*res;
 
 	key_end = ft_strchr(string, '=');
 	if (key_end == NULL)
 	{
-		*key = ft_strdup(string);
-		*value = NULL;
+		res = mgr->env_table->insert(mgr->env_table, string, NULL);
+		printf("key: %s\n", string);
+		printf("res: %s\n", res);
+		return (SC_SUCCESS);
 	}
-	else
-	{
-		*key = ft_strndup(string, key_end - string);
-		*value = ft_strdup(key_end + 1);
-	}
-	if (*key != NULL)
-	{
-		insert(mgr->env_table, *key, *value);
-		free(*key);
-		if (*value)
-			free(*value);
-		return (1);
-	}
-	if (*key)
-		free(*key);
-	return (-1);
+	key = string;
+	*key_end = '\0';
+	value = key_end + 1;
+	// insert内でstrdupしているため、strudupする必要がない
+	res = mgr->env_table->insert(mgr->env_table, key, value);
+	printf("key: %s\n", string);
+	printf("val: %s\n", value);
+	printf("res: %s\n", res);
+	return (SC_SUCCESS);
 }
 
 // 返り値 : 正常が0, エラーは1
 int	builtin_export(char **argv, t_mgr *mgr)
 {
-	int		i;
+	size_t	i;
 	int		status;
-	char	*key;
-	char	*value;
 
 	if (argv[1] == NULL)
 	{
@@ -57,10 +53,9 @@ int	builtin_export(char **argv, t_mgr *mgr)
 	status = 0;
 	while (argv[i])
 	{
-		if (set_key_value(argv[i], &key, &value, mgr) < 0)
+		if (set_key_value(argv[i], mgr) < 0)
 		{
-			// エラーの場合
-			perror("export");
+			perror("export"); // エラーの場合
 			status = 1;
 		}
 		i++; //代入される変数の分だけ繰り返す
