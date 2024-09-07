@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:16 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/22 13:16:41 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/07 21:54:24 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ int	builtin_exit(char **argv)
 
 	if (argv[1] == NULL)
 		exit(0);
-	// exit(last_status); //本当は, 引数がない場合は最後のステータスで終了する. last_statusをどうやって持ってくるか.
 	if (argv[2])
 	{
 		perror("exit: too many arguments");
@@ -86,6 +85,6 @@ int	builtin_exit(char **argv)
 		if (errno == 0)
 			exit(status);
 	}
-	perror("exit: numeric argument required"); // 数字でない引数の場合のエラーメッセージ
-	exit(255);                                 // エラーの場合は255で終了
+	perror("exit: numeric argument required");
+	exit(255);
 }

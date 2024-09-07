@@ -10,6 +10,8 @@ bool	is_builtin(char *cmd_name);
 int		exec_builtin(char **argv, t_mgr *mgr);
 char	**convert_list_to_array(t_word *word_list);
 void	print_argv(char **argv);
+int	    consume_path(char **rest, char *path, char *s);
+void	delete_last_path(char *newpwd);
 
 /* builtin_exit.c */
 int		builtin_exit(char **argv);
