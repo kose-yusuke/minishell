@@ -24,6 +24,7 @@ typedef enum e_token_type
 	TK_HEREDOC,   // ヒアドキュメント '<<'
 	TK_APPEND,    // リダイレクト追加 '>>'
 	TK_BLANK,     // 空白 ' ' または '\t'
+	TK_NL         // 改行 '\n'
 }						t_token_type;
 
 typedef struct s_token

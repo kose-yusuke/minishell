@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/04 15:17:13 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/05 02:38:32 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ static t_status	validate_cmd_path(char **argv, char **path)
 
 	if (!*path)
 	{
-		write(2, "here?\n", 6);
 		report_error("minishell", argv[0], "command not found");
 		return (SC_NOTFOUND);
 	}
