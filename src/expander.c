@@ -3,24 +3,6 @@
 #include "expander.h"
 #include "heredoc.h"
 
-static void	expand_word_list(t_word *word_list, t_mgr *mgr)
-{
-	t_word	*word;
-	t_word	*next_word;
-
-	word = word_list;
-	while (word)
-	{
-		next_word = word->next;
-		if (word->token->type == TK_WORD || word->token->type == TK_DQUOTE)
-		{
-			expand_word_str(&(word->token->word), mgr);
-		}
-		split_word_token(word);
-		word = next_word;
-	}
-	merge_words(word_list);
-}
 
 static bool	is_quoted_heredoc(t_word *word_list)
 {
@@ -48,6 +30,25 @@ static void	merge_heredoc_delimi(t_word *word_list)
 	}
 }
 
+static void	expand_redir_word(t_word *word_list, t_mgr *mgr)
+{
+	t_word	*word;
+	t_word	*next_word;
+
+	word = word_list;
+	while (word)
+	{
+		next_word = word->next;
+		if (word->token->type == TK_WORD || word->token->type == TK_DQUOTE)
+		{
+			expand_word_str(&(word->token->word), mgr);
+		}
+		split_word_token(word);
+		word = next_word;
+	}
+	merge_words(word_list);
+}
+
 static void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
 {
 	t_redir	*redir;
@@ -62,7 +63,7 @@ static void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
 		}
 		else
 		{
-			expand_word_list(redir_list->word_list, mgr);
+			expand_redir_word(redir_list->word_list, mgr);
 		}
 		redir = redir->next;
 	}
