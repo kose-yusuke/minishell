@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:40:05 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/02 19:03:53 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/11 01:02:20 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,11 @@ static void	setup_signals(void)
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handle_sigint;
-	// SIGINTのハンドラを設定 Ctrl+C を受け取る
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 	{
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	// SIGQUITのハンドラを設定 Ctrl + \ を無視
 	ignore_signal(SIGQUIT);
 }
 
@@ -68,8 +66,8 @@ void	init_signal(void)
 {
 	extern int	_rl_echo_control_chars;
 
-	_rl_echo_control_chars = 0; // 制御文字^Cを表示しない
-	rl_catch_signals = 0;       // Ctrl + C で終了しない
+	_rl_echo_control_chars = 0;
+	rl_catch_signals = 0;
 	if (isatty(STDIN_FILENO))
 	{
 		rl_event_hook = basic_sigint_hook;
@@ -117,23 +115,3 @@ void	init_signal(void)
 // 								// rl_redisplay(); // 入力プロンプトを再表示
 // 	}
 // }
-
-/*
-### シグナル実装の要点
-
-1. **コマンド入力受付中**:
-   - **入力なし**: Ctrl-CやCtrl-\で新しいプロンプトを表示。
-   - **入力あり**: 入力を破棄し、新しいプロンプトを表示。
-
-2. **Here Document受付中**:
-   - **入力なし**: シグナルで入力をキャンセルし、プロンプトを再表示。
-   - **入力あり**: 行をキャンセルし、次のプロンプトへ。
-   - **複数行入力あり**: 入力キャンセル後、正確な処理が必要。
-
-3. **コマンド実行中**:
-   - **単一コマンド**: シグナルでコマンドを終了し、入力待機状態へ。
-   - **複数コマンド（パイプ含む）**: 関連プロセス全てを終了し、シェルを再起動。
-
-4. **複数のHere Documentやコマンドが標準入力をブロック**:
-   - シグナル処理の設計が複雑。どこで停止し、どうリカバリするかが重要。
- */

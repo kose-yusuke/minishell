@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_file.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 01:52:23 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 01:52:35 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "heredoc.h"
 #include "xlibc.h"
 
@@ -29,7 +41,7 @@ static char	*create_unique_tmp_file_name(void)
 	while (index < HEREDOC_MAX_FILES)
 	{
 		tmp_file_name = generate_tmp_file_name(index);
-		if (access(tmp_file_name, F_OK) == -1) // 存在しないファイル名
+		if (access(tmp_file_name, F_OK) == -1)
 		{
 			return (tmp_file_name);
 		}
@@ -66,7 +78,7 @@ void	delete_tmp_files(void)
 	while (1)
 	{
 		file_name = generate_tmp_file_name(index);
-		if (access(file_name, F_OK) == -1) // まだ存在しないファイル名
+		if (access(file_name, F_OK) == -1)
 		{
 			free(file_name);
 			break ;

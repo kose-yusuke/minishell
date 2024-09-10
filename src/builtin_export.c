@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/08 01:31:11 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/11 02:36:32 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ int	set_key_value(char *string, char **key, char **value, t_mgr *mgr)
 
 int	builtin_export(char **argv, t_mgr *mgr)
 {
-	int i;
-	int status;
-	char *key;
-	char *value;
+	int		i;
+	int		status;
+	char	*key;
+	char	*value;
 
 	if (argv[1] == NULL)
 	{

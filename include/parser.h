@@ -1,4 +1,15 @@
-/* parser.h - パーサー関連のヘッダーファイル */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:47:25 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:47:27 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSER_H
 # define PARSER_H
 
@@ -13,4 +24,6 @@ t_redir	*init_redir(t_token_type type, int fd);
 t_cmd	*init_execcmd(void);
 t_cmd	*init_pipecmd(t_cmd *left, t_cmd *right);
 
+void	append_word(t_word **word_list, t_word *new_word);
+int		parse_redir(t_redir **redir_list, t_token **token);
 #endif

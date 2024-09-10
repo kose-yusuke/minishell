@@ -1,7 +1,17 @@
-/* env.c */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_hash_table.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:21:13 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:39:49 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env.h"
 #include "minishell.h"
-#include "utils.h"
 #include "xlibc.h"
 
 static unsigned long	hash_djb2(unsigned char *str)
@@ -18,25 +28,7 @@ static unsigned long	hash_djb2(unsigned char *str)
 	return (hash);
 }
 
-char	*search(t_hash_table *table, const char *key)
-{
-	unsigned int	index;
-	t_hash_node		*var;
-
-	index = hash_djb2((unsigned char *)key) % HASH_TABLE_SIZE;
-	var = table->table[index];
-	while (var)
-	{
-		if (ft_strcmp(var->key, key) == 0)
-		{
-			return (var->value);
-		}
-		var = var->next;
-	}
-	return (NULL);
-}
-
-int delete (t_hash_table *table, const char *key)
+int	delete(t_hash_table *table, const char *key)
 {
 	unsigned int	index;
 	t_hash_node		*var;
@@ -64,6 +56,24 @@ int delete (t_hash_table *table, const char *key)
 	return (-1);
 }
 
+char	*search(t_hash_table *table, const char *key)
+{
+	unsigned int	index;
+	t_hash_node		*var;
+
+	index = hash_djb2((unsigned char *)key) % HASH_TABLE_SIZE;
+	var = table->table[index];
+	while (var)
+	{
+		if (ft_strcmp(var->key, key) == 0)
+		{
+			return (var->value);
+		}
+		var = var->next;
+	}
+	return (NULL);
+}
+
 char	*insert(t_hash_table *table, char *key, char *value)
 {
 	unsigned int	index;
@@ -71,7 +81,7 @@ char	*insert(t_hash_table *table, char *key, char *value)
 
 	if (!key)
 		return (NULL);
-	delete (table, key); // 既存のkeyがあれば削除
+	delete (table, key);
 	index = hash_djb2((unsigned char *)key) % HASH_TABLE_SIZE;
 	new_var = xmalloc(sizeof(t_hash_node));
 	new_var->key = ft_strdup(key);
@@ -102,53 +112,4 @@ void	free_hash_table(t_hash_table *table)
 		i++;
 	}
 	free(table);
-}
-
-t_hash_table	*create_hash_table(void)
-{
-	t_hash_table	*table;
-
-	table = malloc(sizeof(t_hash_table));
-	if (!table)
-		return (NULL);
-	ft_bzero(table, sizeof(t_hash_table));
-	table->search = search;
-	table->delete = delete;
-	table->insert = insert;
-	table->free = free_hash_table;
-	return (table);
-}
-
-t_hash_table	*create_env_table(void)
-{
-	extern char		**environ;
-	t_hash_table	*env_table;
-	char			*env;
-	char			*delimiter;
-	size_t			i;
-
-	env_table = create_hash_table();
-	if (!env_table)
-	{
-		return (NULL);
-	}
-	i = 0;
-	while (environ[i])
-	{
-		env = strdup(environ[i]);
-		if (!env)
-		{
-			free_hash_table(env_table);
-			return (NULL);
-		}
-		delimiter = strchr(env, '=');
-		if (delimiter) // if(delimiter && *delimiter) ？
-		{
-			*delimiter = '\0';
-			env_table->insert(env_table, env, delimiter + 1);
-		}
-		free(env);
-		i++;
-	}
-	return (env_table);
 }

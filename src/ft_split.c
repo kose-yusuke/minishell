@@ -6,34 +6,12 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 18:21:45 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/04 18:12:41 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/11 01:50:05 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "xlibc.h"
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	char	*ans;
-	int		i;
-	size_t	mem;
-
-	i = 0;
-	mem = count * size;
-	if (size != 0 && count >= SIZE_MAX / size)
-		return (NULL);
-	ans = (char *)xmalloc(sizeof(char) * (mem));
-	if (!ans)
-		return (NULL);
-	while (mem > 0)
-	{
-		ans[i] = 0;
-		i++;
-		mem--;
-	}
-	return (ans);
-}
 
 static int	ft_split_number(char *s, char c)
 {

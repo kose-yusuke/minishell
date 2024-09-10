@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/10 13:18:03 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/11 01:06:12 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	exec_builtin(char **argv, t_mgr *mgr)
 {
 	int	status;
 
-	status = 1; // TODO: 初期化の値が適切か確認
+	status = 1;
 	if (ft_strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);
 	else if (ft_strcmp(argv[0], "export") == 0)
@@ -93,7 +93,7 @@ int	exec_builtin(char **argv, t_mgr *mgr)
 bool	is_builtin(char *cmd_name)
 {
 	const char		*builtin_commands[] = {"exit", "export", "unset", "env",
-				"cd", "echo", "pwd"};
+		"cd", "echo", "pwd"};
 	unsigned int	i;
 
 	if (!cmd_name)

@@ -1,4 +1,14 @@
-/* exp_var_utils.c */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exp_get_var.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 01:51:47 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 01:51:58 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "error.h"
 #include "expander.h"
@@ -10,7 +20,6 @@ static char	*extract_env_key(char *env_head, char **suffix)
 	size_t	len;
 
 	*suffix = env_head;
-	// suffixにはenv_keyの終了位置（IFSまたは文字列の終端）が入る
 	while (**suffix && !ft_strchr(IFS_EXTENDED, **suffix))
 		(*suffix)++;
 	len = *suffix - env_head;

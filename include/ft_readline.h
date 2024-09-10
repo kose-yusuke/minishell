@@ -1,6 +1,17 @@
-/* readline 関数のラッパー、履歴の初期化と更新、入力の処理と解析など */
-#ifndef READLINE_H
-# define READLINE_H
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_readline.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:47:37 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:47:55 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef FT_READLINE_H
+# define FT_READLINE_H
 
 # include "minishell.h"
 

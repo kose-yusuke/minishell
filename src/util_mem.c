@@ -1,33 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   util_mem.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/16 12:07:35 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/10 13:16:39 by sakitaha         ###   ########.fr       */
+/*   Created: 2024/09/11 01:33:22 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 01:45:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "utils.h"
-#include "xlibc.h"
-
-void	ft_bzero(void *s, size_t n)
-{
-	char	*p;
-	int		i;
-
-	p = (char *)s;
-	i = 0;
-	while (n > 0)
-	{
-		p[i] = 0;
-		n--;
-		i++;
-	}
-}
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 {
@@ -73,40 +57,6 @@ size_t	ft_strlcat(char *dest, const char *src, size_t size)
 	return (destnum + ft_strlen(src));
 }
 
-int	ft_isdigit(int c)
-{
-	while (c > 47 && c < 58)
-	{
-		return (1);
-	}
-	return (0);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	while (*s != '\0')
-	{
-		if (*s == (char)c)
-		{
-			return ((char *)s);
-		}
-		s++;
-	}
-	if (c == '\0')
-		return ((char *)s);
-	return (NULL);
-}
-
-size_t	ft_strlen(const char *str)
-{
-	int	a;
-
-	a = 0;
-	while (*(str + a) != '\0')
-		a++;
-	return (a);
-}
-
 char	*ft_strcpy(char *dest, const char *src)
 {
 	int	i;
@@ -137,62 +87,4 @@ char	*ft_strncpy(char *dest, const char *src, size_t n)
 		i++;
 	}
 	return (dest);
-}
-
-char	*ft_strdup(char *src)
-{
-	char	*p;
-	long	len;
-
-	if (src == NULL)
-		return (NULL);
-	len = ft_strlen(src);
-	p = (char *)xmalloc(sizeof(char) * (len + 1));
-	if (!p)
-		return (0);
-	ft_strcpy(p, src);
-	return (p);
-}
-
-char	*ft_strndup(char *src, long len)
-{
-	char	*p;
-
-	if (src == NULL)
-		return (NULL);
-	p = (char *)xmalloc(sizeof(char) * (len + 1));
-	if (!p)
-		return (NULL);
-	ft_strncpy(p, src, len);
-	p[len] = '\0';
-	return (p);
-}
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	while (n && (*s1 || *s2))
-	{
-		if ((unsigned char)*s1 != (unsigned char)*s2)
-		{
-			return ((unsigned char)*s1 - (unsigned char)*s2);
-		}
-		s1++;
-		s2++;
-		n--;
-	}
-	return (0);
-}
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 || *s2)
-	{
-		if ((unsigned char)*s1 != (unsigned char)*s2)
-		{
-			return ((unsigned char)*s1 - (unsigned char)*s2);
-		}
-		s1++;
-		s2++;
-	}
-	return (0);
 }

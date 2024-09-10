@@ -1,8 +1,18 @@
-/* expand.c - 展開処理 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:36:48 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:36:50 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "error.h"
 #include "expander.h"
 #include "heredoc.h"
-
 
 static bool	is_quoted_heredoc(t_word *word_list)
 {

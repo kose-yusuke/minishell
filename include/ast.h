@@ -1,4 +1,15 @@
-/* ast.h - 抽象構文木に関する構造体の定義。 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast.h                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:44:06 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:44:22 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef AST_H
 # define AST_H
 
@@ -14,7 +25,7 @@ typedef struct s_redir
 {
 	enum e_token_type	redir_type;
 	int					fd;
-	struct s_word *word_list; // TODO: このexpand処理->統合を確認
+	struct s_word		*word_list;
 	struct s_redir		*next;
 }						t_redir;
 

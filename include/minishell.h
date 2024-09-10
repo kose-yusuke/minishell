@@ -1,4 +1,15 @@
-/*  minishell.h - minishellのヘッダファイル*/
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:46:36 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:46:38 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -16,24 +27,24 @@
 
 typedef enum e_status
 {
-	SC_SUCCESS = 0,        // 正常終了
-	SC_FAILURE = 1,        // 一般的なエラー
-	SC_BADUSAGE = 2,       // ビルトインコマンドの誤用
-	SC_MISCERROR = 2,      // その他のエラー
-	SC_RETRYFAIL = 124,    // 再試行の失敗
-	SC_WEXPCOMSUB = 125,   // コマンド置換に失敗
-	SC_BINARY_FILE = 126,  // 実行できないバイナリファイル
-	SC_NOEXEC = 126,       // 実行できないコマンド
-	SC_NOINPUT = 126,      // 入力がない
-	SC_NOTFOUND = 127,     // コマンドが見つからない
-	SC_FATAL_ERROR = 255,  // 致命的なエラー
-	SC_SHERRBASE = 256,    // すべての特別なエラー値はこれより大きい
-	SC_BADSYNTAX = 257,    // シェル構文エラー
-	SC_USAGE = 258,        // 使用方法の誤り
-	SC_REDIRFAIL = 259,    // リダイレクトに失敗
-	SC_BADASSIGN = 260,    // 変数の代入エラー
-	SC_EXPFAIL = 261,      // ワード展開に失敗
-	SC_DISKFALLBACK = 262, // ディスクコマンドへのフォールバック
+	SC_SUCCESS = 0,
+	SC_FAILURE = 1,
+	SC_BADUSAGE = 2,
+	SC_MISCERROR = 2,
+	SC_RETRYFAIL = 124,
+	SC_WEXPCOMSUB = 125,
+	SC_BINARY_FILE = 126,
+	SC_NOEXEC = 126,
+	SC_NOINPUT = 126,
+	SC_NOTFOUND = 127,
+	SC_FATAL_ERROR = 255,
+	SC_SHERRBASE = 256,
+	SC_BADSYNTAX = 257,
+	SC_USAGE = 258,
+	SC_REDIRFAIL = 259,
+	SC_BADASSIGN = 260,
+	SC_EXPFAIL = 261,
+	SC_DISKFALLBACK = 262
 }								t_status;
 
 typedef struct s_mgr
