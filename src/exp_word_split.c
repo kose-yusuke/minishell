@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:41:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/08 01:29:02 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/10 04:22:46 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "parser.h"
 #include "xlibc.h"
 
-static t_word	*new_word_node(char *str)
+t_word	*new_word_node(t_token_type type, char *str)
 {
 	t_token	*token;
 	char	*start;
@@ -24,7 +24,7 @@ static t_word	*new_word_node(char *str)
 
 	start = str;
 	end = str + ft_strlen(str);
-	token = new_token(TK_WORD, &start, &end);
+	token = new_token(type, &start, &end);
 	if (!token)
 		return (NULL);
 	return (init_word(token));
@@ -38,7 +38,7 @@ static t_word	*insert_word(t_word *prev_word, char *str)
 	blank_token = new_token(TK_BLANK, NULL, NULL);
 	if (!blank_token)
 		return (NULL);
-	new_word = new_word_node(str);
+	new_word = new_word_node(TK_WORD, str);
 	if (!new_word)
 	{
 		free(blank_token);

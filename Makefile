@@ -17,7 +17,8 @@ SRCS     = src/main.c src/builtin.c src/builtin_cd.c src/builtin_echo.c \
            src/exp_merge_words.c src/exp_word_str.c src/exp_get_var.c src/parser.c \
            src/parser_init.c src/signal.c src/signal_hooks.c src/token_checks.c \
            src/token_operations.c src/utils.c src/xlibc.c src/heredoc_file.c \
-           src/exec_pipe_child.c src/token_utils.c src/builtin_cd_utils.c
+           src/exec_pipe_child.c src/token_utils.c src/builtin_cd_utils.c \
+           src/exp_word_list.c
 
 OBJS     = $(SRCS:%.c=%.o)
 

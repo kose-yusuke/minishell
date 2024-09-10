@@ -27,6 +27,44 @@ typedef enum e_status
 	SC_DISKFALLBACK = 262, // ディスクコマンドへのフォールバック
 }								t_status;
 ```
+
+### 未対応
+
+- 要対応のもの
+```sh
+bash-3.2$ cd testdir/
+bash-3.2$ echo $?
+0
+```
+```sh
+minishell$ cd testdir/
+minishell$ echo $?
+1
+```
+
+- 対応しなくても良さそうなやつ
+```sh
+bash-3.2$ .
+bash: .: filename argument required
+.: usage: . filename [arguments]
+bash-3.2$ echo $?
+2
+```
+```sh
+minishell$ .
+minishell: .: is a directory
+minishell$ echo $?
+126
+```
+```
+minishell$ cd aaa
+path error: No such file or directory
+minishell$ echo $?
+
+bash-3.2$ cd aaa
+bash: cd: aaa: No such file or directory
+```
+
 ### 対応済
 
 - 引数なしのcatでCtrl + C : 130 (128 + signal number)
@@ -127,35 +165,6 @@ minishell$ echo $?
 ```
 ---
 
-### 未対応
-
-- 要対応のもの
-```sh
-bash-3.2$ cd testdir/
-bash-3.2$ echo $?
-0
-```
-```sh
-minishell$ cd testdir/
-minishell$ echo $?
-1
-```
-
-- 対応しなくても良さそうなやつ
-```sh
-bash-3.2$ .
-bash: .: filename argument required
-.: usage: . filename [arguments]
-bash-3.2$ echo $?
-2
-```
-```sh
-minishell$ .
-minishell: .: is a directory
-minishell$ echo $?
-1
-```
----
 ```sh
 bash-3.2$ /
 bash: /: is a directory
@@ -166,6 +175,8 @@ bash-3.2$ echo $?
 minishell$ /
 minishell: /: is a directory
 minishell$ echo $?
-1
+126
 ```
+
+
 
