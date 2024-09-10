@@ -2,7 +2,6 @@ NAME     = minishell
 CC       = cc
 # CFLAGS   = $(INCLUDES) -g -fsanitize=address
 CFLAGS   = -Wall -Wextra -Werror $(INCLUDES)
-CFLAGS   = $(INCLUDES)
 RLDIR    = $(shell brew --prefix readline)
 INCLUDES = -I include -I$(RLDIR)/include
 LIBS     = -lreadline -L$(RLDIR)/lib

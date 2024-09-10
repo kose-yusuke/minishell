@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 22:02:40 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/10 13:18:03 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,19 +72,20 @@ int	exec_builtin(char **argv, t_mgr *mgr)
 {
 	int	status;
 
-	if (strcmp(argv[0], "exit") == 0)
+	status = 1; // TODO: 初期化の値が適切か確認
+	if (ft_strcmp(argv[0], "exit") == 0)
 		status = builtin_exit(argv);
-	else if (strcmp(argv[0], "export") == 0)
+	else if (ft_strcmp(argv[0], "export") == 0)
 		status = builtin_export(argv, mgr);
-	else if (strcmp(argv[0], "unset") == 0)
+	else if (ft_strcmp(argv[0], "unset") == 0)
 		status = builtin_unset(argv, mgr);
-	else if (strcmp(argv[0], "env") == 0)
+	else if (ft_strcmp(argv[0], "env") == 0)
 		status = builtin_env(argv, mgr, 1);
-	else if (strcmp(argv[0], "cd") == 0)
+	else if (ft_strcmp(argv[0], "cd") == 0)
 		status = builtin_cd(argv, mgr);
-	else if (strcmp(argv[0], "echo") == 0)
+	else if (ft_strcmp(argv[0], "echo") == 0)
 		status = builtin_echo(argv);
-	else if (strcmp(argv[0], "pwd") == 0)
+	else if (ft_strcmp(argv[0], "pwd") == 0)
 		status = builtin_pwd(argv);
 	return (status);
 }
@@ -92,7 +93,7 @@ int	exec_builtin(char **argv, t_mgr *mgr)
 bool	is_builtin(char *cmd_name)
 {
 	const char		*builtin_commands[] = {"exit", "export", "unset", "env",
-		"cd", "echo", "pwd"};
+				"cd", "echo", "pwd"};
 	unsigned int	i;
 
 	if (!cmd_name)
@@ -100,7 +101,7 @@ bool	is_builtin(char *cmd_name)
 	i = 0;
 	while (i < sizeof(builtin_commands) / sizeof(*builtin_commands))
 	{
-		if (strcmp(cmd_name, builtin_commands[i]) == 0)
+		if (ft_strcmp(cmd_name, builtin_commands[i]) == 0)
 			return (true);
 		i++;
 	}

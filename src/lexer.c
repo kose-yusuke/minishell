@@ -31,7 +31,7 @@ static t_token_type	get_op_type(char **ps)
 		return (TK_UNDEF_TOKEN);
 	while (op[i])
 	{
-		if (strncmp(*ps, op[i], len[i]) == 0)
+		if (ft_strncmp(*ps, op[i], len[i]) == 0)
 		{
 			*ps += len[i];
 			return (tok[i]);

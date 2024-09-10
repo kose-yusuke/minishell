@@ -27,7 +27,7 @@ char	*search(t_hash_table *table, const char *key)
 	var = table->table[index];
 	while (var)
 	{
-		if (strcmp(var->key, key) == 0)
+		if (ft_strcmp(var->key, key) == 0)
 		{
 			return (var->value);
 		}
@@ -47,7 +47,7 @@ int delete (t_hash_table *table, const char *key)
 	prev = NULL;
 	while (var)
 	{
-		if (strcmp(var->key, key) == 0)
+		if (ft_strcmp(var->key, key) == 0)
 		{
 			if (prev)
 				prev->next = var->next;
