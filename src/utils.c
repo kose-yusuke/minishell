@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 12:07:35 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 23:07:36 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/10 13:12:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,4 +166,33 @@ char	*ft_strndup(char *src, long len)
 	ft_strncpy(p, src, len);
 	p[len] = '\0';
 	return (p);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	while (n && (*s1 || *s2))
+	{
+		if ((unsigned char)*s1 != (unsigned char)*s2)
+		{
+			return ((unsigned char)*s1 - (unsigned char)*s2);
+		}
+		s1++;
+		s2++;
+		n--;
+	}
+	return (0);
+}
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	while (*s1 || *s2)
+	{
+		if ((unsigned char)*s1 != (unsigned char)*s2)
+		{
+			return ((unsigned char)*s1 - (unsigned char)*s2);
+		}
+		s1++;
+		s2++;
+	}
+	return (0);
 }
