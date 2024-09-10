@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:28:09 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 19:16:59 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/10 13:20:15 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ int	builtin_echo(char **argv)
 	size_t	i;
 
 	echo_newline = true;
-	if (argv[1] && strncmp(argv[1], "-n", 2) == 0)
+	i = 1;
+	if (argv[1] && ft_strncmp(argv[1], "-n", 2) == 0)
 	{
 		i++;
 		echo_newline = false;

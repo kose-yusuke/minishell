@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 22:04:16 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 22:12:40 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/10 13:16:31 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	consume_path(char **rest, char *path, char *s)
 	size_t	s_len;
 
 	s_len = ft_strlen(s);
-	if (strncmp(path, s, s_len) == 0)
+	if (ft_strncmp(path, s, s_len) == 0)
 	{
 		if (*(path + s_len) == '/' || *(path + s_len) == '\0')
 		{

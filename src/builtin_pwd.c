@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:44:10 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/08/22 13:17:23 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/10 13:21:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ int	builtin_pwd(char **argv)
 {
 	char	cwd_path[PATH_MAX];
 
+	(void)argv;
 	if (getcwd(cwd_path, PATH_MAX) == NULL)
 	{
 		perror("pwd");

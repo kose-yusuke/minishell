@@ -20,7 +20,7 @@ static char	*extract_env_key(char *env_head, char **suffix)
 	return (env_key);
 }
 
-static char	*expand_exit_status(char *dollar_ptr, t_status exit_status)
+static char	*expand_exit_status(t_status exit_status)
 {
 	char	*expanded_value;
 
@@ -51,7 +51,7 @@ char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr)
 
 	if (*(dollar_ptr + 1) == '?')
 	{
-		expanded_value = expand_exit_status(dollar_ptr, mgr->exit_status);
+		expanded_value = expand_exit_status(mgr->exit_status);
 		*suffix = dollar_ptr + 2;
 		return (expanded_value);
 	}

@@ -74,8 +74,7 @@ void	expand_word_list(t_word *word_list, t_mgr *mgr)
 	bool	after_equal_sign;
 
 	word = word_list;
-	// TODO: ft_strcmpに変える
-	has_export_cmd = (strcmp(word->token->word, "export") == 0);
+	has_export_cmd = (ft_strcmp(word->token->word, "export") == 0);
 	after_equal_sign = false;
 	while (word)
 	{
