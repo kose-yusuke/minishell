@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_table.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:17:19 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:32:51 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/22 21:01:01 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,26 @@
 #include "minishell.h"
 #include "utils.h"
 #include "xlibc.h"
+
+char	*get_path_value(t_hash_table *hash_table)
+{
+	t_hash_node	*node;
+	size_t		i;
+
+	i = 0;
+	while (i < HASH_TABLE_SIZE)
+	{
+		node = hash_table->table[i];
+		while (node)
+		{
+			if (ft_strcmp(node->key, "PATH") == 0)
+				return (ft_strdup(node->value));
+			node = node->next;
+		}
+		i++;
+	}
+	return (NULL);
+}
 
 t_hash_table	*create_hash_table(void)
 {
