@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:52:50 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:20:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/22 16:41:19 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static t_token	*add_eof_token(t_token *cur_token, t_token *head_token)
 		free_tokens(head_token);
 		return (NULL);
 	}
-	return (head_token->next);
+	return (head_token);
 }
 
 static t_token	*create_tokens(char *s, t_token *head_token)
