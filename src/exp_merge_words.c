@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exp_merge_words.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:37:07 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:37:23 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "error.h"
 #include "expander.h"
 #include "xlibc.h"
@@ -23,15 +35,10 @@ static void	merge_adjacent_words(t_word *word)
 	new_word = xmalloc(len + 1);
 	strcpy(new_word, word->token->word);
 	strcat(new_word, next_word->token->word);
-	// 1stが2ndのtokenを指す
 	word->token = next_word->token;
-	// 旧wordのメモリを解放
 	free(word->token->word);
-	// 2ndのtokenのwordを新しいwordに設定
 	word->token->word = new_word;
-	// 1stのnextを3rdに設定
 	word->next = next_word->next;
-	// 2ndのt_word構造体を解放
 	free(next_word);
 }
 

@@ -1,8 +1,18 @@
-/* free_ast.c - AST（抽象構文木）の解放関数 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_ast.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 00:48:03 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 00:50:59 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "free.h"
 #include "minishell.h"
 
-/* free_word - リンクリスト形式のt_word構造体を解放する関数 */
 void	free_word(t_word *word)
 {
 	t_word	*next;
@@ -15,7 +25,6 @@ void	free_word(t_word *word)
 	}
 }
 
-/* free_redir - linked list形式のt_redir構造体を解放する関数 */
 void	free_redir(t_redir *redir)
 {
 	t_redir	*next;
@@ -29,7 +38,6 @@ void	free_redir(t_redir *redir)
 	}
 }
 
-// ダブルフリー防止用
 static void	free_right_cmd(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
@@ -46,7 +54,6 @@ static void	free_right_cmd(t_cmd *cmd)
 			free(ecmd->word_list);
 			ecmd->word_list = next;
 		}
-		// free(ecmd->word_list->token);
 		free_redir(ecmd->redir_list);
 	}
 	else if (cmd->type == PIPE)
@@ -57,7 +64,6 @@ static void	free_right_cmd(t_cmd *cmd)
 	free(cmd);
 }
 
-/* free_cmd - t_cmd構造体およびその派生構造体を解放する関数 */
 void	free_cmd(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
@@ -73,10 +79,7 @@ void	free_cmd(t_cmd *cmd)
 	}
 	else if (cmd->type == PIPE)
 	{
-		// 左と右両方やると, 二重freeになる箇所あり. たぶんleftのtokenとかword_listで,
-		// rightの内容も含んでる部分だと思う. 個別対応必須.
 		free_cmd(((t_pipecmd *)cmd)->left);
-		// free_cmd(((t_pipecmd *)cmd)->right);
 		free_right_cmd(((t_pipecmd *)cmd)->right);
 	}
 	free(cmd);

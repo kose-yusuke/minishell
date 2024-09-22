@@ -1,8 +1,19 @@
-/* env.h - 環境変数の操作に関連する関数の定義。環境変数の設定、取得、更新、削除など。 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.h                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:48:43 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:50:40 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef ENV_H
 # define ENV_H
 
-# define HASH_TABLE_SIZE 101 // 適当に決めたサイズ
+# define HASH_TABLE_SIZE 101
 
 typedef struct s_hash_node
 {
@@ -17,19 +28,17 @@ typedef struct s_hash_table
 	char				*(*search)(struct s_hash_table *table, const char *key);
 	int					(*delete)(struct s_hash_table *table, const char *key);
 	char				*(*insert)(struct s_hash_table *table, char *key,
-						char *value);
+			char *value);
 	void				(*free)(struct s_hash_table *table);
 }						t_hash_table;
-
-# include "env.h"
 
 t_hash_table			*create_hash_table(void);
 
 char					*insert(t_hash_table *table, char *key, char *value);
 char					*search(t_hash_table *table, const char *key);
-int delete (t_hash_table *table, const char *key);
+int						delete(t_hash_table *table, const char *key);
 void					free_hash_table(t_hash_table *table);
 
 t_hash_table			*create_env_table(void);
 
-#endif /* ENV_H */
+#endif

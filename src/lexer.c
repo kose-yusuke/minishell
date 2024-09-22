@@ -1,97 +1,19 @@
-/* lexer.c - 入力をトークンに分割する字句解析器の実装。 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 01:52:50 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:20:26 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "error.h"
 #include "free.h"
 #include "lexer.h"
-
-static t_token_type	get_blank_type(char **ps)
-{
-	char	*s;
-
-	s = *ps;
-	if (!s || !*s)
-		return (TK_UNDEF_TOKEN);
-	if (*s != ' ' && *s != '\t')
-		return (TK_UNDEF_TOKEN);
-	while (*s == ' ' || *s == '\t')
-		s++;
-	*ps = s;
-	return (TK_BLANK);
-}
-
-static t_token_type	get_op_type(char **ps)
-{
-	static const char			*op[] = {"|", "<<", ">>", "<", ">", NULL};
-	static const t_token_type	tok[] = {TK_PIPE, TK_HEREDOC, TK_APPEND,
-			TK_REDIR_IN, TK_REDIR_OUT};
-	static const size_t			len[] = {1, 2, 2, 1, 1};
-	size_t						i;
-
-	i = 0;
-	if (!*ps || !**ps)
-		return (TK_UNDEF_TOKEN);
-	while (op[i])
-	{
-		if (ft_strncmp(*ps, op[i], len[i]) == 0)
-		{
-			*ps += len[i];
-			return (tok[i]);
-		}
-		i++;
-	}
-	return (TK_UNDEF_TOKEN);
-}
-
-static t_token_type	get_quoted_type(char **ps, char **q, char **eq)
-{
-	char	*s;
-	char	quote_char;
-
-	s = *ps;
-	quote_char = *s;
-	if (quote_char != '\'' && quote_char != '"')
-		return (TK_UNDEF_TOKEN);
-	*q = ++s;
-	while (*s && (*s != quote_char || (quote_char == '"' && *(s - 1) == '\\')))
-		s++;
-	if (*s != quote_char)
-		return (TK_PARSE_ERROR);
-	*eq = s;
-	*ps = s + 1; // 次のトークンの開始位置
-	if (quote_char == '\'')
-		return (TK_SQUOTE);
-	else
-		return (TK_DQUOTE);
-}
-
-static bool	is_meta_character(char c)
-{
-	static const char	*meta_character = "|<> '\" \t\n";
-
-	return (strchr(meta_character, c) != 0);
-}
-
-static t_token_type	get_word_or_ionum_type(char **ps, char **q, char **eq)
-{
-	char	*s;
-	bool	is_num;
-
-	s = *ps;
-	*q = s;
-	is_num = true;
-	if (!*s || is_meta_character(*s))
-		return (TK_PARSE_ERROR);
-	while (*s && !is_meta_character(*s))
-	{
-		if (!ft_isdigit(*s))
-			is_num = false;
-		s++;
-	}
-	*eq = s;
-	*ps = s; // 次のトークンの開始位置
-	if (is_num && (*s == '<' || *s == '>'))
-		return (TK_IO_NUM);
-	return (TK_WORD);
-}
+#include "xlibc.h"
 
 static t_token_type	get_token_type(char **ps, char **q, char **eq)
 {
@@ -116,39 +38,40 @@ t_token	*new_token(t_token_type type, char **q, char **eq)
 
 	if (type == TK_UNDEF_TOKEN || type == TK_PARSE_ERROR)
 		return (NULL);
-	new_token = calloc(1, sizeof(t_token));
-	if (!new_token)
-		return (NULL);
+	new_token = xmalloc(sizeof(t_token));
+	ft_bzero(new_token, sizeof(t_token));
 	new_token->type = type;
 	if (is_word_or_quoted_token(new_token) || is_io_num_token(new_token))
 	{
 		if (!q || !eq || !*q)
 		{
 			free(new_token);
-			report_error("new_token", NULL, "invalid arguments"); // ?
 			return (NULL);
 		}
 		len = *eq - *q;
 		new_token->word = ft_strndup(*q, len);
-		if (!new_token->word)
-		{
-			free(new_token);
-			report_error("new_token", NULL, "strndup failed"); // ?
-			return (NULL);
-		}
 	}
 	return (new_token);
 }
 
-t_token	*lexer(char *s)
+static t_token	*add_eof_token(t_token *cur_token, t_token *head_token)
 {
-	t_token	head_token;
+	cur_token->next = new_token(TK_EOF, NULL, NULL);
+	if (!cur_token->next)
+	{
+		free_tokens(head_token);
+		return (NULL);
+	}
+	return (head_token->next);
+}
+
+static t_token	*create_tokens(char *s, t_token *head_token)
+{
 	t_token	*cur_token;
 	char	*q;
 	char	*eq;
 
-	head_token.next = NULL;
-	cur_token = &head_token;
+	cur_token = head_token;
 	while (*s)
 	{
 		q = NULL;
@@ -156,16 +79,22 @@ t_token	*lexer(char *s)
 		cur_token->next = new_token(get_token_type(&s, &q, &eq), &q, &eq);
 		if (!cur_token->next)
 		{
-			free_tokens(head_token.next);
+			free_tokens(head_token->next);
 			return (NULL);
 		}
 		cur_token = cur_token->next;
 	}
-	cur_token->next = new_token(TK_EOF, NULL, NULL);
-	if (!cur_token->next)
-	{
-		free_tokens(head_token.next);
+	return (cur_token);
+}
+
+t_token	*lexer(char *s)
+{
+	t_token	head_token;
+	t_token	*cur_token;
+
+	head_token.next = NULL;
+	cur_token = create_tokens(s, &head_token);
+	if (!cur_token)
 		return (NULL);
-	}
-	return (head_token.next);
+	return (add_eof_token(cur_token, head_token.next));
 }

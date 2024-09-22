@@ -1,18 +1,19 @@
-/* xlibc.c - 標準Cライブラリのラッパー関数 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   xlibc.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 00:45:50 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 00:46:36 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "error.h"
 #include "xlibc.h"
 #include <stdio.h>
 #include <unistd.h>
-
-/*
-error.h にあるmemory_error_and_exit関数の内容
-void	memory_error_and_exit(char *func_name)
-{
-	write(2, func_name, ft_strlen(func_name));
-	write(2, ": out of virtual memory\n", 24);
-	exit(SC_FATAL_ERROR);
-}
-*/
 
 void	*xmalloc(size_t bytes)
 {
@@ -61,30 +62,3 @@ pid_t	xfork(void)
 		sys_error("minishell", "fork");
 	return (pid);
 }
-
-/*
-note:
-minishellの使用許可内かつ`xlibc.c` に収めても違和感のない関数
-必要に応じて、ラッパー関数を作成する
-
-- [x] malloc (xmalloc)
-- [ ] free
-- [ ] open
-- [ ] close
-- [ ] read
-- [ ] write
-- [x] dup (xdup)
-- [x] dup2 (xdup2)
-- [x] fork
-- [ ] pipe
-- [ ] wait
-- [ ] waitpid
-- [ ] execve
-- [ ] access
-- [ ] getcwd
-- [ ] chdir
-- [ ] unlink
-- [ ] opendir
-- [ ] readdir
-- [ ] closedir
- */

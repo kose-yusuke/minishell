@@ -1,4 +1,15 @@
-/* token.h - トークンの型定義 */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   token.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 02:41:28 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 02:42:16 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef TOKEN_H
 # define TOKEN_H
 
@@ -7,24 +18,20 @@
 
 typedef enum e_token_type
 {
-	TK_UNDEF_TOKEN = -1, // 未定義のトークン
-	TK_PARSE_ERROR = -2, // 構文エラー
-	TK_EOF = 0,          // ファイルの終わり
-
-	// Word tokens
-	TK_WORD,   // 一般的な単語や文字列
-	TK_SQUOTE, // シングルクオートで囲まれた文字列
-	TK_DQUOTE, // ダブルクオートで囲まれた文字列
-	TK_IO_NUM, // IO番号
-
-	// Meta and operator tokens
-	TK_PIPE,      // パイプ '|'
-	TK_REDIR_IN,  // リダイレクト入力 '<'
-	TK_REDIR_OUT, // リダイレクト出力 '>'
-	TK_HEREDOC,   // ヒアドキュメント '<<'
-	TK_APPEND,    // リダイレクト追加 '>>'
-	TK_BLANK,     // 空白 ' ' または '\t'
-	TK_NL         // 改行 '\n'
+	TK_UNDEF_TOKEN = -1,
+	TK_PARSE_ERROR = -2,
+	TK_EOF = 0,
+	TK_WORD,
+	TK_SQUOTE,
+	TK_DQUOTE,
+	TK_IO_NUM,
+	TK_PIPE,
+	TK_REDIR_IN,
+	TK_REDIR_OUT,
+	TK_HEREDOC,
+	TK_APPEND,
+	TK_BLANK,
+	TK_NL
 }						t_token_type;
 
 typedef struct s_token
@@ -41,7 +48,7 @@ bool					is_word_or_quoted_token(t_token *token);
 bool					is_io_num_token(t_token *token);
 bool					is_redir_token(t_token *token);
 
-/* token_operations.c  */
+/* token_operations.c */
 void					advance(t_token **token);
 void					skip_blanks(t_token **token);
 bool					peek(t_token **token, t_token_type type);

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/05 02:38:32 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/11 02:36:18 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static void	handle_child_process(char **argv, char *path)
 {
 	extern char	**environ;
 
-	restore_signals(); // シグナルハンドラーをデフォルトに戻す
+	restore_signals();
 	if (execve(path, argv, environ) < 0)
 	{
 		sys_error("minishell", argv[0]);
@@ -118,7 +118,7 @@ t_status	exec_cmd(char **argv, t_mgr *mgr)
 	if (is_builtin(argv[0]))
 		return (exec_builtin(argv, mgr));
 	if (ft_strchr(argv[0], '/') != NULL)
-		path = ft_strdup(argv[0]); // 絶対パスが指定されている場合
+		path = ft_strdup(argv[0]);
 	else
 		path = search_path(argv[0]);
 	status = validate_cmd_path(argv, &path);

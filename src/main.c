@@ -1,4 +1,15 @@
-/* main.c - メイン関数  */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/11 01:16:55 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/11 01:28:22 by sakitaha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "error.h"
 #include "free.h"
 #include "ft_readline.h"
@@ -18,6 +29,7 @@ static void	init_mgr(t_mgr *mgr)
 	mgr->env_table = create_env_table();
 	if (!mgr->env_table)
 		error_exit("failed to create env_table", EXIT_FAILURE);
+	g_status = 0;
 }
 
 int	main(int argc, char **argv)
@@ -28,7 +40,6 @@ int	main(int argc, char **argv)
 	(void)argv;
 	if (argc != 1)
 		error_exit("usage: ./minishell", EXIT_FAILURE);
-	// 端末デバイスファイル /dev/tty を開いて、FD 0, 1, 2 が開いていることを確認
 	while (1)
 	{
 		fd = open("/dev/tty", O_RDWR);
