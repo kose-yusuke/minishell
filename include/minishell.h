@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:46:36 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:46:38 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/23 22:02:06 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_mgr
 	t_status					exit_status;
 	t_token						*token;
 	t_cmd						*cmd;
-	t_hash_table				*env_table;
+	t_env_node					*env_list;
 }								t_mgr;
 
 extern volatile sig_atomic_t	g_status;

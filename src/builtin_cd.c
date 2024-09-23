@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:49:27 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 23:23:09 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/24 03:54:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,14 +94,14 @@ int	builtin_cd(char **argv, t_mgr *mgr)
 	if (!path)
 		return (1);
 	pwd = getenv("PWD");
-	insert(mgr->env_table, "OLDPWD", pwd);
+	append_env(&(mgr->env_list), "OLDPWD", pwd);
 	if (set_newpath(&path, argv[1]) == 1)
 		return (handle_cd_error(path, "no new path"));
 	if (chdir(path) < 0)
 		return (handle_cd_error(path, "path error"));
 	newpwd = update_pwd(pwd, path);
 	if (newpwd)
-		insert(mgr->env_table, "PWD", newpwd);
+		append_env(&(mgr->env_list), "PWD", newpwd);
 	else
 	{
 		free(path);

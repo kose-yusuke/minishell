@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:20:10 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 21:55:16 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/24 03:32:13 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,15 @@
 
 int	builtin_env(char **argv, t_mgr *mgr, int var)
 {
-	t_hash_table	*hash_table;
-	t_hash_node		*node;
-	int				i;
+	t_env_node	*env_node;
 
-	i = 0;
 	if (argv[1])
 		return (1);
-	hash_table = mgr->env_table;
-	while (i < HASH_TABLE_SIZE)
+	env_node = mgr->env_list;
+	while (env_node)
 	{
-		node = hash_table->table[i];
-		while (node)
-		{
-			printf("%s=%s\n", node->key, node->value);
-			node = node->next;
-		}
-		i++;
+		printf("%s=%s\n", env_node->key, env_node->value);
+		env_node = env_node->next;
 	}
 	if (var == 1)
 		printf("_=/usr/bin/env\n");

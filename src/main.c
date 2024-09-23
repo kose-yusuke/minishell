@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:16:55 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:28:22 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 03:20:31 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ volatile sig_atomic_t	g_status = 0;
 
 static void	init_mgr(t_mgr *mgr)
 {
-	memset(mgr, 0, sizeof(t_mgr));
-	mgr->env_table = create_env_table();
-	if (!mgr->env_table)
+	ft_bzero(mgr, sizeof(t_mgr));
+	mgr->env_list = create_env_list();
+	if (!mgr->env_list)
 		error_exit("failed to create env_table", EXIT_FAILURE);
 	g_status = 0;
 }

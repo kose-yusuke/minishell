@@ -8,8 +8,8 @@ LIBS     = -lreadline -L$(RLDIR)/lib
 
 SRCS     = src/main.c src/builtin.c src/builtin_cd.c src/builtin_cd_utils.c \
            src/builtin_echo.c src/builtin_env.c src/builtin_exit.c src/builtin_export.c \
-           src/builtin_pwd.c src/builtin_unset.c src/debug_helpers.c src/env_hash_table.c \
-           src/env_table.c src/error.c src/error_parser.c src/executor.c src/exec_cmd.c \
+           src/builtin_pwd.c src/builtin_unset.c src/debug_helpers.c src/env_list.c \
+           src/env_node.c src/error.c src/error_parser.c src/executor.c src/exec_cmd.c \
            src/exec_pipe.c src/exec_pipe_child.c src/exec_redir.c src/expander.c \
            src/exp_get_var.c src/exp_merge_words.c src/exp_word_list.c src/exp_word_split.c \
            src/exp_word_str.c src/free.c src/free_ast.c src/ft_readline.c \

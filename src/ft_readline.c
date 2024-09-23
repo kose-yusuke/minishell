@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:07:16 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:10:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 04:09:26 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,21 @@ static void	interpret(char *line, t_mgr *mgr)
 	run_expansion(mgr->cmd, mgr);
 	mgr->exit_status = run_cmd(mgr->cmd, mgr);
 }
+
+// #include <unistd.h> // for getpid
+
+// void	check_for_leaks(void)
+// {
+// 	pid_t	pid;
+// 	char	command[256];
+
+// 	pid = getpid();
+// 	snprintf(command, sizeof(command), "leaks -q %d", pid);
+// 	system(command);
+// }
+
+// check_for_leaks();
+// system("leaks -q minishell"); // TODO: remove
 
 void	ft_readline(t_mgr *mgr)
 {
