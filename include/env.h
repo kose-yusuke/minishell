@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:48:43 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:50:40 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/22 20:59:01 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,5 @@ int						delete(t_hash_table *table, const char *key);
 void					free_hash_table(t_hash_table *table);
 
 t_hash_table			*create_env_table(void);
-
+char    				*get_path_value(t_hash_table *hash_table);
 #endif

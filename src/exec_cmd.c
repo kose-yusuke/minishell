@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:36:18 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/22 21:00:03 by koseki.yusu      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-static char	*search_path(const char *word)
+static char	*search_path(const char *word, t_hash_table *hash_table)
 {
 	char	path[PATH_MAX];
 	char	*value;
 	char	*end;
 
-	value = getenv("PATH");
-	while (*value)
+	value = get_path_value(hash_table);
+	while (value && *value)
 	{
 		ft_bzero(path, PATH_MAX);
 		end = ft_strchr(value, ':');
@@ -120,7 +120,7 @@ t_status	exec_cmd(char **argv, t_mgr *mgr)
 	if (ft_strchr(argv[0], '/') != NULL)
 		path = ft_strdup(argv[0]);
 	else
-		path = search_path(argv[0]);
+		path = search_path(argv[0], mgr->env_table);
 	status = validate_cmd_path(argv, &path);
 	if (status != SC_SUCCESS)
 		return (status);
