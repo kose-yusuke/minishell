@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 03:13:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 03:53:57 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:55:48 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,85 +15,53 @@
 #include "utils.h"
 #include "xlibc.h"
 
-char	*get_path_value(t_env_node *env_head)
+void	free_env_list(t_env_node *env_head)
 {
 	t_env_node	*node;
+	t_env_node	*tmp;
 
+	if (!env_head)
+		return ;
 	node = env_head;
 	while (node)
 	{
-		if (ft_strcmp(node->key, "PATH") == 0)
-		{
-			return (node->value);
-		}
+		tmp = node;
 		node = node->next;
+		free(tmp->key);
+		free(tmp->value);
+		free(tmp);
 	}
-	return (NULL);
 }
 
-char	*search_env(t_env_node *env_head, char *key)
+t_env_node	*create_env_node(char *key, char *value)
 {
-	t_env_node	*node;
-
-	node = env_head;
-	while (node)
-	{
-		if (ft_strcmp(node->key, key) == 0)
-		{
-			return (node->value);
-		}
-		node = node->next;
-	}
-	return (NULL);
-}
-
-char	*append_env(t_env_node **env_head, char *key, char *value)
-{
-	t_env_node	*node;
 	t_env_node	*new_node;
 
-	if (!key)
-		return (NULL);
-	node = *env_head;
-	while (node)
-	{
-		if (ft_strcmp(node->key, key) == 0)
-		{
-			free(node->value);
-			node->value = ft_strdup(value);
-			return (node->value);
-		}
-		if (!node->next)
-			break ;
-		node = node->next;
-	}
-	new_node = create_env_node(key, value);
-	if (!*env_head)
-		*env_head = new_node;
-	else
-		node->next = new_node;
-	return (new_node->value);
+	new_node = xmalloc(sizeof(t_env_node));
+	new_node->key = ft_strdup(key);
+	new_node->value = ft_strdup(value);
+	new_node->next = NULL;
+	return (new_node);
 }
 
 void	add_var_to_env_list(t_env_node **env_head, char *env_var)
 {
-	char	*copied_env;
+	char	*copied_key;
+	char	*copied_value;
 	char	*eql_sign;
-	char	*key;
-	char	*value;
 
-	copied_env = ft_strdup(env_var);
-	if (!copied_env)
+	copied_key = ft_strdup(env_var);
+	if (!copied_key)
 		return ;
-	eql_sign = ft_strchr(copied_env, '=');
+	copied_value = NULL;
+	eql_sign = ft_strchr(copied_key, '=');
 	if (eql_sign)
 	{
 		*eql_sign = '\0';
-		key = copied_env;
-		value = eql_sign + 1;
-		append_env(env_head, key, value);
+		copied_value = eql_sign + 1;
 	}
-	free(copied_env);
+	set_env(env_head, copied_key, copied_value);
+	free(copied_key);
 }
 
 t_env_node	*create_env_list(void)

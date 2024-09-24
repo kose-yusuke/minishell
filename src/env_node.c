@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:21:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 03:59:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:53:14 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,101 +14,105 @@
 #include "minishell.h"
 #include "xlibc.h"
 
-t_env_node	*create_env_node(char *key, char *value)
-{
-	t_env_node	*new_node;
-
-	new_node = xmalloc(sizeof(t_env_node));
-	new_node->key = ft_strdup(key);
-	new_node->value = ft_strdup(value);
-	new_node->next = NULL;
-	return (new_node);
-}
-
-void	insert_to_sorted_list(t_env_node **sorted_head, t_env_node *node_to_add)
-{
-	t_env_node	*sorted_node;
-
-	sorted_node = *sorted_head;
-	if (ft_strcmp(node_to_add->key, sorted_node->key) < 0)
-	{
-		node_to_add->next = sorted_node;
-		*sorted_head = node_to_add;
-		return ;
-	}
-	while (sorted_node->next)
-	{
-		if (ft_strcmp(node_to_add->key, sorted_node->next->key) < 0)
-		{
-			node_to_add->next = sorted_node->next;
-			sorted_node->next = node_to_add;
-			return ;
-		}
-		sorted_node = sorted_node->next;
-	}
-	sorted_node->next = node_to_add;
-}
-
-t_env_node	*create_sorted_env(t_env_node *env_head)
-{
-	t_env_node	*sorted_head;
-	t_env_node	*copied_node;
-	t_env_node	*node;
-
-	if (!env_head)
-		return (NULL);
-	sorted_head = create_env_node(env_head->key, env_head->value);
-	node = env_head->next;
-	while (node)
-	{
-		copied_node = create_env_node(node->key, node->value);
-		insert_to_sorted_list(&sorted_head, copied_node);
-		node = node->next;
-	}
-	return (sorted_head);
-}
-
-void	free_env_list(t_env_node *env_head)
+char	*get_env(t_env_node *env_head, char *key)
 {
 	t_env_node	*node;
-	t_env_node	*tmp;
 
-	if (!env_head)
-		return ;
 	node = env_head;
 	while (node)
 	{
-		tmp = node;
+		if (ft_strcmp(node->key, key) == 0)
+		{
+			return (node->value);
+		}
 		node = node->next;
-		free(tmp->key);
-		free(tmp->value);
-		free(tmp);
 	}
+	return (NULL);
 }
 
-int	delete_env(t_env_node **env_head, char *key)
+bool	is_valid_key(char *key)
 {
-	t_env_node	*prev;
+	if (!key || !*key || ft_strchr(key, '='))
+		return (false);
+	if (!ft_isalpha(*key) && *key != '_')
+		return (false);
+	while (*key)
+	{
+		if (!ft_isalnum(*key) && *key != '_')
+			return (false);
+		key++;
+	}
+	return (true);
+}
+
+int	set_env(t_env_node **env_head, char *key, char *value)
+{
 	t_env_node	*node;
 
-	if (!env_head || !*env_head || !key)
-		return (1);
-	prev = NULL;
+	if (!is_valid_key(key))
+		return (-1);
 	node = *env_head;
 	while (node)
 	{
 		if (ft_strcmp(node->key, key) == 0)
 		{
-			if (prev)
-				prev->next = node->next;
-			else
-				*env_head = node->next;
-			free(node->key);
-			free(node->value);
-			free(node);
+			if (node->value)
+			{
+				free(node->value);
+				node->value = ft_strdup(value);
+			}
 			return (0);
 		}
-		prev = node;
+		if (!node->next)
+			break ;
+		node = node->next;
+	}
+	if (!*env_head)
+		*env_head = create_env_node(key, value);
+	else
+		node->next = create_env_node(key, value);
+	return (0);
+}
+
+int	unset_env_head(t_env_node **env_head, char *key)
+{
+	t_env_node	*node;
+
+	node = *env_head;
+	if (ft_strcmp(node->key, key) == 0)
+	{
+		*env_head = node->next;
+		free(node->key);
+		free(node->value);
+		free(node);
+		return (0);
+	}
+	return (-1);
+}
+
+int	unset_env(t_env_node **env_head, char *key)
+{
+	t_env_node	*node;
+	t_env_node	*tmp;
+
+	if (!env_head || !*env_head)
+		return (1);
+	if (!is_valid_key(key))
+		return (-1);
+	if (unset_env_head(env_head, key) == 0)
+		return (0);
+	node = *env_head;
+	while (node && node->next)
+	{
+		if (ft_strcmp(node->next->key, key) == 0)
+		{
+			tmp = node->next;
+			node->next = tmp->next;
+			free(tmp->key);
+			free(tmp->value);
+			free(tmp);
+			return (0);
+		}
 		node = node->next;
 	}
 	return (-1);
