@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:48:04 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:48:04 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:13:26 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,13 @@ void	*ft_calloc(size_t count, size_t size);
 char	*ft_itoa(int n);
 
 /* util_cmp.c */
-int		ft_isdigit(int c);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+
+/* util_ctype.c */
+int		ft_isalnum(int c);
+int		ft_isalpha(int c);
+int		ft_isdigit(int c);
 
 /* util_mem.c */
 size_t	ft_strlcpy(char *dest, const char *src, size_t size);
