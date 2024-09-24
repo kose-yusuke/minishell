@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:49:27 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 03:54:25 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:30:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,13 @@ static char	*update_pwd(char *oldpwd, char *path)
 }
 
 // homeかargのpathを取得
-int	set_newpath(char **path, char *arg)
+int	set_newpath(t_mgr *mgr, char **path, char *arg)
 {
 	char	*home;
 
 	if (arg == NULL)
 	{
-		home = getenv("HOME");
+		home = get_env(mgr->env_list, "HOME");
 		if (home == NULL)
 		{
 			perror("cd: HOME not set\n");
@@ -93,15 +93,15 @@ int	builtin_cd(char **argv, t_mgr *mgr)
 	path = (char *)malloc((sizeof(char)) * PATH_MAX);
 	if (!path)
 		return (1);
-	pwd = getenv("PWD");
-	append_env(&(mgr->env_list), "OLDPWD", pwd);
-	if (set_newpath(&path, argv[1]) == 1)
+	pwd = get_env(mgr->env_list, "PWD");
+	set_env(&(mgr->env_list), "OLDPWD", pwd);
+	if (set_newpath(mgr, &path, argv[1]) == 1)
 		return (handle_cd_error(path, "no new path"));
 	if (chdir(path) < 0)
 		return (handle_cd_error(path, "path error"));
 	newpwd = update_pwd(pwd, path);
 	if (newpwd)
-		append_env(&(mgr->env_list), "PWD", newpwd);
+		set_env(&(mgr->env_list), "PWD", newpwd);
 	else
 	{
 		free(path);
