@@ -6,11 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 14:48:56 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:07:16 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_cmd.h"
+#include "error.h"
+#include "xlibc.h"
 
 void	display_sorted_env(t_env_node *env_list)
 {
@@ -31,40 +33,47 @@ void	display_sorted_env(t_env_node *env_list)
 	free_env_list(sorted_env_head);
 }
 
-int	set_key_value(char *string, char **key, char **value, t_mgr *mgr)
+int	set_key_value(char *string, t_mgr *mgr)
 {
+	char	*key;
+	char	*value;
 	char	*key_end;
+	int		ret;
 
-	key_end = ft_strchr(string, '=');
-	if (key_end == NULL)
+	key = ft_strdup(string);
+	if (!key)
+		return (-1);
+	value = NULL;
+	key_end = ft_strchr(key, '=');
+	if (key_end)
 	{
-		*key = ft_strdup(string);
-		*value = NULL;
+		*key_end = '\0';
+		value = key_end + 1;
 	}
-	else
-	{
-		*key = ft_strndup(string, key_end - string);
-		*value = ft_strdup(key_end + 1);
-	}
-	if (*key != NULL)
-	{
-		append_env(&mgr->env_list, *key, *value);
-		free(*key);
-		if (*value)
-			free(*value);
-		return (1);
-	}
-	if (*key)
-		free(*key);
-	return (-1);
+	ret = set_env(&mgr->env_list, key, value);
+	free(key);
+	return (ret);
+}
+
+char	*prepare_str_to_print(char *key)
+{
+	char	*key_to_print;
+	size_t	len;
+
+	len = ft_strlen(key);
+	key_to_print = xmalloc(len + 3);
+	ft_bzero(key_to_print, len + 3);
+	key_to_print[0] = '`';
+	ft_strlcat(key_to_print, key, len + 3);
+	key_to_print[len + 1] = '\'';
+	return (key_to_print);
 }
 
 int	builtin_export(char **argv, t_mgr *mgr)
 {
 	int		i;
 	int		status;
-	char	*key;
-	char	*value;
+	char	*str;
 
 	if (argv[1] == NULL)
 	{
@@ -75,9 +84,11 @@ int	builtin_export(char **argv, t_mgr *mgr)
 	status = 0;
 	while (argv[i])
 	{
-		if (set_key_value(argv[i], &key, &value, mgr) < 0)
+		if (set_key_value(argv[i], mgr) < 0)
 		{
-			perror("export");
+			str = prepare_str_to_print(argv[i]);
+			report_error("export", str, "not a valid identifier");
+			free(str);
 			status = 1;
 		}
 		i++;

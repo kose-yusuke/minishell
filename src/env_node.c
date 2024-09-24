@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:21:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 19:53:14 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:04:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,5 +115,5 @@ int	unset_env(t_env_node **env_head, char *key)
 		}
 		node = node->next;
 	}
-	return (-1);
+	return (1);
 }
