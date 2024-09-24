@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 04:04:17 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 14:48:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@ void	display_sorted_env(t_env_node *env_list)
 	sorted_env = sorted_env_head;
 	while (sorted_env)
 	{
-		printf("declare -x %s=\"%s\"\n", sorted_env->key, sorted_env->value);
+		printf("declare -x %s", sorted_env->key);
+		if (sorted_env->value)
+			printf("=\"%s\"\n", sorted_env->value);
+		else
+			printf("\n");
 		sorted_env = sorted_env->next;
 	}
 	free_env_list(sorted_env_head);
