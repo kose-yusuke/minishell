@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:51:47 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 03:51:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:35:19 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static char	*expand_env(char *dollar_ptr, char **suffix, t_env_node *env_list)
 	char	*expanded_value;
 
 	env_key = extract_env_key(dollar_ptr + 1, suffix);
-	expanded_value = search_env(env_list, env_key);
+	expanded_value = get_env(env_list, env_key);
 	free(env_key);
 	return (expanded_value);
 }

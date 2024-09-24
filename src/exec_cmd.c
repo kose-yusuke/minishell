@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 03:49:57 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:19:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static char	*search_path(const char *word, t_env_node *env_list)
 	char	*value;
 	char	*end;
 
-	value = get_path_value(env_list);
+	value = get_env(env_list, "PATH");
 	while (value && *value)
 	{
 		ft_bzero(path, PATH_MAX);
