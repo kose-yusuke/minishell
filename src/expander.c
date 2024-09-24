@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:36:48 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 03:50:14 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/25 01:03:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,49 +14,49 @@
 #include "expander.h"
 #include "heredoc.h"
 
-static bool	is_quoted_heredoc(t_word *word_list)
+static bool	is_quoted_heredoc(t_arg *arg_list)
 {
-	t_word	*word;
+	t_arg	*arg;
 
-	word = word_list;
-	while (word)
+	arg = arg_list;
+	while (arg)
 	{
-		if (word->token->type == TK_SQUOTE || word->token->type == TK_DQUOTE)
+		if (arg->token->type == TK_SQUOTE || arg->token->type == TK_DQUOTE)
 			return (true);
-		word = word->next;
+		arg = arg->next;
 	}
 	return (false);
 }
 
-static void	merge_heredoc_delimi(t_word *word_list)
+static void	merge_heredoc_delimi(t_arg *arg_list)
 {
 	bool	has_quote;
 
-	has_quote = is_quoted_heredoc(word_list);
-	merge_words(word_list);
+	has_quote = is_quoted_heredoc(arg_list);
+	merge_arg_list(arg_list);
 	if (has_quote)
 	{
-		word_list->token->type = TK_SQUOTE;
+		arg_list->token->type = TK_SQUOTE;
 	}
 }
 
-static void	expand_redir_word(t_word *word_list, t_mgr *mgr)
+static void	expand_redir_word(t_arg *arg_list, t_mgr *mgr)
 {
-	t_word	*word;
-	t_word	*next_word;
+	t_arg	*arg;
+	t_arg	*next_arg;
 
-	word = word_list;
-	while (word)
+	arg = arg_list;
+	while (arg)
 	{
-		next_word = word->next;
-		if (word->token->type == TK_WORD || word->token->type == TK_DQUOTE)
+		next_arg = arg->next;
+		if (arg->token->type == TK_WORD || arg->token->type == TK_DQUOTE)
 		{
-			expand_word_str(&(word->token->word), mgr);
+			expand_word_str(&(arg->token->word), mgr);
 		}
-		split_word_token(word);
-		word = next_word;
+		split_word_token(arg);
+		arg = next_arg;
 	}
-	merge_words(word_list);
+	merge_arg_list(arg_list);
 }
 
 static void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
@@ -68,12 +68,12 @@ static void	expand_redir_list(t_redir *redir_list, t_mgr *mgr)
 	{
 		if (redir->redir_type == TK_HEREDOC)
 		{
-			merge_heredoc_delimi(redir_list->word_list);
+			merge_heredoc_delimi(redir_list->arg_list);
 			ft_heredoc(redir, mgr);
 		}
 		else
 		{
-			expand_redir_word(redir_list->word_list, mgr);
+			expand_redir_word(redir_list->arg_list, mgr);
 		}
 		redir = redir->next;
 	}
@@ -90,7 +90,7 @@ void	run_expansion(t_cmd *cmd, t_mgr *mgr)
 	{
 		ecmd = (t_execcmd *)cmd;
 		expand_redir_list(ecmd->redir_list, mgr);
-		expand_word_list(ecmd->word_list, mgr);
+		expand_arg_list(ecmd->arg_list, mgr);
 		mgr->exit_status = SC_SUCCESS;
 	}
 	else if (cmd->type == PIPE)

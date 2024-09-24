@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:11:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 03:48:24 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:48:42 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static t_status	process_exec(t_execcmd *ecmd, t_mgr *mgr)
 	{
 		return (SC_FAILURE);
 	}
-	argv = convert_list_to_array(ecmd->word_list);
+	argv = convert_list_to_array(ecmd->arg_list);
 	status = exec_redir(ecmd->redir_list, argv);
 	if (status == SC_SUCCESS && argv)
 		status = exec_cmd(argv, mgr);

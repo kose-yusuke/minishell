@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 00:56:17 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 00:59:16 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/25 01:09:48 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,19 @@
 #include "ft_strtol.h"
 #include "parser.h"
 
-void	append_word(t_word **word_list, t_word *new_word)
+void	append_arg(t_arg **arg_list, t_arg *new_arg)
 {
-	t_word	*current;
+	t_arg	*current;
 
-	if (!*word_list)
+	if (!*arg_list)
 	{
-		*word_list = new_word;
+		*arg_list = new_arg;
 		return ;
 	}
-	current = *word_list;
+	current = *arg_list;
 	while (current->next)
 		current = current->next;
-	current->next = new_word;
+	current->next = new_arg;
 }
 
 static void	append_redir(t_redir **redir_list, t_redir *new_redir)
@@ -45,7 +45,7 @@ static void	append_redir(t_redir **redir_list, t_redir *new_redir)
 	current->next = new_redir;
 }
 
-static int	process_redir_words(t_word **word_list, t_token **token)
+static int	process_redir_args(t_arg **arg_list, t_token **token)
 {
 	if (!is_word_or_quoted_token(*token))
 	{
@@ -54,7 +54,7 @@ static int	process_redir_words(t_word **word_list, t_token **token)
 	}
 	while (is_word_or_quoted_token(*token))
 	{
-		append_word(word_list, init_word(*token));
+		append_arg(arg_list, init_arg(*token));
 		advance(token);
 	}
 	return (0);
@@ -97,7 +97,7 @@ int	parse_redir(t_redir **redir_list, t_token **token)
 		new_redir = init_redir((*token)->type, fd);
 		advance(token);
 		skip_blanks(token);
-		if (process_redir_words(&new_redir->word_list, token) != 0)
+		if (process_redir_args(&new_redir->arg_list, token) != 0)
 		{
 			free_redir(new_redir);
 			return (1);

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:43:24 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:43:27 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 22:59:27 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ void	expand_word_str(char **str, t_mgr *mgr);
 /* expander.c */
 void	run_expansion(t_cmd *cmd, t_mgr *mgr);
 
-t_word	*new_word_node(t_token_type type, char *str);
-void	split_word_token(t_word *word);
-void	merge_words(t_word *word_list);
-void	expand_word_list(t_word *word_list, t_mgr *mgr);
+t_arg	*new_arg_node(t_token_type type, char *str);
+void	split_word_token(t_arg *arg);
+void	merge_arg_list(t_arg *arg_list);
+void	expand_arg_list(t_arg *arg_list, t_mgr *mgr);
 
 #endif

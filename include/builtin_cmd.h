@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 23:27:42 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 21:05:55 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:48:27 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 /* builtin.c */
 bool	is_builtin(char *cmd_name);
 int		exec_builtin(char **argv, t_mgr *mgr);
-char	**convert_list_to_array(t_word *word_list);
+char	**convert_list_to_array(t_arg *arg_list);
 void	print_argv(char **argv);
 int		consume_path(char **rest, char *path, char *s);
 void	delete_last_path(char *newpwd);

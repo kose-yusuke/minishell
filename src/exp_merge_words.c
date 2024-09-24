@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/11 02:37:07 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:37:23 by sakitaha         ###   ########.fr       */
+/*   Created: 2024/09/24 23:01:28 by sakitaha          #+#    #+#             */
+/*   Updated: 2024/09/25 01:03:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,44 +14,44 @@
 #include "expander.h"
 #include "xlibc.h"
 
-static bool	should_merge(t_word *word)
+static bool	should_merge(t_arg *arg)
 {
-	if (!word || !word->next)
+	if (!arg || !arg->next)
 		return (false);
-	if (!is_word_or_quoted_token(word->token)
-		|| !is_word_or_quoted_token(word->next->token))
+	if (!is_word_or_quoted_token(arg->token)
+		|| !is_word_or_quoted_token(arg->next->token))
 		return (false);
-	return (word->token->next == word->next->token);
+	return (arg->token->next == arg->next->token);
 }
 
-static void	merge_adjacent_words(t_word *word)
+static void	merge_adjacent_args(t_arg *arg)
 {
-	t_word	*next_word;
-	char	*new_word;
+	t_arg	*next_arg;
+	char	*merged_word;
 	size_t	len;
 
-	next_word = word->next;
-	len = ft_strlen(word->token->word) + ft_strlen(next_word->token->word);
-	new_word = xmalloc(len + 1);
-	strcpy(new_word, word->token->word);
-	strcat(new_word, next_word->token->word);
-	word->token = next_word->token;
-	free(word->token->word);
-	word->token->word = new_word;
-	word->next = next_word->next;
-	free(next_word);
+	next_arg = arg->next;
+	len = ft_strlen(arg->token->word) + ft_strlen(next_arg->token->word);
+	merged_word = xmalloc(len + 1);
+	ft_strcpy(merged_word, arg->token->word);
+	ft_strlcat(merged_word, next_arg->token->word, len + 1);
+	arg->token = next_arg->token;
+	free(arg->token->word);
+	arg->token->word = merged_word;
+	arg->next = next_arg->next;
+	free(next_arg);
 }
 
-void	merge_words(t_word *word_list)
+void	merge_arg_list(t_arg *arg_list)
 {
-	t_word	*word_to_check;
+	t_arg	*arg_to_check;
 
-	word_to_check = word_list;
-	while (word_to_check && word_to_check->next)
+	arg_to_check = arg_list;
+	while (arg_to_check && arg_to_check->next)
 	{
-		if (should_merge(word_to_check))
-			merge_adjacent_words(word_to_check);
+		if (should_merge(arg_to_check))
+			merge_adjacent_args(arg_to_check);
 		else
-			word_to_check = word_to_check->next;
+			arg_to_check = arg_to_check->next;
 	}
 }

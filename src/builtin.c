@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 03:02:42 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:48:16 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,29 +40,29 @@ void	print_argv(char **argv)
 	}
 }
 
-char	**convert_list_to_array(t_word *word_list)
+char	**convert_list_to_array(t_arg *arg_list)
 {
 	char	**argv;
-	t_word	*tmp_word;
+	t_arg	*tmp_arg;
 	size_t	len;
 	size_t	i;
 
-	if (!word_list || !word_list->token || !word_list->token->word)
+	if (!arg_list || !arg_list->token || !arg_list->token->word)
 		return (NULL);
 	len = 0;
-	tmp_word = word_list;
-	while (tmp_word)
+	tmp_arg = arg_list;
+	while (tmp_arg)
 	{
-		tmp_word = tmp_word->next;
+		tmp_arg = tmp_arg->next;
 		len++;
 	}
 	argv = (char **)xmalloc(sizeof(char *) * (len + 1));
-	tmp_word = word_list;
+	tmp_arg = arg_list;
 	i = 0;
-	while (tmp_word && is_word_or_quoted_token(tmp_word->token))
+	while (tmp_arg && is_word_or_quoted_token(tmp_arg->token))
 	{
-		argv[i++] = ft_strdup(tmp_word->token->word);
-		tmp_word = tmp_word->next;
+		argv[i++] = ft_strdup(tmp_arg->token->word);
+		tmp_arg = tmp_arg->next;
 	}
 	argv[i] = NULL;
 	return (argv);
@@ -93,7 +93,7 @@ int	exec_builtin(char **argv, t_mgr *mgr)
 bool	is_builtin(char *cmd_name)
 {
 	const char		*builtin_commands[] = {"exit", "export", "unset", "env",
-		"cd", "echo", "pwd"};
+				"cd", "echo", "pwd"};
 	unsigned int	i;
 
 	if (!cmd_name)

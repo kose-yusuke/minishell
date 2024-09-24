@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:37:56 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:37:59 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:48:57 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static int	open_filepath(t_redir *redir, char *cmd_name)
 	int		oflag;
 	int		fd;
 
-	path = redir->word_list->token->word;
+	path = redir->arg_list->token->word;
 	oflag = get_open_flag(redir->redir_type);
 	if (!path || oflag == -1)
 	{
