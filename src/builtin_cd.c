@@ -6,11 +6,14 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:49:27 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 17:30:49 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/25 01:41:39 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_cmd.h"
+#include "error.h"
+#include "xlibc.h"
+#include <errno.h>
 
 void	append_path(char *dst, char **rest, char *src)
 {
@@ -77,10 +80,13 @@ int	set_newpath(t_mgr *mgr, char **path, char *arg)
 	return (0);
 }
 
-static int	handle_cd_error(char *path, const char *error_msg)
+static int	handle_cd_error(char *path, char **argv)
 {
+	int	e;
+
+	e = errno;
 	free(path);
-	perror(error_msg);
+	report_error("cd", argv[1], strerror(e));
 	return (1);
 }
 
@@ -90,15 +96,15 @@ int	builtin_cd(char **argv, t_mgr *mgr)
 	char	*path;
 	char	*newpwd;
 
-	path = (char *)malloc((sizeof(char)) * PATH_MAX);
+	path = (char *)xmalloc((sizeof(char)) * PATH_MAX);
 	if (!path)
 		return (1);
 	pwd = get_env(mgr->env_list, "PWD");
 	set_env(&(mgr->env_list), "OLDPWD", pwd);
 	if (set_newpath(mgr, &path, argv[1]) == 1)
-		return (handle_cd_error(path, "no new path"));
+		return (handle_cd_error(path, argv));
 	if (chdir(path) < 0)
-		return (handle_cd_error(path, "path error"));
+		return (handle_cd_error(path, argv));
 	newpwd = update_pwd(pwd, path);
 	if (newpwd)
 		set_env(&(mgr->env_list), "PWD", newpwd);
