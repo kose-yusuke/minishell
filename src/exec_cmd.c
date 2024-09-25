@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 17:19:49 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/25 01:56:31 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static t_status	validate_cmd_path(char **argv, char **path)
 
 	if (!*path)
 	{
-		report_error("minishell", argv[0], "command not found");
+		report_error(argv[0], 0, "command not found");
 		return (SC_NOTFOUND);
 	}
 	if (stat(*path, &statbuf) == -1)
@@ -64,7 +64,7 @@ static t_status	validate_cmd_path(char **argv, char **path)
 	}
 	if (S_ISDIR(statbuf.st_mode))
 	{
-		report_error("minishell", argv[0], "is a directory");
+		report_error(argv[0], 0, "is a directory");
 		free(*path);
 		return (SC_NOEXEC);
 	}

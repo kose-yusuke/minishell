@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/24 21:48:16 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/25 02:06:21 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ int	exec_builtin(char **argv, t_mgr *mgr)
 bool	is_builtin(char *cmd_name)
 {
 	const char		*builtin_commands[] = {"exit", "export", "unset", "env",
-				"cd", "echo", "pwd"};
+		"cd", "echo", "pwd"};
 	unsigned int	i;
 
 	if (!cmd_name)
