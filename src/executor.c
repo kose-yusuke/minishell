@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:11:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/02 19:05:52 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 03:48:24 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static t_status	process_exec(t_execcmd *ecmd, t_mgr *mgr)
 
 t_status	run_cmd(t_cmd *cmd, t_mgr *mgr)
 {
-	if (!cmd || !mgr || !mgr->env_table)
+	if (!cmd || !mgr)
 	{
 		return (SC_FAILURE);
 	}

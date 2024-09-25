@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cmd.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: koseki.yusuke <koseki.yusuke@student.42    +#+  +:+       +#+        */
+/*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 23:27:42 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/07 23:29:22 by koseki.yusu      ###   ########.fr       */
+/*   Updated: 2024/09/24 21:05:55 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	delete_last_path(char *newpwd);
 int		builtin_exit(char **argv);
 /* builtin_export.c */
 int		builtin_export(char **argv, t_mgr *mgr);
+char	*prepare_str_to_print(char *key);
 /* builtin_unset.c */
 int		builtin_unset(char **argv, t_mgr *mgr);
 /* builtin_pwd.c */

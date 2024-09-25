@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:51:47 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:51:58 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:35:19 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,13 @@ static char	*expand_exit_status(t_status exit_status)
 	return (expanded_value);
 }
 
-static char	*expand_env(char *dollar_ptr, char **suffix,
-		t_hash_table *env_table)
+static char	*expand_env(char *dollar_ptr, char **suffix, t_env_node *env_list)
 {
 	char	*env_key;
 	char	*expanded_value;
 
 	env_key = extract_env_key(dollar_ptr + 1, suffix);
-	expanded_value = env_table->search(env_table, env_key);
+	expanded_value = get_env(env_list, env_key);
 	free(env_key);
 	return (expanded_value);
 }
@@ -64,7 +63,7 @@ char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr)
 		*suffix = dollar_ptr + 2;
 		return (expanded_value);
 	}
-	expanded_value = expand_env(dollar_ptr, suffix, mgr->env_table);
+	expanded_value = expand_env(dollar_ptr, suffix, mgr->env_list);
 	if (!expanded_value)
 	{
 		ft_strcpy(dollar_ptr, *suffix);

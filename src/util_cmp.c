@@ -6,21 +6,12 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:37:38 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:38:55 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 19:11:33 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "utils.h"
-
-int	ft_isdigit(int c)
-{
-	while (c > 47 && c < 58)
-	{
-		return (1);
-	}
-	return (0);
-}
 
 int	ft_strcmp(const char *s1, const char *s2)
 {

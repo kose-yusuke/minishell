@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:36:48 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:36:50 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 03:50:14 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	run_expansion(t_cmd *cmd, t_mgr *mgr)
 	t_execcmd	*ecmd;
 	t_pipecmd	*pcmd;
 
-	if (!cmd || !mgr || !mgr->env_table || g_status != 0)
+	if (!cmd || !mgr || g_status != 0)
 		return ;
 	else if (cmd->type == EXEC)
 	{

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:11:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:15:45 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 20:51:26 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,20 @@ void	error_exit(const char *msg, int exit_status)
 
 void	report_error(char *cmd, char *file, char *info)
 {
+	write(STDERR_FILENO, "minishell:", 10);
 	if (cmd && *cmd)
+	{
+		write(STDERR_FILENO, " ", 1);
 		write(STDERR_FILENO, cmd, ft_strlen(cmd));
-	else
-		write(STDERR_FILENO, "minishell", 9);
-	write(STDERR_FILENO, ":", 1);
+		write(STDERR_FILENO, ":", 1);
+	}
 	if (file && *file)
 	{
 		write(STDERR_FILENO, " ", 1);
 		write(STDERR_FILENO, file, ft_strlen(file));
 		write(STDERR_FILENO, ":", 1);
 	}
-	if (info)
+	if (info && *info)
 	{
 		write(STDERR_FILENO, " ", 1);
 		write(STDERR_FILENO, info, ft_strlen(info));

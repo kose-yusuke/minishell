@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:10:34 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:10:37 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 03:51:51 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ void	free_mgr_resources(t_mgr *mgr)
 	{
 		free_cmd(mgr->cmd);
 	}
-	if (mgr->env_table)
+	if (mgr->env_list)
 	{
-		mgr->env_table->free(mgr->env_table);
+		free_env_list(mgr->env_list);
 	}
 }

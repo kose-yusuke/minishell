@@ -19,6 +19,7 @@
 - [bash git](https://git.savannah.gnu.org/cgit/bash.git/)
 - [GNU Readline Library](https://tiswww.cwru.edu/php/chet/readline/readline.html)
 - [Appendix E. Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html#EXITCODESREF)
+- [POSIX specification](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06) <- 変数名の仕様について
 ## 使用可能な関数一覧と説明
 
 ### 入力と履歴管理の関数
