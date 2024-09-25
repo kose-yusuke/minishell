@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:41:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/10 04:22:46 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 22:58:23 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "parser.h"
 #include "xlibc.h"
 
-t_word	*new_word_node(t_token_type type, char *str)
+t_arg	*new_arg_node(t_token_type type, char *str)
 {
 	t_token	*token;
 	char	*start;
@@ -27,80 +27,80 @@ t_word	*new_word_node(t_token_type type, char *str)
 	token = new_token(type, &start, &end);
 	if (!token)
 		return (NULL);
-	return (init_word(token));
+	return (init_arg(token));
 }
 
-static t_word	*insert_word(t_word *prev_word, char *str)
+static t_arg	*insert_arg(t_arg *prev_arg, char *str)
 {
 	t_token	*blank_token;
-	t_word	*new_word;
+	t_arg	*new_arg;
 
 	blank_token = new_token(TK_BLANK, NULL, NULL);
 	if (!blank_token)
 		return (NULL);
-	new_word = new_word_node(TK_WORD, str);
-	if (!new_word)
+	new_arg = new_arg_node(TK_WORD, str);
+	if (!new_arg)
 	{
 		free(blank_token);
 		return (NULL);
 	}
-	prev_word->next = new_word;
-	prev_word->token->next = blank_token;
-	blank_token->next = new_word->token;
-	return (new_word);
+	prev_arg->next = new_arg;
+	prev_arg->token->next = blank_token;
+	blank_token->next = new_arg->token;
+	return (new_arg);
 }
 
-static bool	set_first_word(t_word *word, char *str)
+static bool	set_first_arg(t_arg *arg, char *str)
 {
 	char	*first_str;
 
 	first_str = ft_strdup(str);
 	if (!first_str)
 		return (false);
-	free(word->token->word);
-	word->token->word = first_str;
+	free(arg->token->word);
+	arg->token->word = first_str;
 	return (true);
 }
 
-static t_word	*set_words(t_word *word, char **splits)
+static t_arg	*set_args(t_arg *arg, char **splits)
 {
-	t_word	*prev_word;
+	t_arg	*prev_arg;
 	size_t	i;
 
 	i = 0;
-	if (!set_first_word(word, splits[i]))
+	if (!set_first_arg(arg, splits[i]))
 		return (NULL);
 	i++;
-	prev_word = word;
+	prev_arg = arg;
 	while (splits[i])
 	{
-		prev_word->next = insert_word(prev_word, splits[i]);
-		if (!prev_word->next)
+		prev_arg->next = insert_arg(prev_arg, splits[i]);
+		if (!prev_arg->next)
 			return (NULL);
-		prev_word = prev_word->next;
+		prev_arg = prev_arg->next;
 		i++;
 	}
-	return (prev_word);
+	return (prev_arg);
 }
 
-void	split_word_token(t_word *word)
+void	split_word_token(t_arg *arg)
 {
-	t_word	*next_word;
+	t_arg	*next_arg;
 	t_token	*next_token;
-	t_word	*last_word;
+	t_arg	*last_arg;
 	char	**splits;
 
-	if (!word || !word->token || !has_delimiter(word->token, IFS))
+	if (!arg || !arg->token || !has_delimiter(arg->token, IFS))
 		return ;
-	next_word = word->next;
-	next_token = word->token->next;
-	splits = ft_split(word->token->word, ' ');
+	next_arg = arg->next;
+	next_token = arg->token->next;
+	splits = ft_split(arg->token->word, ' ');
 	if (!splits)
 		return ;
-	last_word = set_words(word, splits);
+	last_arg = set_args(arg, splits);
 	free_argv(splits);
-	if (!last_word)
+	if (!last_arg)
 		return ;
-	last_word->next = next_word;
-	last_word->token->next = next_token;
+	last_arg->next = next_arg;
+	last_arg->token->next = next_token;
 }

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:50:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:50:28 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 22:52:33 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 #include "utils.h"
 #include "xlibc.h"
 
-t_word	*init_word(t_token *token)
+t_arg	*init_arg(t_token *token)
 {
-	t_word	*new_word;
+	t_arg	*new_arg;
 
-	new_word = xmalloc(sizeof(*new_word));
-	ft_bzero(new_word, sizeof(*new_word));
-	new_word->token = token;
-	new_word->next = NULL;
-	return (new_word);
+	new_arg = xmalloc(sizeof(*new_arg));
+	ft_bzero(new_arg, sizeof(*new_arg));
+	new_arg->token = token;
+	new_arg->next = NULL;
+	return (new_arg);
 }
 
 t_redir	*init_redir(t_token_type type, int fd)
@@ -34,7 +34,7 @@ t_redir	*init_redir(t_token_type type, int fd)
 	ft_bzero(new_redir, sizeof(*new_redir));
 	new_redir->redir_type = type;
 	new_redir->fd = fd;
-	new_redir->word_list = NULL;
+	new_redir->arg_list = NULL;
 	new_redir->next = NULL;
 	return (new_redir);
 }
@@ -46,7 +46,7 @@ t_cmd	*init_execcmd(void)
 	cmd = xmalloc(sizeof(*cmd));
 	ft_bzero(cmd, sizeof(*cmd));
 	cmd->type = EXEC;
-	cmd->word_list = NULL;
+	cmd->arg_list = NULL;
 	cmd->redir_list = NULL;
 	return ((t_cmd *)cmd);
 }

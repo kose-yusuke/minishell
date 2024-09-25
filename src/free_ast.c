@@ -6,22 +6,22 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 00:48:03 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 00:50:59 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:46:18 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "free.h"
 #include "minishell.h"
 
-void	free_word(t_word *word)
+void	free_word(t_arg *arg_list)
 {
-	t_word	*next;
+	t_arg	*next;
 
-	while (word)
+	while (arg_list)
 	{
-		next = word->next;
-		free(word);
-		word = next;
+		next = arg_list->next;
+		free(arg_list);
+		arg_list = next;
 	}
 }
 
@@ -32,7 +32,7 @@ void	free_redir(t_redir *redir)
 	while (redir)
 	{
 		next = redir->next;
-		free_word(redir->word_list);
+		free_word(redir->arg_list);
 		free(redir);
 		redir = next;
 	}
@@ -41,18 +41,18 @@ void	free_redir(t_redir *redir)
 static void	free_right_cmd(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
-	t_word		*next;
+	t_arg		*next;
 
 	ecmd = (t_execcmd *)cmd;
 	if (!cmd)
 		return ;
 	if (cmd->type == EXEC)
 	{
-		while (ecmd->word_list)
+		while (ecmd->arg_list)
 		{
-			next = ecmd->word_list->next;
-			free(ecmd->word_list);
-			ecmd->word_list = next;
+			next = ecmd->arg_list->next;
+			free(ecmd->arg_list);
+			ecmd->arg_list = next;
 		}
 		free_redir(ecmd->redir_list);
 	}
@@ -73,8 +73,8 @@ void	free_cmd(t_cmd *cmd)
 		return ;
 	if (cmd->type == EXEC)
 	{
-		free_word(ecmd->word_list);
-		ecmd->word_list = NULL;
+		free_word(ecmd->arg_list);
+		ecmd->arg_list = NULL;
 		free_redir(((t_execcmd *)cmd)->redir_list);
 	}
 	else if (cmd->type == PIPE)

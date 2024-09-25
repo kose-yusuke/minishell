@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 00:52:37 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 00:59:39 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/25 01:11:17 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static t_cmd	*parse_exec(t_token **token)
 			free_cmd((t_cmd *)exec_cmd);
 			return (NULL);
 		}
-		append_word(&exec_cmd->word_list, init_word(*token));
+		append_arg(&exec_cmd->arg_list, init_arg(*token));
 		advance(token);
 		if (parse_redir(&exec_cmd->redir_list, token) != 0)
 		{

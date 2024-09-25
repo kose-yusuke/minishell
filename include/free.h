@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:51:36 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:51:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/24 21:45:32 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "minishell.h"
 
 /* free_ast.c */
-void	free_word(t_word *word);
+void	free_word(t_arg *arg_list);
 void	free_redir(t_redir *redir);
 void	free_cmd(t_cmd *cmd);
 
