@@ -6,13 +6,18 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:51:47 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 17:35:19 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/28 19:43:00 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "error.h"
 #include "expander.h"
 #include "xlibc.h"
+
+// static bool is_valid_key_char(char c)
+// {
+// 	return (ft_isalnum(c) || c == '_');
+// }
 
 static char	*extract_env_key(char *env_head, char **suffix)
 {
