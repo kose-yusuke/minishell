@@ -6,31 +6,12 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 00:51:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/29 05:48:02 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 02:25:46 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "error.h"
 #include "expander.h"
-
-// TODO: remove this function
-void	print_arg_list(char *msg, t_arg *arg_list)
-{
-	t_arg	*arg;
-	size_t	i;
-
-	arg = arg_list;
-	i = 0;
-	printf("--------------------\n");
-	printf("%s\n", msg);
-	while (arg)
-	{
-		printf("arg[%zu]: %s\n", i, arg->token->word);
-		arg = arg->next;
-		i++;
-	}
-	printf("--------------------\n");
-}
 
 static bool	is_continuous_token(t_arg *arg, t_arg *next_arg)
 {
@@ -39,31 +20,27 @@ static bool	is_continuous_token(t_arg *arg, t_arg *next_arg)
 	return (arg->token->next == next_arg->token);
 }
 
-// 前提確認: これまでのargでdlが出現しておらず、eqが出現した場合の右辺のみword splitを行う
-// KEY=VALUE の場合、KEYの部分に環境変数が含まれない場合のみ、VALUEの部分のword splitを行わない
-static bool	manage_split_flags(t_arg *arg, bool *ws_off, bool *has_dlr)
+static bool	manage_split_flags(t_arg *arg, bool *ws_off, bool *dlr_on)
 {
 	char	*dl_pos;
 	char	*eq_pos;
 
-	// すでにwsが禁止されている（true）または、すでにdlが出現している場合はチェック不要
-	if (*ws_off || *has_dlr)
+	if (*ws_off || *dlr_on)
 		return (is_continuous_token(arg, arg->next));
 	dl_pos = ft_strchr(arg->token->word, '$');
 	eq_pos = ft_strchr(arg->token->word, '=');
-	// `$`と`=`の位置に応じて、フラグを設定
 	if (dl_pos)
-		*has_dlr = true;
+		*dlr_on = true;
 	if (eq_pos && (!dl_pos || dl_pos > eq_pos))
 		*ws_off = true;
 	return (is_continuous_token(arg, arg->next));
 }
 
-static void	process_arg(t_arg *arg, t_mgr *mgr, bool *ws_off, bool *has_dlr)
+static void	process_arg(t_arg *arg, t_mgr *mgr, bool *ws_off, bool *dlr_on)
 {
 	bool	is_continuous;
 
-	is_continuous = manage_split_flags(arg, ws_off, has_dlr);
+	is_continuous = manage_split_flags(arg, ws_off, dlr_on);
 	if (arg->token->type == TK_WORD || arg->token->type == TK_DQUOTE)
 		expand_word_str(&(arg->token->word), mgr);
 	if (arg->token->type == TK_WORD && !*ws_off)
@@ -71,7 +48,7 @@ static void	process_arg(t_arg *arg, t_mgr *mgr, bool *ws_off, bool *has_dlr)
 	if (!is_continuous)
 	{
 		*ws_off = false;
-		*has_dlr = false;
+		*dlr_on = false;
 	}
 }
 
@@ -80,15 +57,15 @@ void	expand_arg_list(t_arg *arg_list, t_mgr *mgr)
 	t_arg	*arg;
 	t_arg	*next_arg;
 	bool	ws_off;
-	bool	has_dlr;
+	bool	dlr_on;
 
 	arg = arg_list;
 	ws_off = false;
-	has_dlr = false;
+	dlr_on = false;
 	while (arg)
 	{
 		next_arg = arg->next;
-		process_arg(arg, mgr, &ws_off, &has_dlr);
+		process_arg(arg, mgr, &ws_off, &dlr_on);
 		arg = next_arg;
 	}
 	merge_arg_list(arg_list);

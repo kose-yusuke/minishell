@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 16:54:15 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/28 20:03:39 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 02:25:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,16 +69,6 @@ char	*prepare_str_to_print(char *key)
 	return (key_to_print);
 }
 
-void print_all_args(char **argv)
-{
-	int i = 0;
-	while (argv[i])
-	{
-		printf("argv[%d]: %s\n", i, argv[i]);
-		i++;
-	}
-}
-
 int	builtin_export(char **argv, t_mgr *mgr)
 {
 	int		i;
@@ -90,7 +80,6 @@ int	builtin_export(char **argv, t_mgr *mgr)
 		display_sorted_env(mgr->env_list);
 		return (0);
 	}
-	print_all_args(argv); // TODO: remove
 	i = 1;
 	status = 0;
 	while (argv[i])
