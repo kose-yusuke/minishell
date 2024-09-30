@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:21:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/28 19:42:46 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/30 16:40:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,7 @@ int	set_env(t_env_node **env_head, char *key, char *value)
 	t_env_node	*node;
 
 	if (!is_valid_key(key))
-	{
-		printf("key is invalid\n");
 		return (-1);
-	}
 	node = *env_head;
 	while (node)
 	{
