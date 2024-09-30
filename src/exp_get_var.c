@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:51:47 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/30 16:30:34 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 01:56:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ static char	*expand_exit_status(t_status exit_status)
 {
 	char	*expanded_value;
 
+	// ft_itoaはmallocするのでエラー時には終了する
 	expanded_value = ft_itoa(exit_status);
 	if (!expanded_value)
 	{
@@ -54,8 +55,14 @@ static char	*expand_env(char *dollar_ptr, char **suffix, t_env_node *env_list)
 
 	env_key = extract_env_key(dollar_ptr + 1, suffix);
 	expanded_value = get_env(env_list, env_key);
+	if (!expanded_value)
+	{
+		free(env_key);
+		return (NULL);
+	}
 	free(env_key);
-	return (expanded_value);
+	// 直接valueを返すとfreeできないのでコピーして返す
+	return (ft_strdup(expanded_value));
 }
 
 char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr)

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:42:10 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/30 16:22:00 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 01:58:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,20 +62,17 @@ static void	expand_variable(char **word, char **cur_ptr, t_mgr *mgr)
 	char	*suffix;
 	char	*expanded_value;
 	size_t	updated_len;
-	bool	should_free;
 
 	dollar_ptr = find_dollar(cur_ptr);
 	if (!dollar_ptr)
 		return ;
-	should_free = *(dollar_ptr + 1) == '?';
 	expanded_value = get_expanded_value(dollar_ptr, &suffix, mgr);
 	if (!expanded_value)
 		return ;
 	*dollar_ptr = '\0';
 	updated_len = ft_strlen(*word) + ft_strlen(expanded_value);
 	replace_word_str(word, expanded_value, suffix);
-	if (should_free)
-		free(expanded_value);
+	free(expanded_value);
 	*cur_ptr = *word + updated_len;
 }
 
