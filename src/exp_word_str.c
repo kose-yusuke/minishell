@@ -6,13 +6,18 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:42:10 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:42:11 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/30 16:22:00 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "error.h"
 #include "expander.h"
 #include "xlibc.h"
+
+static bool	is_valid_first_char_after_dollar(char c)
+{
+	return (ft_isalpha(c) || c == '_' || c == '?' || c == '$');
+}
 
 static char	*find_dollar(char **cur_ptr)
 {
@@ -22,6 +27,11 @@ static char	*find_dollar(char **cur_ptr)
 	if (!dollar_ptr || *(dollar_ptr + 1) == '\0')
 	{
 		*cur_ptr = NULL;
+		return (NULL);
+	}
+	if (!is_valid_first_char_after_dollar(*(dollar_ptr + 1)))
+	{
+		*cur_ptr = dollar_ptr + 1;
 		return (NULL);
 	}
 	if (*(dollar_ptr + 1) == '$')

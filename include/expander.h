@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:43:24 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 22:59:27 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/30 14:11:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include "minishell.h"
 
 # define IFS " \t\n\""
-# define IFS_EXTENDED " \t\n\"\'|&;()<>$"
 
 /* exp_get_value.c */
 char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr);
