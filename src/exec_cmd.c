@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:00:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/25 01:56:31 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 03:11:04 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,8 @@ t_status	exec_cmd(char **argv, t_mgr *mgr)
 	t_status	status;
 	pid_t		pid;
 
+	if (!argv[0] || *argv[0] == '\0')
+		return (SC_SUCCESS);
 	if (is_builtin(argv[0]))
 		return (exec_builtin(argv, mgr));
 	if (ft_strchr(argv[0], '/') != NULL)

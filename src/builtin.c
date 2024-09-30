@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 13:48:26 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/25 02:06:21 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 03:35:05 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,29 +15,29 @@
 #include "free.h"
 #include "xlibc.h"
 
-void	print_argv(char **argv)
+static bool	is_valid_arg(t_arg *arg)
 {
-	int	i;
+	if (!arg || !arg->token || !arg->token->word || !arg->token->word[0])
+		return (false);
+	if (!is_word_or_quoted_token(arg->token))
+		return (false);
+	return (true);
+}
 
-	i = 0;
-	if (argv == NULL)
+static size_t	count_valid_args(t_arg *arg_list)
+{
+	size_t	count;
+	t_arg	*tmp_arg;
+
+	count = 0;
+	tmp_arg = arg_list;
+	while (tmp_arg)
 	{
-		printf("argv is NULL\n");
-		return ;
+		if (is_valid_arg(tmp_arg))
+			count++;
+		tmp_arg = tmp_arg->next;
 	}
-	printf("argv:\n");
-	while (argv[i])
-	{
-		if (argv[i] == NULL)
-		{
-			printf("argv[%d] is NULL\n", i);
-		}
-		else
-		{
-			printf("argv[%d]: %s\n", i, argv[i]);
-		}
-		i++;
-	}
+	return (count);
 }
 
 char	**convert_list_to_array(t_arg *arg_list)
@@ -47,21 +47,17 @@ char	**convert_list_to_array(t_arg *arg_list)
 	size_t	len;
 	size_t	i;
 
-	if (!arg_list || !arg_list->token || !arg_list->token->word)
+	if (!arg_list)
 		return (NULL);
-	len = 0;
 	tmp_arg = arg_list;
-	while (tmp_arg)
-	{
-		tmp_arg = tmp_arg->next;
-		len++;
-	}
+	len = count_valid_args(arg_list);
 	argv = (char **)xmalloc(sizeof(char *) * (len + 1));
 	tmp_arg = arg_list;
 	i = 0;
-	while (tmp_arg && is_word_or_quoted_token(tmp_arg->token))
+	while (tmp_arg)
 	{
-		argv[i++] = ft_strdup(tmp_arg->token->word);
+		if (is_valid_arg(tmp_arg))
+			argv[i++] = ft_strdup(tmp_arg->token->word);
 		tmp_arg = tmp_arg->next;
 	}
 	argv[i] = NULL;
