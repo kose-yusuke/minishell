@@ -6,31 +6,41 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 17:28:09 by koseki.yusu       #+#    #+#             */
-/*   Updated: 2024/09/10 13:20:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 04:53:30 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static bool	is_echo_n_option(char *arg)
+{
+	if (!arg || ft_strlen(arg) < 2 || arg[0] != '-' || arg[1] != 'n')
+		return (false);
+	arg++;
+	while (*arg == 'n')
+		arg++;
+	return (*arg == '\0');
+}
+
 int	builtin_echo(char **argv)
 {
 	bool	echo_newline;
+	bool	is_first_arg_to_print;
 	size_t	i;
 
 	echo_newline = true;
 	i = 1;
-	if (argv[1] && ft_strncmp(argv[1], "-n", 2) == 0)
+	while (argv[i] && is_echo_n_option(argv[i]))
 	{
-		i++;
 		echo_newline = false;
+		i++;
 	}
-	if (echo_newline)
-		i = 1;
-	else
-		i = 2;
+	is_first_arg_to_print = true;
 	while (argv[i])
 	{
-		if (i > 1 + !echo_newline)
+		if (is_first_arg_to_print)
+			is_first_arg_to_print = false;
+		else
 			write(1, " ", 1);
 		write(1, argv[i], ft_strlen(argv[i]));
 		i++;
