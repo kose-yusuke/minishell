@@ -6,13 +6,18 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:42:10 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:42:11 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 01:58:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "error.h"
 #include "expander.h"
 #include "xlibc.h"
+
+static bool	is_valid_first_char_after_dollar(char c)
+{
+	return (ft_isalpha(c) || c == '_' || c == '?' || c == '$');
+}
 
 static char	*find_dollar(char **cur_ptr)
 {
@@ -22,6 +27,11 @@ static char	*find_dollar(char **cur_ptr)
 	if (!dollar_ptr || *(dollar_ptr + 1) == '\0')
 	{
 		*cur_ptr = NULL;
+		return (NULL);
+	}
+	if (!is_valid_first_char_after_dollar(*(dollar_ptr + 1)))
+	{
+		*cur_ptr = dollar_ptr + 1;
 		return (NULL);
 	}
 	if (*(dollar_ptr + 1) == '$')
@@ -52,20 +62,17 @@ static void	expand_variable(char **word, char **cur_ptr, t_mgr *mgr)
 	char	*suffix;
 	char	*expanded_value;
 	size_t	updated_len;
-	bool	should_free;
 
 	dollar_ptr = find_dollar(cur_ptr);
 	if (!dollar_ptr)
 		return ;
-	should_free = *(dollar_ptr + 1) == '?';
 	expanded_value = get_expanded_value(dollar_ptr, &suffix, mgr);
 	if (!expanded_value)
 		return ;
 	*dollar_ptr = '\0';
 	updated_len = ft_strlen(*word) + ft_strlen(expanded_value);
 	replace_word_str(word, expanded_value, suffix);
-	if (should_free)
-		free(expanded_value);
+	free(expanded_value);
 	*cur_ptr = *word + updated_len;
 }
 

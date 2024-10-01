@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:21:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 21:04:11 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/09/30 16:40:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ char	*get_env(t_env_node *env_head, char *key)
 	return (NULL);
 }
 
-bool	is_valid_key(char *key)
+static bool	is_valid_key(char *key)
 {
 	if (!key || !*key || ft_strchr(key, '='))
 		return (false);

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:51:47 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 17:35:19 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/01 01:56:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,18 @@
 #include "expander.h"
 #include "xlibc.h"
 
+static bool	is_valid_key_char(char c)
+{
+	return (ft_isalnum(c) || c == '_');
+}
+
 static char	*extract_env_key(char *env_head, char **suffix)
 {
 	char	*env_key;
 	size_t	len;
 
 	*suffix = env_head;
-	while (**suffix && !ft_strchr(IFS_EXTENDED, **suffix))
+	while (**suffix && is_valid_key_char(**suffix))
 		(*suffix)++;
 	len = *suffix - env_head;
 	env_key = xmalloc(len + 1);
@@ -33,6 +38,7 @@ static char	*expand_exit_status(t_status exit_status)
 {
 	char	*expanded_value;
 
+	// ft_itoaはmallocするのでエラー時には終了する
 	expanded_value = ft_itoa(exit_status);
 	if (!expanded_value)
 	{
@@ -49,8 +55,14 @@ static char	*expand_env(char *dollar_ptr, char **suffix, t_env_node *env_list)
 
 	env_key = extract_env_key(dollar_ptr + 1, suffix);
 	expanded_value = get_env(env_list, env_key);
+	if (!expanded_value)
+	{
+		free(env_key);
+		return (NULL);
+	}
 	free(env_key);
-	return (expanded_value);
+	// 直接valueを返すとfreeできないのでコピーして返す
+	return (ft_strdup(expanded_value));
 }
 
 char	*get_expanded_value(char *dollar_ptr, char **suffix, t_mgr *mgr)
