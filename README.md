@@ -1,11 +1,11 @@
 # Minishell
 
 ## 目次
-- [使用した資料（Resources）](#使用した資料resources)
+- [資料](#資料)
 - [使用可能な関数一覧と説明](#使用可能な関数一覧と説明)
-- [TODOリスト](#todoリスト)
+- [作業リスト](#作業リスト)
 
-## 使用した資料（Resources）
+## 資料
 - [minishellの作り方](https://usatie.notion.site/minishell-29921d3ea13447ad897349acd5733d5e#2ebba0b5890641898a16957b69e50f1f)
 - [The Architecture of Open Source Applications](https://aosabook.org/en/index.html)
 - [AOSA 日本語版](https://m-takagi.github.io/aosa-ja/aosa.pdf)
@@ -20,6 +20,9 @@
 - [GNU Readline Library](https://tiswww.cwru.edu/php/chet/readline/readline.html)
 - [Appendix E. Exit Codes With Special Meanings](https://tldp.org/LDP/abs/html/exitcodes.html#EXITCODESREF)
 - [POSIX specification](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06) <- 変数名の仕様について
+- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/html_node/index.html)
+- [Bash Reference Manual 4 Shell Builtin Commands](https://www.gnu.org/software/bash/manual/html_node/Shell-Builtin-Commands.html) <- built-inコマンドの仕様について
+
 ## 使用可能な関数一覧と説明
 
 ### 入力と履歴管理の関数
