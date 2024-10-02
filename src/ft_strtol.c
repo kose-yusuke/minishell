@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:37:33 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:37:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/02 16:19:59 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,55 +111,3 @@ long	ft_strtol(const char *str, char **endptr, int base)
 	base = confirm_base(&str, endptr, base);
 	return (convert(str, is_negative, endptr, base));
 }
-
-/*
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-void	test_strtol(const char *str, int base)
-{
-	char	*end;
-	char	*ft_end;
-	long	res;
-	long	ft_res;
-
-	printf("Testing: '%s' with base %d\n", str, base);
-	errno = 0;
-	res = strtol(str, &end, base);
-	printf("Og_strtol : %ld, errno: %d, end: '%s'\n", res, errno, end);
-	errno = 0;
-	ft_res = ft_strtol(str, &ft_end, base);
-	printf("ft_strtol : %ld, errno: %d, end: '%s'\n", ft_res, errno, ft_end);
-	printf("-------------------------------------------------\n\n");
-}
-
-int	main(void)
-{
-	test_strtol("42", 0);
-	test_strtol("0755", 0);
-	test_strtol("0x1A", 0);
-	test_strtol("101010", 2);
-	test_strtol("-101010", 2);
-	test_strtol("0436", 8);
-	test_strtol("0xff", 16);
-	test_strtol("123abc", 10);
-	test_strtol("999999999999999999999999999999", 10);
-	test_strtol("-999999999999999999999999999999", 10);
-	test_strtol("0", 0);
-	test_strtol("0x", 0);
-	test_strtol("0xzz", 0);
-	test_strtol("-z", 0);
-	test_strtol("0z", 0);
-	test_strtol("abc", 10);
-	test_strtol("Z", 36);
-	test_strtol("10", 36);
-	test_strtol("", 10);
-	test_strtol(" ", 10);
-	test_strtol("-apple00", 10);
-	test_strtol("123", 37);
-	test_strtol("123", 1);
-	return (0);
-}
-
- */
