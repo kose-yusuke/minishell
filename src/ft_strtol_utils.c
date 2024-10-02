@@ -6,20 +6,20 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:06:43 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 01:06:44 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/02 16:18:30 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_strtol.h"
 
-static int	ft_isspace(int c)
+int	ft_isspace_custom(int c)
 {
-	return (('\t' <= c && c <= '\r') || c == ' ');
+	return (c == ' ' || c == '\t');
 }
 
 void	skip_space(const char **str)
 {
-	while (ft_isspace(**str))
+	while (ft_isspace_custom(**str))
 	{
 		(*str)++;
 	}
