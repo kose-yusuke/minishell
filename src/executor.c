@@ -6,11 +6,12 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 22:11:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 21:48:42 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/02 14:25:07 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtin_cmd.h"
+#include "error.h"
 #include "executor.h"
 #include "free.h"
 #include "xlibc.h"
@@ -48,6 +49,20 @@ static void	restore_std_fds(int saved_stdin, int saved_stdout, int saved_stderr)
 	close(saved_stderr);
 }
 
+static t_status	validate_cmd_arg(char **argv)
+{
+	if (!argv[0] || *argv[0] == '\0')
+	{
+		return (SC_SUCCESS);
+	}
+	if (ft_strcmp(argv[0], ".") == 0)
+	{
+		report_error(argv[0], 0, "unsupported feature");
+		return (SC_BADUSAGE);
+	}
+	return (SC_SUCCESS);
+}
+
 static t_status	process_exec(t_execcmd *ecmd, t_mgr *mgr)
 {
 	int		status;
@@ -62,6 +77,8 @@ static t_status	process_exec(t_execcmd *ecmd, t_mgr *mgr)
 	}
 	argv = convert_list_to_array(ecmd->arg_list);
 	status = exec_redir(ecmd->redir_list, argv);
+	if (status == SC_SUCCESS && argv)
+		status = validate_cmd_arg(argv);
 	if (status == SC_SUCCESS && argv)
 		status = exec_cmd(argv, mgr);
 	free_argv(argv);
