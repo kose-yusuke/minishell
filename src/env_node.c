@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:21:13 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/30 16:40:43 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/08 17:21:34 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	set_env(t_env_node **env_head, char *key, char *value)
 	{
 		if (ft_strcmp(node->key, key) == 0)
 		{
-			if (node->value)
+			if (value)
 			{
 				free(node->value);
 				node->value = ft_strdup(value);
