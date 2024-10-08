@@ -24,6 +24,7 @@
 # include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <stdint.h>
 
 typedef enum e_status
 {
