@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 02:17:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/11 02:36:03 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/08 14:39:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static bool	is_meta_character(char c)
 {
 	static const char	*meta_character = "|<> '\" \t\n";
 
-	return (strchr(meta_character, c) != 0);
+	return (ft_strchr(meta_character, c) != 0);
 }
 
 t_token_type	get_word_or_ionum_type(char **ps, char **q, char **eq)
