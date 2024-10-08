@@ -14,7 +14,7 @@
 #include "free.h"
 #include "ft_readline.h"
 #include "minishell.h"
-#include <libc.h>
+// #include <libc.h>
 
 // __attribute__((destructor)) static void destructor()
 // {

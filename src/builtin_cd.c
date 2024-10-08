@@ -73,10 +73,10 @@ int	set_newpath(t_mgr *mgr, char **path, char *arg)
 			perror("cd: HOME not set\n");
 			return (1);
 		}
-		strlcpy(*path, home, PATH_MAX);
+		ft_strlcpy(*path, home, PATH_MAX);
 	}
 	else
-		strlcpy(*path, arg, PATH_MAX);
+		ft_strlcpy(*path, arg, PATH_MAX);
 	return (0);
 }
 
