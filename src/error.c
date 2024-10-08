@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:11:11 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 20:51:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/08 14:45:54 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,6 @@ void	memory_error_and_exit(char *func_name)
 	write(2, func_name, ft_strlen(func_name));
 	write(2, ": out of virtual memory\n", 24);
 	exit(SC_FATAL_ERROR);
-}
-
-void	assert_error(const char *msg, char *location)
-{
-	write(STDERR_FILENO, "Assert Error: ", 14);
-	if (msg)
-		write(STDERR_FILENO, msg, ft_strlen(msg));
-	if (location)
-	{
-		write(STDERR_FILENO, " near ", 6);
-		write(STDERR_FILENO, location, ft_strlen(location));
-	}
-	write(STDERR_FILENO, "\n", 1);
-	exit(255);
 }
 
 void	error_exit(const char *msg, int exit_status)
