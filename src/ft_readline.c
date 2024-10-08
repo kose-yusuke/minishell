@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 01:07:16 by sakitaha          #+#    #+#             */
-/*   Updated: 2024/09/24 16:38:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2024/10/08 17:05:46 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,18 +83,20 @@ static void	interpret(char *line, t_mgr *mgr)
 
 void	ft_readline(t_mgr *mgr)
 {
-	char	*line;
+	char		*line;
+	t_status	prev_status;
 
 	rl_outstream = stderr;
 	init_signal();
 	while (1)
 	{
+		prev_status = mgr->exit_status;
 		line = readline("minishell$ ");
 		if (!line)
 		{
 			write(1, "exit\n", 5);
 			free_mgr_resources(mgr);
-			exit(255);
+			exit(prev_status);
 		}
 		if (*line && has_content(line))
 		{
